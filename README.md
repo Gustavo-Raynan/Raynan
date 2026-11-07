@@ -1,4 +1,4 @@
-# Meu Bolso — finanças e agenda
+# Tico Finances — finanças e agenda
 
 App de controle financeiro (Pix, gastos por categoria, contas a pagar, plano de pagamento) e agenda
 (dias de serviço, eventos, festas), com uma conta separada para cada pessoa.
@@ -21,7 +21,7 @@ chaves secretas nos arquivos do site.
 
 1. Em <https://dash.cloudflare.com> vá em **Workers & Pages → Create → Pages → Connect to Git**.
 2. Escolha o repositório **Raynan**.
-3. **Project name:** `meu-bolso` (o endereço fica `https://meu-bolso.pages.dev`).
+3. **Project name:** `tico-finances` (o endereço fica `https://tico-finances.pages.dev`).
 4. **Production branch:** `gh-pages`.
 5. **Framework preset:** None · **Build command:** vazio · **Build output directory:** vazio (ou `/`).
 6. **Save and Deploy**. Cada alteração enviada para a branch `gh-pages` publica sozinha.
