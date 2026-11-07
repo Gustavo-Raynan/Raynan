@@ -451,7 +451,7 @@ const BASE_RULES=[
  // transporte
  ['99app','transporte'],['99 tecnologia','transporte'],['99pop','transporte'],['99','transporte'],['uber','transporte'],['cabify','transporte'],['indrive','transporte'],['metro','transporte'],['sptrans','transporte'],['bilhete unico','transporte'],['onibus','transporte'],['buser','transporte'],['recarga transporte','transporte'],['bhbus','transporte'],['passagem','transporte'],['clickbus','transporte'],['blablacar','transporte'],['top bilhete','transporte'],
  // veículo
- ['posto','veiculo'],['combustivel','veiculo'],['gasolina','veiculo'],['etanol','veiculo'],['ipiranga','veiculo'],['shell','veiculo'],['petrobras','veiculo'],['br mania','veiculo'],['ale combustiveis','veiculo'],['oficina','veiculo'],['mecanica','veiculo'],['autopecas','veiculo'],['auto pecas','veiculo'],['moto pecas','veiculo'],['motopecas','veiculo'],['borracharia','veiculo'],['pneu','veiculo'],['ipva','veiculo'],['licenciamento','veiculo'],['detran','veiculo'],['multa','veiculo'],['estacionamento','veiculo'],['estapar','veiculo'],['sem parar','veiculo'],['conectcar','veiculo'],['veloe','veiculo'],['taggy','veiculo'],['pedagio','veiculo'],['lava jato','veiculo'],['lava rapido','veiculo'],['autoescola','veiculo'],['auto escola','veiculo'],
+ ['banco honda','veiculo'],['honda servicos','veiculo'],['yamaha','veiculo'],['consorcio','veiculo'],['posto','veiculo'],['combustivel','veiculo'],['gasolina','veiculo'],['etanol','veiculo'],['ipiranga','veiculo'],['shell','veiculo'],['petrobras','veiculo'],['br mania','veiculo'],['ale combustiveis','veiculo'],['oficina','veiculo'],['mecanica','veiculo'],['autopecas','veiculo'],['auto pecas','veiculo'],['moto pecas','veiculo'],['motopecas','veiculo'],['borracharia','veiculo'],['pneu','veiculo'],['ipva','veiculo'],['licenciamento','veiculo'],['detran','veiculo'],['multa','veiculo'],['estacionamento','veiculo'],['estapar','veiculo'],['sem parar','veiculo'],['conectcar','veiculo'],['veloe','veiculo'],['taggy','veiculo'],['pedagio','veiculo'],['lava jato','veiculo'],['lava rapido','veiculo'],['autoescola','veiculo'],['auto escola','veiculo'],
  // internet / operadora
  ['vivo fibra','internet'],['claro net','internet'],['net servicos','internet'],['net virtua','internet'],['oi fibra','internet'],['tim live','internet'],['fibra','internet'],['banda larga','internet'],['internet','internet'],['brisanet','internet'],['desktop','internet'],['algar','internet'],['starlink','internet'],['provedor','internet'],
  ['recarga celular','operadora'],['recarga vivo','operadora'],['recarga claro','operadora'],['recarga tim','operadora'],['vivo','operadora'],['claro','operadora'],['tim','operadora'],['oi movel','operadora'],['nextel','operadora'],['surf telecom','operadora'],['telefonica','operadora'],['operadora','operadora'],
@@ -462,7 +462,7 @@ const BASE_RULES=[
  ['aluguel','moradia'],['condominio','moradia'],['imobiliaria','moradia'],['quinto andar','moradia'],['quintoandar','moradia'],
  ['leroy merlin','casa'],['telhanorte','casa'],['material de construcao','casa'],['madeireira','casa'],['ferragens','casa'],['eletricista','casa'],['encanador','casa'],['tok stok','casa'],['tokstok','casa'],['mobly','casa'],['moveis','casa'],['camicado','casa'],['diarista','casa'],
  // assinaturas
- ['netflix','assinaturas'],['spotify','assinaturas'],['disney','assinaturas'],['hbo','assinaturas'],['max.com','assinaturas'],['globoplay','assinaturas'],['youtube','assinaturas'],['deezer','assinaturas'],['apple.com','assinaturas'],['google one','assinaturas'],['google play','assinaturas'],['icloud','assinaturas'],['paramount','assinaturas'],['crunchyroll','assinaturas'],['chatgpt','assinaturas'],['openai','assinaturas'],['claude.ai','assinaturas'],['xbox','assinaturas'],['playstation','assinaturas'],['microsoft 365','assinaturas'],['canva','assinaturas'],['kindle','assinaturas'],['sky ','assinaturas'],['premiere','assinaturas'],['telecine','assinaturas'],
+ ['netflix','assinaturas'],['spotify','assinaturas'],['disney','assinaturas'],['hbo','assinaturas'],['max.com','assinaturas'],['globoplay','assinaturas'],['youtube','assinaturas'],['deezer','assinaturas'],['apple.com','assinaturas'],['google one','assinaturas'],['google play','assinaturas'],['icloud','assinaturas'],['paramount','assinaturas'],['crunchyroll','assinaturas'],['chatgpt','assinaturas'],['openai','assinaturas'],['claude.ai','assinaturas'],['anthropic','assinaturas'],['claude','assinaturas'],['xbox','assinaturas'],['playstation','assinaturas'],['microsoft 365','assinaturas'],['canva','assinaturas'],['kindle','assinaturas'],['sky ','assinaturas'],['premiere','assinaturas'],['telecine','assinaturas'],
  // educação
  ['faculdade','educacao'],['universidade','educacao'],['unopar','educacao'],['anhanguera','educacao'],['estacio','educacao'],['unip','educacao'],['uninove','educacao'],['pitagoras','educacao'],['kroton','educacao'],['cogna','educacao'],['mensalidade','educacao'],['escola','educacao'],['colegio','educacao'],['curso','educacao'],['udemy','educacao'],['alura','educacao'],['hotmart','educacao'],['livraria','educacao'],['material escolar','educacao'],['fies','educacao'],['senac','educacao'],['senai','educacao'],['ingles','educacao'],['wizard','educacao'],['ccaa','educacao'],
  // saúde
@@ -990,6 +990,45 @@ function inferBySaldo(seq){const rows=seq.filter(x=>x.row);if(!rows.length)retur
     if(it.bal!=null)ref=it.bal}}
 function pickBalance(cands){if(!cands.length)return null;const f=cands.filter(c=>c.final);const pool=f.length?f:cands;
   return pool.reduce((a,b)=>(b.date||'')>=(a.date||'')?b:a)}
+/* PDF em formato de tabela (Data | Descrição | ... | Valor | Saldo): lê por colunas, com descrições em várias linhas */
+function parsePdfTable(items){const rows=[];const bals=[];let cols=null;
+  const pages=[...new Set(items.map(i=>i.p))].sort((a,b)=>a-b);
+  const isDate=s=>/^\d{1,2}[\/.-]\d{1,2}([\/.-]\d{2,4})?$/.test(s.trim())||/^\d{4}-\d{2}-\d{2}$/.test(s.trim());
+  for(const p of pages){const it=items.filter(i=>i.p===p);let headY=null;
+    const cand=it.filter(i=>/^data\b/i.test(i.s.trim()));
+    for(const d of cand){const same=it.filter(i=>Math.abs(i.y-d.y)<5);const n=same.map(i=>norm(i.s)).join(' | ');
+      if(/descri|historico|lancamento|detalhe/.test(n)&&/valor|debito|credito|entrada|saida/.test(n)){headY=d.y;
+        const find=re=>{const x=same.find(i=>re.test(norm(i.s)));return x?x.x+x.w/2:null};
+        cols={data:find(/^data/),desc:find(/descri|historico|lancamento|detalhe/),id:find(/id da operacao|documento|^id\b|operacao|^doc/),valor:find(/^valor/),deb:find(/^(debito|saida)/),cre:find(/^(credito|entrada)/),saldo:find(/^saldo/)};break}}
+    if(!cols)continue;
+    const C=Object.entries(cols).filter(([k,v])=>v!=null).map(([k,x])=>({k,x})).sort((a,b)=>a.x-b.x);
+    const colOf=i=>{const cx=i.x+i.w/2;let best=C[0],bd=1e9;for(const c of C){const d=Math.abs(c.x-cx);if(d<bd){bd=d;best=c}}
+      if(best.k!=='desc'&&cols.desc!=null&&i.x<=cols.desc+40&&i.x>=(cols.data??0)+30&&!/\d,\d{2}/.test(i.s))return 'desc';return best.k};
+    const body=it.filter(i=>headY==null||i.y<headY-3);
+    const anchors=body.filter(i=>colOf(i)==='data'&&isDate(i.s)).sort((a,b)=>b.y-a.y);if(!anchors.length)continue;
+    const gaps=anchors.slice(1).map((a,k)=>anchors[k].y-a.y).filter(g=>g>4).sort((a,b)=>a-b);const gap=gaps.length?gaps[Math.floor(gaps.length/2)]:40;
+    const groups=anchors.map(a=>({a,desc:[],valor:[],deb:[],cre:[],saldo:[]}));
+    for(const i of body){if(anchors.includes(i))continue;const k=colOf(i);if(!['desc','valor','deb','cre','saldo'].includes(k))continue;
+      let best=null,bd=1e9;for(const g of groups){const d=Math.abs(g.a.y-i.y);if(d<bd){bd=d;best=g}}
+      if(best&&bd<=Math.max(gap*0.75,16))best[k].push(i)}
+    for(const g of groups){const txt=a=>a.sort((x,y)=>y.y-x.y||x.x-y.x).map(i=>i.s).join(' ').replace(/\s+/g,' ').trim();
+      const date=parseDate(g.a.s.replace(/-/g,'/').replace(/^(\d{4})\/(\d{2})\/(\d{2})$/,'$1-$2-$3'));let v=NaN,signed=false;
+      const vt=txt(g.valor);if(vt){v=parseMoney(vt.replace(/\s*[DC]$/i,''));signed=/-/.test(vt)||/[DC]$/i.test(vt);if(/D$/i.test(vt))v=-Math.abs(v)}
+      else{const d_=parseMoney(txt(g.deb)),c_=parseMoney(txt(g.cre));if(!isNaN(c_)&&c_){v=Math.abs(c_);signed=true}else if(!isNaN(d_)&&d_){v=-Math.abs(d_);signed=true}}
+      const st=txt(g.saldo);const bal=st?parseMoney(st.replace(/\s*[DC]$/i,'')):null;
+      const desc=txt(g.desc);if(date&&bal!=null&&!isNaN(bal))bals.push({value:bal,date,final:false});
+      if(!date||isNaN(v)||v===0||!desc)continue;if(/^saldo/.test(norm(desc)))continue;
+      rows.push({date,amount:Math.abs(v),type:v<0?'saida':'entrada',desc,fitid:'',signed,bal:isNaN(bal)?null:bal})}}
+  if(rows.some(r=>r.type==='saida'))rows.forEach(r=>r.signed=true);
+  else{const seq=rows.map(r=>({row:r,bal:r.bal}));inferBySaldo(seq)}
+  rows.forEach(r=>delete r.bal);
+  let balance=null;if(bals.length){const last=bals.reduce((a,b)=>b.date>=a.date?b:a);balance=last}
+  return{rows,balance}}
+function holderName(text){const L=String(text).split(/\n/).map(l=>l.trim()).filter(Boolean).slice(0,40);
+  for(let i=0;i<L.length;i++){if(/cpf|cnpj/i.test(L[i])){for(const c of [L[i].split(/cpf|cnpj/i)[0],L[i-1],L[i-2]]){const n=(c||'').replace(/[^A-Za-zÀ-ÿ ]/g,' ').replace(/\s+/g,' ').trim();if(n.split(' ').length>=2&&n.length>=8&&!/extrato|conta|banco|pagamento|agencia|periodo/i.test(norm(n)))return n}}}
+  const m=String(text).match(/(?:titular|cliente|nome)\s*:?\s*([A-ZÀ-Ý][A-Za-zÀ-ÿ]+(?:\s+[A-ZÀ-Ý][A-Za-zÀ-ÿ]+)+)/);return m?m[1]:''}
+function isSelf(desc,names){const d=norm(desc);return names.some(n=>{const t=norm(n).split(' ').filter(x=>x.length>2);return t.length>=2&&d.includes(t[0])&&d.includes(t[t.length-1])&&(t.length<3||d.includes(t[1]))})}
+
 /* tabela (CSV ou Excel) já separada em linhas e colunas */
 function parseTable(T){T=T.map(r=>r.map(c=>String(c??'').trim())).filter(r=>r.some(c=>c));if(!T.length)return{rows:[]};
   const isHead=r=>{const n=r.map(norm);return n.some(h=>/^(data|date|dt)\b/.test(h))&&n.some(h=>/valor|amount|value|quantia|debito|credito|entrada|saida/.test(h))};
@@ -1022,6 +1061,7 @@ function parseCSV(txt){const lines=txt.split(/\r?\n/).filter(l=>l.trim());if(!li
   const dl=[';','\t',','].sort((a,b)=>cnt(b)-cnt(a))[0];return parseTable(lines.map(l=>splitCSV(l,dl)))}
 const MESN={jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12,janeiro:1,fevereiro:2,marco:3,abril:4,maio:5,junho:6,julho:7,agosto:8,setembro:9,outubro:10,novembro:11,dezembro:12};
 function lineDate(l,yr){const n=norm(l);let m;
+  if(m=n.match(/\b(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})\b/))return `${m[3]}-${pad(m[2])}-${pad(m[1])}`;
   if(m=n.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{2,4})\b/))return `${m[3].length===2?'20'+m[3]:m[3]}-${pad(m[2])}-${pad(m[1])}`;
   if(m=n.match(/\b(\d{4})-(\d{2})-(\d{2})\b/))return `${m[1]}-${m[2]}-${m[3]}`;
   if(m=n.match(/\b(\d{1,2})\s+de\s+([a-z]+)\s+de\s+(\d{4})\b/)){const mm=MESN[m[2]];if(mm)return `${m[3]}-${pad(mm)}-${pad(m[1])}`}
@@ -1058,20 +1098,24 @@ function parseTextStatement(text){const lines=text.split(/\n/).map(l=>l.replace(
 const libCache={};function loadScript(src){return libCache[src]||(libCache[src]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>{delete libCache[src];no(new Error('lib'))};document.head.appendChild(s)}))}
 async function pdfText(buf){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');const pj=window.pdfjsLib;
   pj.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const doc=await pj.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;let out='';
+  const doc=await pj.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;let out='';const items=[];
   for(let p=1;p<=doc.numPages;p++){const pg=await doc.getPage(p);const tc=await pg.getTextContent();const lines={};
-    tc.items.forEach(it=>{if(!it.str||!it.str.trim())return;const y=Math.round(it.transform[5]/3)*3;(lines[y]=lines[y]||[]).push({x:it.transform[4],s:it.str})});
+    tc.items.forEach(it=>{if(!it.str||!it.str.trim())return;items.push({p,x:it.transform[4],y:it.transform[5],w:it.width||0,s:it.str});const y=Math.round(it.transform[5]/3)*3;(lines[y]=lines[y]||[]).push({x:it.transform[4],s:it.str})});
     Object.keys(lines).map(Number).sort((a,b)=>b-a).forEach(y=>{out+=lines[y].sort((a,b)=>a.x-b.x).map(i=>i.s).join(' ')+'\n'})}
-  return out}
+  return{text:out,items}}
 async function xlsxRows(buf){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');const wb=XLSX.read(buf,{type:'array',cellDates:true});
   let best=[];wb.SheetNames.forEach(n=>{const r=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,dateNF:'dd/mm/yyyy',defval:''});if(r.length>best.length)best=r});return best}
 const BANKS=[['260','Nubank',/nubank|nu pagamentos|nu financeira/],['077','Inter',/banco inter|inter&co|bancointer/],['341','Itaú',/itau/],['237','Bradesco',/bradesco/],['104','Caixa',/caixa economica|caixa tem|\bcaixa\b/],['001','Banco do Brasil',/banco do brasil/],['033','Santander',/santander/],['336','C6 Bank',/c6 bank|banco c6/],['380','PicPay',/picpay/],['323','Mercado Pago',/mercado ?pago/],['290','PagBank',/pagbank|pagseguro/],['756','Sicoob',/sicoob/],['748','Sicredi',/sicredi/],['536','Neon',/\bneon\b/],['208','BTG',/btg/],['212','Original',/banco original/],['623','Pan',/banco pan\b/],['403','Cora',/\bcora\b/],['197','Stone',/\bstone\b/],['121','Agibank',/agibank/],['218','BS2',/\bbs2\b/],['069','Crefisa',/crefisa/],['070','BRB',/\bbrb\b/],['041','Banrisul',/banrisul/]];
 function detectBank(text,fname){const t=norm(String(text).slice(0,6000)+' '+(fname||''));const id=(t.match(/<bankid>\s*0*(\d{1,3})/)||[])[1];
   if(id){const b=BANKS.find(x=>+x[0]===+id);if(b)return b[1]}const b=BANKS.find(x=>x[2].test(t));return b?b[1]:''}
 function ofxBalance(txt){const m=txt.match(/<LEDGERBAL>([\s\S]*?)(<\/LEDGERBAL>|<AVAILBAL>|<\/STMTRS>)/i);if(!m)return null;const v=parseMoney((m[1].match(/<BALAMT>([^<\r\n]*)/i)||[])[1]);const d=parseDate((m[1].match(/<DTASOF>([^<\r\n]*)/i)||[])[1]||'');return isNaN(v)?null:{value:v,date:d||today(),final:true}}
+function pdfParse(t,items,name){const a=parsePdfTable(items);const b=parseTextStatement(t);const r=a.rows.length>=3||a.rows.length>=b.rows.length?a:b;
+  const fin=(t.match(/saldo final[^\d-]*(-?\s*R?\$?\s*-?\d{1,3}(?:\.\d{3})*,\d{2})/i)||[])[1];let balance=r.balance||a.balance||b.balance;
+  if(fin){const v=parseMoney(fin.replace(/\s/g,''));const ds=r.rows.map(x=>x.date).sort();if(!isNaN(v))balance={value:v,date:ds[ds.length-1]||today(),final:true}}
+  return{kind:'PDF',rows:r.rows,balance,bank:detectBank(t,name),holder:holderName(t)}}
 async function readAny(file){const buf=await file.arrayBuffer();const name=(file.name||'').toLowerCase();const head=new Uint8Array(buf.slice(0,5));
   const isPdf=head[0]===0x25&&head[1]===0x50&&head[2]===0x44&&head[3]===0x46;const isZip=head[0]===0x50&&head[1]===0x4b;const isXls=head[0]===0xd0&&head[1]===0xcf;
-  if(isPdf||name.endsWith('.pdf')){const t=await pdfText(buf);const r=parseTextStatement(t);return{kind:'PDF',rows:r.rows,balance:r.balance,bank:detectBank(t,name)}}
+  if(isPdf||name.endsWith('.pdf')){const P=await pdfText(buf);return pdfParse(P.text,P.items,name)}
   if(isZip||isXls||/\.xlsx?$/.test(name)){const T=await xlsxRows(buf);const flat=T.slice(0,30).map(x=>x.join(' ')).join(' ');const r=parseTable(T);return{kind:'Excel',rows:r.rows,balance:r.balance,bank:detectBank(flat,name)}}
   let txt;try{txt=new TextDecoder('utf-8',{fatal:true}).decode(buf)}catch(e){txt=new TextDecoder('windows-1252').decode(buf)}
   if(/<OFX>|<STMTTRN>|OFXHEADER/i.test(txt))return{kind:'OFX',rows:parseOFX(txt).map(r=>({...r,signed:true})),balance:ofxBalance(txt),bank:detectBank(txt,name)};
@@ -1109,17 +1153,29 @@ function openImport(bank,file){
     $('#iHow',s).onchange=()=>{const v=$('#iHow',s).value;$('#iHowTxt',s).innerHTML=BANK_HOWTO[v]||(v?'Procure no app do banco por <b>Extrato → Exportar/Compartilhar</b> e escolha <b>OFX</b>, <b>Excel</b>, <b>CSV</b> ou <b>PDF</b>. Depois escolha o arquivo aqui.':'')};
     if(file)handle(file);
   })}
+function catMemory(){const m=new Map();allTx().slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{if(t.cat&&t.cat!=='classificar'){const k=t.type+'|'+keyFromDesc(t.desc);if(k.length>4)m.set(k,t.cat)}});return m}
+function myNames(r){const n=[];if(r&&r.holder)n.push(r.holder);try{const nm=lastSession&&lastSession.user&&lastSession.user.user_metadata&&lastSession.user.user_metadata.name;if(nm&&nm.split(' ').length>=2)n.push(nm)}catch(e){}(S.settings.myNames||[]).forEach(x=>n.push(x));return [...new Set(n)]}
+function matchBill(t){if(t.type!=='saida')return null;for(const off of [0,-1,1]){const M=addMonths(ymOf(t.date),off);for(const b of S.bills.items){if(!billIn(b,M)||(b.paid&&b.paid[M]))continue;
+  if(Math.abs((+b.amount||0)-t.amount)>0.01)continue;const due=billDue(b,M);const dd=Math.abs((new Date(due)-new Date(t.date))/864e5);if(dd<=15)return{b,M}}}return null}
 function autoImport(r,bankHint){
   const banks=S.settings.banks||[];const bank=r.bank||bankHint||(banks.length===1?banks[0]:'')||'Meu banco';
-  const keys0=new Set(allTx().map(t=>t.key).filter(Boolean));const batch='b'+uid();const added=[];const keys=new Set(['settings']);let dups=0;
+  const keys0=new Set(allTx().map(t=>t.key).filter(Boolean));const batch='b'+uid();const added=[];const keys=new Set(['settings']);let dups=0,selfN=0,paidN=0,memN=0;
+  const mem=catMemory();const names=myNames(r);if(r.holder){S.settings.myNames=[...new Set([...(S.settings.myNames||[]),r.holder])]}
   r.rows.forEach(x=>{const key=x.fitid?'f:'+x.fitid:`k:${x.date}|${x.amount}|${norm(x.desc)}`;if(keys0.has(key)){dups++;return}keys0.add(key);
-    const t={id:uid(),type:x.type,amount:Math.round(x.amount*100)/100,date:x.date,desc:x.desc,cat:guessCat(x.desc,x.type),method:norm(x.desc).includes('pix')?'pix':'outro',bank,vehicle:'',src:'import',key,imp:batch};
+    let cat;const nd=norm(x.desc);const ruled=(S.settings.rules||[]).find(rr=>kwMatch(nd,rr.kw));
+    if(names.length&&isSelf(x.desc,names)){cat='transferencia';selfN++}
+    else if(ruled)cat=ruled.cat;
+    else if(mem.has(x.type+'|'+keyFromDesc(x.desc))){cat=mem.get(x.type+'|'+keyFromDesc(x.desc));memN++}
+    else cat=guessCat(x.desc,x.type);
+    if(x.type==='entrada'&&!INC.some(c=>c.id===cat))cat=guessCat(x.desc,'entrada');if(x.type==='saida'&&!CATS.some(c=>c.id===cat))cat=guessCat(x.desc,'saida');
+    const t={id:uid(),type:x.type,amount:Math.round(x.amount*100)/100,date:x.date,desc:x.desc,cat,method:nd.includes('pix')?'pix':'outro',bank,vehicle:'',src:'import',key,imp:batch};
+    const mb=matchBill(t);if(mb){mb.b.paid=mb.b.paid||{};mb.b.paid[mb.M]=t.id;t.billId=mb.b.id;t.cat=mb.b.cat;t.vehicle=mb.b.vehicle||'';keys.add('bills');paidN++}
     keys.add(addTx(t));added.push(t.id)});
   S.settings.banks=S.settings.banks||[];if(!S.settings.banks.includes(bank))S.settings.banks.push(bank);
   S.settings.lastImport=S.settings.lastImport||{};S.settings.lastImport[bank]=today();
   const balOk=setBankBalance(bank,r.balance);
   S.settings.lastBatch={id:batch,bank,count:added.length,date:today()};
-  save([...keys]);IMP={batch,ids:added,bank,kind:r.kind,dups,balance:r.balance,balOk};
+  save([...keys]);IMP={batch,ids:added,bank,kind:r.kind,dups,balance:r.balance,balOk,selfN,paidN,memN};
   if(added.length){const ds=added.map(id=>findTx(id)).filter(Boolean).map(f=>f.t.date).sort();cur=ymOf(ds[ds.length-1])}
   render();drawResult()}
 function drawResult(){const s=$('#sheet');if(!s||!IMP)return;
@@ -1127,7 +1183,7 @@ function drawResult(){const s=$('#sheet');if(!s||!IMP)return;
   const outT=sum(txs.filter(t=>t.type==='saida'&&counted(t))),inT=sum(txs.filter(t=>t.type==='entrada'&&counted(t)));const pend=txs.filter(t=>t.cat==='classificar').length;
   const banks=[...new Set([IMP.bank,...(S.settings.banks||[])])];
   s.innerHTML=`${head('✅ Extrato importado')}
-   <div class="callout ok small">${IMP.kind} do <b>${esc(IMP.bank)}</b> · <b>${txs.length}</b> lançamento(s) novo(s)${IMP.dups?` · ${IMP.dups} já estavam no app`:''}<br>Entradas <b class="pos">${brl(inT)}</b> · Saídas <b>${brl(outT)}</b>${pend?` · ${pend} para classificar`:''}
+   <div class="callout ok small">${IMP.kind} do <b>${esc(IMP.bank)}</b> · <b>${txs.length}</b> lançamento(s) novo(s)${IMP.dups?` · ${IMP.dups} já estavam no app`:''}<br>Entradas <b class="pos">${brl(inT)}</b> · Saídas <b>${brl(outT)}</b>${pend?` · ${pend} para classificar`:''}${IMP.selfN?`<br>🔁 ${IMP.selfN} transferência(s) entre suas contas (não contam como gasto/ganho)`:''}${IMP.paidN?`<br>✅ ${IMP.paidN} conta(s) marcada(s) como paga(s) automaticamente`:''}${IMP.memN?`<br>🧠 ${IMP.memN} classificado(s) pelo que você já tinha escolhido antes`:''}
    ${IMP.balance?`<br>🏦 Saldo no banco${IMP.balance.date?` em ${dFull(IMP.balance.date)}`:''}: <b>${brl(IMP.balance.value)}</b>${IMP.balOk?' — atualizado ✅':''}`:'<br>🏦 O extrato não mostrou o saldo. Você pode informar em Início → Saldo nos bancos.'}</div>
    <div class="g2" style="align-items:end"><div><label class="f">Banco</label><select id="rBank">${banks.map(b=>`<option ${b===IMP.bank?'selected':''}>${esc(b)}</option>`).join('')}<option value="__new">+ Outro nome…</option></select></div><div class="s" style="padding-bottom:10px">Toque no valor para trocar <b>entrada ↔ saída</b>.</div></div>
    <div class="imp list" style="margin-top:8px">${txs.map(t=>{const opts=(t.type==='entrada'?INC:CATS).map(c=>`<option value="${c.id}" ${t.cat===c.id?'selected':''}>${c.i} ${c.n}</option>`).join('');
@@ -1151,10 +1207,10 @@ if(MODE==='hosted'&&'serviceWorker' in navigator&&location.protocol==='https:'){
 function openClassify(){
   const list=allTx().filter(t=>t.type==='saida'&&t.cat==='classificar').sort((a,b)=>b.date.localeCompare(a.date));
   if(!list.length){closeModal();toast('Tudo classificado ✅');render();return}
-  openModal(`${head('Classificar lançamentos')}<div class="small muted">Escolha a categoria de cada um. Marque “lembrar” para eu acertar sozinho da próxima vez que aparecer a mesma descrição.</div>
+  openModal(`${head('Classificar lançamentos')}<div class="small muted">Escolha a categoria de cada um. Com “lembrar” marcado, da próxima vez que aparecer o mesmo nome (ex.: Pix para a mesma pessoa) eu já classifico sozinho.</div>
    <div class="list" style="margin-top:6px">${list.map(t=>`<div class="row" style="flex-wrap:wrap"><div class="grow" style="min-width:60%"><div class="t small">${esc(t.desc||'Sem descrição')}</div><div class="s">${dNice(t.date)} · ${brl(t.amount)}${t.bank?' · '+esc(t.bank):''}</div></div>
     <div style="display:flex;gap:6px;align-items:center;width:100%"><select class="cCat" data-id="${t.id}" style="flex:1"><option value="">Escolher categoria…</option>${CATS.filter(c=>c.id!=='classificar').map(c=>`<option value="${c.id}">${c.i} ${c.n}</option>`).join('')}</select>
-    <label class="ck small" style="margin:0;white-space:nowrap" title="Lembrar: ${esc(keyFromDesc(t.desc))}"><input type="checkbox" class="cRem" data-id="${t.id}"> lembrar</label></div></div>`).join('')}</div>
+    <label class="ck small" style="margin:0;white-space:nowrap" title="Lembrar: ${esc(keyFromDesc(t.desc))}"><input type="checkbox" class="cRem" data-id="${t.id}" checked> lembrar</label></div></div>`).join('')}</div>
    <div class="mf"><button class="btn pri" data-act="close">Pronto</button></div>`,s=>{
     $$('.cCat',s).forEach(el=>el.onchange=()=>{if(!el.value)return;const f=findTx(el.dataset.id);if(!f)return;f.t.cat=el.value;const keys=['m-'+f.M];
       const rem=$(`.cRem[data-id="${el.dataset.id}"]`,s);let more=[];if(rem&&rem.checked){more=addRule(keyFromDesc(f.t.desc),el.value)}
