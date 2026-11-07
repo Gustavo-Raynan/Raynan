@@ -601,6 +601,7 @@ async function startSync(){
     loadPending().forEach(k=>dirty.add(k));
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
     applyRemote(remote);render();
+    if(!remote.upcoming||remote.upcoming.updated!==today())dirty.add('upcoming');
     if(dirty.size)flush();else setSync('cloud');
     setTimeout(maybeAskSalary,2500);
     if(MODE==='hosted'){setTimeout(sysNotify,1500);setTimeout(checkSharedFile,300);maybeAutoInstallGuide()}}
