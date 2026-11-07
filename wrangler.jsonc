@@ -1,0 +1,11 @@
+{
+  // Tico Finances — site estático servido pelo Cloudflare Workers (static assets).
+  // O banco e o login ficam no Supabase; aqui só ficam os arquivos do site, em ./public.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tico-finances",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  }
+}
