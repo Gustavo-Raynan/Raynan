@@ -835,6 +835,28 @@ body[data-mode=light] .nh-act span{background:#fff;box-shadow:0 1px 2px rgba(24,
 ::view-transition-group(navbar),::view-transition-group(topbar),::view-transition-old(navbar),::view-transition-new(navbar),::view-transition-old(topbar),::view-transition-new(topbar){animation:none}
 
 .bthemed{display:flex;gap:14px;align-items:center;background:var(--soft);border-radius:18px;padding:12px;margin-bottom:12px}.bthemed img{width:72px;height:72px;flex:none}.bthemed b{display:block}.bthemed span{display:block;font-size:12px;color:var(--mute);margin:2px 0 8px}
+/* ===== TUTORIAL / PRIMEIROS PASSOS ===== */
+#tourBlock{position:fixed;inset:0;z-index:80;background:transparent}
+#tourHole{position:fixed;z-index:81;border-radius:18px;pointer-events:none;box-shadow:0 0 0 9999px rgba(0,0,0,.7),0 0 0 2px rgba(var(--accRGB),.9);transition:left .28s ease,top .28s ease,width .28s ease,height .28s ease}
+#tourTip{position:fixed;z-index:82;background:var(--solid,#16141b);color:var(--fg,#fff);border:1px solid rgba(var(--accRGB),.35);border-radius:20px;padding:16px 16px 12px;box-shadow:0 18px 50px rgba(0,0,0,.45);animation:ttIn .25s ease}
+#tourTip.center{left:50%;top:50%;transform:translate(-50%,-50%);width:min(360px,calc(100vw - 32px));text-align:center}
+@keyframes ttIn{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+#tourTip h4{margin:2px 0 6px;font-size:17px}#tourTip p{margin:0 0 10px;font-size:14px;line-height:1.45;opacity:.88}
+.tt-step{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--acc)}
+.tt-logo{width:64px;height:64px;border-radius:18px;display:block;margin:0 auto 8px}
+.tt-dots,.ob-dots{display:flex;gap:5px;justify-content:center;margin:4px 0 10px}
+.tt-dots i,.ob-dots i{width:6px;height:6px;border-radius:9px;background:currentColor;opacity:.2;transition:.2s}
+.tt-dots i.on,.ob-dots i.on{opacity:1;background:var(--acc);width:16px}
+.tt-btns{display:flex;gap:8px;align-items:center}.tt-btns span{flex:1}
+body.touring .tabs,body.touring header{z-index:auto}
+.ob-hero{text-align:center;padding:6px 4px 4px}.ob-hero img{width:88px;height:88px;border-radius:24px;margin:4px auto 12px;display:block;box-shadow:0 10px 30px rgba(var(--accRGB),.35)}
+.ob-hero h3{margin:0 0 8px;font-size:21px}.ob-hero p{margin:0 auto;max-width:360px;opacity:.85;line-height:1.5}
+.ob-t{margin:2px 0 4px;font-size:19px}.ob .s{margin-bottom:10px}
+.ob-or{text-align:center;opacity:.6;font-size:12px;margin:12px 0 8px}
+.ob-nav{display:flex;gap:8px;margin-top:16px}.ob-nav .btn.pri{flex:1}
+.ob .ck{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px}
+.ob .tgrid{margin-top:8px}
+body.touring .ntoast{display:none!important}
 
 </style>
 </head>
@@ -1077,7 +1099,7 @@ async function startSync(){
     const remote=await bkPull();sbOk=true;sbErr='';
     loadPending().forEach(k=>dirty.add(k));
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
-    applyRemote(remote);migrateFuture();render();SYNCED=true;scheduleTick();
+    applyRemote(remote);migrateFuture();render();SYNCED=true;scheduleTick();setTimeout(maybeIntro,1500);
     if(!remote.upcoming||remote.upcoming.updated!==today())dirty.add('upcoming');
     if(dirty.size)flush();else setSync('cloud');
     setTimeout(maybeAskSalary,2500);
@@ -3066,7 +3088,7 @@ function vProj(){const td=today(),cm=ymOf(td);const P=projection(cm+'-'+pad(dim(
 
 /* ================= MAIS / CONFIGURAÇÕES (hub) ================= */
 function vHub(){const items=[['tab','agenda','📅','Agenda'],['tab','analises','📊','Análises'],['tab','metas','🎯','Metas'],['tab','tico','✨','Tico Inteligente'],['tab','simular','🧮','Simulador'],['search','','🔍','Pesquisar']];
-  const cfg=[['appearance','🎨','Aparência e temas',(THEMES.find(t=>t.id===themeCfg().base)||{}).n],['accounts','🏦','Contas bancárias',accounts().length+' conta(s)'],['nsettings','🔔','Notificações',np().push?'push ativado':'configurar'],['security','🔐','Segurança',lockCfg()?'bloqueio ativo':'senha e biometria'],['history','📜','Histórico de alterações','desfazer ações'],['cats','🏷️','Categorias','gastos e fontes de renda'],['brand','🐶','Identidade do Tico','logo e versões']];
+  const cfg=[['appearance','🎨','Aparência e temas',(THEMES.find(t=>t.id===themeCfg().base)||{}).n],['accounts','🏦','Contas bancárias',accounts().length+' conta(s)'],['nsettings','🔔','Notificações',np().push?'push ativado':'configurar'],['security','🔐','Segurança',lockCfg()?'bloqueio ativo':'senha e biometria'],['history','📜','Histórico de alterações','desfazer ações'],['cats','🏷️','Categorias','gastos e fontes de renda'],['brand','🐶','Identidade do Tico','logo e versões'],['tour','🧭','Tutorial do app','tour guiado pelas telas'],['onboarding','🚀','Primeiros passos','configuração guiada']];
   return `<div class="hub m-only"><div class="shorts">${items.map(([a,v,i,n])=>`<button class="sc" data-act="${a}" ${a==='tab'?`data-tab="${v}"`:''}><i>${i}</i><span>${n}</span></button>`).join('')}</div></div>
    <div class="card"><h2>⚙️ Configurações</h2><div class="list">${cfg.map(([a,i,n,d])=>`<button type="button" class="row optrow" data-act="${a}" ${a==='cats'?'data-t="saida"':''}><div class="ic">${i}</div><div class="grow"><div class="t">${n}</div><div class="s">${esc(d||'')}</div></div><span class="chev">›</span></button>`).join('')}</div></div>`}
 
@@ -3096,7 +3118,7 @@ function vInicio(){const td=today(),cm=ymOf(td);if(cur!==cm&&tab==='inicio')cur=
   const prevEnd=addMonths(cm,-1)+'-'+pad(dim(addMonths(cm,-1)));const b0=m.hasBal?balanceAt(prevEnd):null;const vari=b0!=null?r2(m.bal-b0):null;
   const aPagar=m.now.filter(x=>x.due>=td),nAc=m.banks.filter(b=>b.v!=null).length;
   let h=installBanner('home');
-  if(!hasData())h+=`<section class="sect onb2"><div class="sect-h">Comece por aqui</div>${srow({ic:'wallet',l:'Informe o saldo do banco',s:'ou importe o extrato',act:'setBal',v:''})}${srow({ic:'bill',l:'Cadastre suas contas e dívidas',s:'com a data de vencimento',act:'newDebt',v:''})}${srow({ic:'in',l:'Registre seus recebimentos',s:'e o dia do salário',act:'newTx',data:'data-type="entrada"',v:''})}</section>`;
+  if(!hasData())h+=`<section class="sect onb2"><div class="sect-h">Comece por aqui</div>${srow({ic:'spark',l:'Configuração guiada',s:'5 passos rápidos com o Tico',act:'onboarding',v:''})}${srow({ic:'wallet',l:'Informe o saldo do banco',s:'ou importe o extrato',act:'setBal',v:''})}${srow({ic:'bill',l:'Cadastre suas contas e dívidas',s:'com a data de vencimento',act:'newDebt',v:''})}${srow({ic:'in',l:'Registre seus recebimentos',s:'e o dia do salário',act:'newTx',data:'data-type="entrada"',v:''})}</section>`;
   h+=`<div class="home"><div class="hcol hl">
    <section class="nh-bal"><button type="button" class="nh-main" data-act="accounts"><span class="nh-l">Saldo disponível nas contas</span>
      ${m.hasBal?`<span class="nh-v mv">${brl(m.bal)}</span><span class="nh-s">${vari!=null?`<em class="${vari>=0?'up':'dn'}">${vari>=0?'+':'−'} ${brl(Math.abs(vari))}</em> em ${MN} · `:''}${nAc} conta${nAc===1?'':'s'}</span>`:`<span class="nh-v sm">Informe seu saldo</span><span class="nh-s">Toque para adicionar uma conta ou importe o extrato</span>`}
@@ -3148,6 +3170,90 @@ function updateInstallIcons(){if(MODE!=='hosted')return;const id=ICON_THEMES.inc
   const m=document.querySelector('link[rel=manifest]');if(m&&!m.href.endsWith(`manifest-${id}.webmanifest`))m.setAttribute('href',`manifest-${id}.webmanifest`);
   const a=document.querySelector('link[rel=apple-touch-icon]');if(a)a.setAttribute('href',`icons/${id}-apple.png`)}
 
+/* ================= TUTORIAL: primeiros passos (novos usuários) e tour guiado (todos) ================= */
+const TOUR_V=1;
+const isDesk=()=>innerWidth>=1024;
+function tourSteps(){const D=isDesk();return [
+ {t:'Oi! Eu sou o Tico 🐶',x:'Vou te mostrar rapidinho onde fica cada coisa. Leva menos de 1 minuto — dá para pular quando quiser.',tab:'inicio'},
+ {sel:'.nh-bal',tab:'inicio',t:'Seu saldo de verdade',x:'Aqui fica o dinheiro que existe hoje nas suas contas. Toque para ver cada banco ou adicionar outro. Contas a pagar e recebimentos previstos <b>não</b> mudam esse número até acontecerem.'},
+ {sel:'.nh-acts',tab:'inicio',t:'Ações rápidas',x:'Registre um gasto ou recebimento, cadastre uma conta, transfira entre seus bancos, importe o extrato ou crie uma meta — tudo em um toque.'},
+ {sel:'.hcol.hl .sect:not(.nh-health)',tab:'inicio',t:'Resumo do mês',x:'Quanto entrou, quanto saiu, o que falta pagar e o saldo projetado (uma estimativa, não é dinheiro disponível). Toque em qualquer linha para ver os detalhes.'},
+ {sel:'.nh-health',tab:'inicio',t:'Saúde financeira',x:'Verde é tudo certo, amarelo é atenção, vermelho é risco. Eu aviso se o dinheiro pode faltar antes do próximo recebimento.'},
+ {sel:'#bellBtn',t:'Notificações',x:'Vencimentos, contas atrasadas, recebimentos, metas e resumo do dia. Em <b>⚙️ Configurações → Notificações</b> você ativa o aviso no celular mesmo com o app fechado.'},
+ {sel:'#eyeBtn',t:'Esconder valores',x:'Vai abrir o app perto de alguém? Toque no olho e os valores ficam borrados.'},
+ {sel:'#tabs [data-tab=movimentos]',t:'Movimentações',x:'O extrato completo, recebimentos por fonte de renda, transferências e a <b>importação do extrato do banco</b> (PDF, Excel, OFX ou CSV) — você confere tudo antes de gravar.'},
+ {sel:'#tabs [data-tab=contas]',t:'Contas e dívidas',x:'Tudo o que você tem para pagar, separado por vencimento. Quando pagar, toque em <b>Paguei</b>: a conta sai das pendentes e o valor sai do saldo do banco.'},
+ {sel:D?'.nav-new':'.nav-plus',t:'Botão +',x:'O jeito mais rápido de lançar qualquer coisa: gasto, recebimento, conta, evento, meta ou importar extrato.'},
+ {sel:'#tabs [data-tab=agenda]',t:'Agenda',x:'Calendário com vencimentos, recebimentos, metas e seus compromissos — inclusive plantão de 24h e escalas.'},
+ D?{sel:'#tabs [data-tab=tico]',t:'Tico Inteligente',x:'Pergunte “quanto posso gastar até o salário?” ou “onde estou gastando mais?”. Eu respondo só com os seus dados.'}
+  :{sel:'#tabs [data-tab=mais]',t:'Mais',x:'Aqui ficam Análises, Metas, Tico Inteligente, Simulador e todas as configurações.'},
+ {sel:'#avBtn',t:'Configurações',x:'Temas e cores, contas bancárias, notificações, senha e biometria, histórico de alterações — e este tutorial, se quiser ver de novo.'},
+ {t:'Pronto! 🎉',x:'Agora é com você. Qualquer dúvida, o tutorial fica em <b>Configurações → Tutorial do app</b>.',end:1}]}
+let TOUR=null;
+function tourStart(){closeModal();TOUR={i:0,steps:tourSteps()};document.body.classList.add('touring');tourShow()}
+function tourEnd(done){TOUR=null;document.body.classList.remove('touring');['tourHole','tourTip','tourBlock'].forEach(id=>{const e=document.getElementById(id);if(e)e.remove()});
+  if(S.settings.tourSeen!==TOUR_V){S.settings.tourSeen=TOUR_V;save('settings')}if(done&&!S.settings.onbDone&&!hasData())setTimeout(openOnboarding,300)}
+function visEl(sel){return [...document.querySelectorAll(sel)].find(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(e).visibility!=='hidden'})}
+function tourShow(){if(!TOUR)return;const st=TOUR.steps[TOUR.i];if(st.tab&&tab!==st.tab)go(st.tab);
+  setTimeout(()=>{if(!TOUR)return;let el=st.sel?visEl(st.sel):null;if(st.sel&&!el){TOUR.i+=TOUR.dir||1;if(TOUR.i<0||TOUR.i>=TOUR.steps.length)return tourEnd(1);return tourShow()}
+    let blk=$('#tourBlock');if(!blk){blk=document.createElement('div');blk.id='tourBlock';document.body.appendChild(blk)}
+    let hole=$('#tourHole');if(!hole){hole=document.createElement('div');hole.id='tourHole';document.body.appendChild(hole)}
+    let tip=$('#tourTip');if(!tip){tip=document.createElement('div');tip.id='tourTip';tip.setAttribute('role','dialog');document.body.appendChild(tip)}
+    const n=TOUR.steps.length,i=TOUR.i;
+    tip.innerHTML=`${!el?`<img alt="" class="tt-logo" src="${svgURL(themedLogo('icon'))}">`:''}<div class="tt-step">${i+1} de ${n}</div><h4>${st.t}</h4><p>${st.x}</p>
+      <div class="tt-dots">${st.end?'':TOUR.steps.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+      <div class="tt-btns">${st.end?'':`<button type="button" class="btn sm" id="ttSkip">Pular</button>`}<span></span>${i>0&&!st.end?`<button type="button" class="btn sm" id="ttBack">Voltar</button>`:''}<button type="button" class="btn pri sm" id="ttNext">${st.end?(!hasData()?'Configurar agora':'Começar'):i===0?'Vamos lá':'Próximo'}</button></div>`;
+    $('#ttNext').onclick=()=>{if(st.end)return tourEnd(1);TOUR.dir=1;TOUR.i++;tourShow()};const bk=$('#ttBack');if(bk)bk.onclick=()=>{TOUR.dir=-1;TOUR.i--;tourShow()};const sk=$('#ttSkip');if(sk)sk.onclick=()=>tourEnd(0);
+    const place=()=>{if(!el){hole.style.cssText='left:50%;top:40%;width:0;height:0';tip.className='center';tip.style.cssText='';return}
+      const r=el.getBoundingClientRect(),pd=6;hole.style.cssText=`left:${r.left-pd}px;top:${r.top-pd}px;width:${r.width+pd*2}px;height:${r.height+pd*2}px`;
+      tip.className='';const tw=Math.min(340,innerWidth-24);const th=tip.offsetHeight||190;let top=r.bottom+14;if(top+th>innerHeight-10)top=Math.max(10,r.top-th-14);let left=Math.min(Math.max(12,r.left+r.width/2-tw/2),innerWidth-tw-12);
+      tip.style.cssText=`width:${tw}px;left:${left}px;top:${top}px`};
+    if(el){const r=el.getBoundingClientRect();if(r.top<70||r.bottom>innerHeight-90){el.scrollIntoView({block:'center',behavior:'instant'});setTimeout(place,60)}else place()}else place();
+    $('#ttNext').focus()},st.tab&&tab!==st.tab?380:60)}
+addEventListener('resize',()=>{if(TOUR)tourShow()});
+document.addEventListener('keydown',e=>{if(!TOUR)return;if(e.key==='Escape')tourEnd(0);if(e.key==='ArrowRight'){const b=$('#ttNext');if(b)b.click()}if(e.key==='ArrowLeft'){const b=$('#ttBack');if(b)b.click()}});
+
+/* ----- primeiros passos (configuração guiada para quem acabou de chegar) ----- */
+let ONB=0;
+function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Salário','Primeira conta','Avisos','Aparência'];const dots=`<div class="ob-dots">${steps.map((s,k)=>`<i class="${k<=ONB?'on':''}"></i>`).join('')}</div>`;
+  const nav=(next,label)=>`<div class="mf ob-nav">${ONB>0?'<button type="button" class="btn" id="obBack">Voltar</button>':''}<button type="button" class="btn" id="obSkip">${ONB===0?'Agora não':'Pular'}</button><button type="button" class="btn pri" id="obNext">${label||'Continuar'}</button></div>`;
+  let h='';
+  if(ONB===0)h=`<div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>Bem-vindo ao Tico Finances</h3><p>Em 5 passos rápidos eu deixo tudo pronto: seu saldo, o salário, a primeira conta a pagar, os avisos e a cor do app. Dá para pular qualquer passo.</p></div>${nav(0,'Começar')}`;
+  if(ONB===1)h=`<h3 class="ob-t">🏦 Quanto você tem no banco?</h3><p class="s">É o seu ponto de partida. Depois, cada gasto, recebimento e conta paga atualiza o saldo sozinho.</p>
+    <label class="f">Banco ou conta</label><input type="text" id="obBank" placeholder="Ex.: Nubank, Mercado Pago" value="${esc(defBank()||'')}"><label class="f">Saldo de hoje (R$)</label><input type="text" class="big" id="obBal" inputmode="decimal" placeholder="0,00">
+    <div class="ob-or">ou</div><button type="button" class="btn block" id="obImp">📄 Importar o extrato do banco</button>${nav()}`;
+  if(ONB===2)h=`<h3 class="ob-t">💰 Quando você recebe?</h3><p class="s">Eu aviso um dia antes e no dia — mas o salário só entra no saldo quando cair de verdade.</p>
+    <div class="g2"><div><label class="f">Valor do salário (R$)</label><input type="text" id="obSal" inputmode="decimal" value="${+S.settings.income?fmtNum(S.settings.income):''}" placeholder="0,00"></div><div><label class="f">Dia do pagamento</label><input type="number" id="obDay" min="1" max="31" value="${+np().salaryDay||''}" placeholder="Ex.: 5"></div></div>${nav()}`;
+  if(ONB===3)h=`<h3 class="ob-t">🧾 Uma conta que você precisa pagar</h3><p class="s">Pode ser aluguel, internet, uma dívida ou parcela. Ela fica pendente até você marcar como paga.</p>
+    <label class="f">Nome</label><input type="text" id="obBn" placeholder="Ex.: Internet, Aluguel, Cartão"><div class="g2"><div><label class="f">Valor (R$)</label><input type="text" id="obBv" inputmode="decimal" placeholder="0,00"></div><div><label class="f">Vencimento</label><input type="date" id="obBd" value="${addDays(today(),7)}"></div></div>
+    <label class="ck"><input type="checkbox" id="obBm" checked> Repete todo mês</label>${nav()}`;
+  if(ONB===4)h=`<h3 class="ob-t">🔔 Quer ser avisado?</h3><p class="s">Vencimentos 7, 3 e 1 dia antes, contas atrasadas, salário e resumo do dia. ${MODE==='hosted'?'Funciona mesmo com o app fechado.':''}</p>
+    ${MODE==='hosted'?`<button type="button" class="btn pri block" id="obPush">Ativar notificações neste aparelho</button><div class="s" id="obPushS" style="margin-top:8px;text-align:center"></div>`:'<div class="callout small">Os avisos aparecem no sino 🔔 dentro do app.</div>'}${nav()}`;
+  if(ONB===5)h=`<h3 class="ob-t">🎨 Escolha a cara do seu Tico</h3><p class="s">Dá para mudar quando quiser em Configurações → Aparência.</p><div class="tgrid">${THEMES.slice(0,9).map(t=>`<button type="button" class="tcard ${themeCfg().base===t.id?'on':''}" data-obth="${t.id}">${themeSwatch(t)}<b>${t.n}</b></button>`).join('')}</div>${nav(0,'Concluir')}`;
+  openModal(`<div class="ob">${ONB>0?dots:''}${h}</div>`,s=>{
+    const next=()=>{ONB++;if(ONB>5)return obDone();openOnboarding(ONB)};
+    const nx=$('#obNext',s);nx.onclick=()=>{
+      if(ONB===1){const b=$('#obBank',s).value.trim(),v=parseMoney($('#obBal',s).value);if(b&&!isNaN(v)&&$('#obBal',s).value.trim()){S.settings.balances=S.settings.balances||{};S.settings.balances[b]={value:r2(v),date:today(),at:Date.now(),src:'manual'};regBank(b);if(!S.settings.defBank)S.settings.defBank=b;logAct(`Informou o saldo de ${b}: ${brl(v)}`);save('settings')}}
+      if(ONB===2){const v=Math.abs(parseMoney($('#obSal',s).value)),d=parseInt($('#obDay',s).value);if(v>0)S.settings.income=r2(v);if(d>=1&&d<=31)S.settings.np={...(S.settings.np||{}),salaryDay:d};save('settings')}
+      if(ONB===3){const n=$('#obBn',s).value.trim(),v=Math.abs(parseMoney($('#obBv',s).value)),d=$('#obBd',s).value;if(n&&validAmt(v)&&validDate(d)){const rec=$('#obBm',s).checked;
+        S.bills.items.push(rec?{id:uid(),name:n,amount:r2(v),kind:'recorrente',freq:'mensal',first:d,start:ymOf(d),dueDay:+d.slice(8),cat:'moradia',prio:'normal',paid:{},over:{}}:{id:uid(),name:n,amount:r2(v),kind:'unica',date:d,first:d,start:ymOf(d),dueDay:+d.slice(8),cat:'dividas',prio:'normal',paid:{},over:{}});logAct(`Cadastrou a conta “${n}” ${brl(v)}`);save('bills')}}
+      next()};
+    const sk=$('#obSkip',s);if(sk)sk.onclick=()=>{if(ONB===0){S.settings.onbDone=1;save('settings');closeModal();return}next()};
+    const bk=$('#obBack',s);if(bk)bk.onclick=()=>openOnboarding(ONB-1);
+    const im=$('#obImp',s);if(im)im.onclick=()=>{S.settings.onbStep=2;save('settings');closeModal();openImport()};
+    const ps=$('#obPush',s);if(ps)ps.onclick=async()=>{await pushEnable();const st=await pushState();$('#obPushS',s).textContent=st==='on'?'✅ Ativado!':st==='ios-install'?'No iPhone, instale o Tico na tela inicial primeiro.':'Não foi possível ativar agora — dá para fazer depois em Configurações.'};
+    $$('[data-obth]',s).forEach(b=>b.onclick=()=>{setTheme({base:b.dataset.obth,acc:'',sec:'',hl:'',mode:'auto'});render();openOnboarding(5)})})}
+function obDone(){S.settings.onbDone=1;save('settings');closeModal();render();toast('Tudo pronto! 🎉');if(S.settings.tourSeen!==TOUR_V)setTimeout(tourStart,450)}
+
+/* ----- quando mostrar ----- */
+let tourAsked=false;
+function maybeIntro(){if(tourAsked||TOUR)return;if($('#lock')||(document.getElementById('login')&&!document.getElementById('login').classList.contains('hidden')))return;
+  if(!$('#modal').classList.contains('hidden')){setTimeout(maybeIntro,2500);return}tourAsked=true;
+  if(!hasData()&&!S.settings.onbDone){openOnboarding(0);return}
+  if(S.settings.tourSeen!==TOUR_V){openModal(`<div class="ob"><div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>O Tico está de cara nova ✨</h3><p>Novo visual, temas, notificações, Tico Inteligente e mais. Quer um tour rápido para ver onde ficou cada coisa?</p></div>
+    <div class="mf ob-nav"><button type="button" class="btn" id="tqNo">Agora não</button><button type="button" class="btn pri" id="tqYes">Ver o tour</button></div></div>`,s=>{
+    $('#tqYes',s).onclick=()=>tourStart();$('#tqNo',s).onclick=()=>{S.settings.tourSeen=TOUR_V;save('settings');closeModal();toast('O tutorial fica em Configurações → Tutorial do app')}})}}
+
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>{if(d.pt)payTab=d.pt;closeModal();go(d.tab)},close:closeModal,
@@ -3168,6 +3274,7 @@ const ACT={
   backup:doBackup,csv:doCSV,restore:doRestore,wipe:doWipe,
 };
 Object.assign(ACT,{
+  tour:()=>tourStart(),onboarding:()=>openOnboarding(0),
   movTab:d=>{movTab=d.t;render()},bankF:d=>{txBankF=d.b;render()},recF:d=>{recF=recF===d.f?'':d.f;movTab='receb';render()},incGoal:d=>openIncGoal(d.c),cats:d=>openCats(d.t),
   goAn:()=>{anTab='analise';closeModal();go('analises')},reports:()=>{anTab='relat';closeModal();go('analises')},subsGo:()=>{payTab='assin';go('contas')},
   anPer:d=>{AN.per=d.p;if(d.p==='custom'&&!AN.from){AN.from=cur+'-01';AN.to=cur+'-'+pad(dim(cur))}render()},anCatSet:d=>{AN.cat=AN.cat===d.c?'':d.c;render()},anClear:()=>{AN={...AN,cat:'',bank:'',min:'',max:''};render()},
@@ -3192,7 +3299,7 @@ function submitRule(fm){if(!fm.kw.value.trim()){toast('Digite a palavra');return
 /* ---------- início ---------- */
 loadLocal();
 {const h=location.hash.slice(1);if(TABS.includes(h))tab=h}
-applyTheme();showLock();migrateFuture();render();setTimeout(()=>{if(MODE!=='hosted')SYNCED=true;notifTick()},2500);
+applyTheme();showLock();migrateFuture();render();setTimeout(()=>{if(MODE!=='hosted'){SYNCED=true;setTimeout(maybeIntro,800)}notifTick()},2500);
 initSb();
 if(MODE!=='hosted')setTimeout(()=>{if(!dirty.size)maybeAskSalary()},4000);
 setInterval(()=>{if(document.visibilityState==='visible')refresh()},120000);
