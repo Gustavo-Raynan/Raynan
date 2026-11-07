@@ -557,6 +557,7 @@ async function startSync(){
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
     applyRemote(remote);render();
     if(dirty.size)flush();else setSync('cloud');
+    setTimeout(maybeAskSalary,2500);
     if(MODE==='hosted'){setTimeout(sysNotify,1500);setTimeout(checkSharedFile,300);maybeAutoInstallGuide()}}
   catch(e){console.warn(e);sbOk=false;
     if(e&&e.code==='denied'){try{await sbc.auth.signOut()}catch(_){}showLogin(e.message);return}
@@ -855,14 +856,14 @@ function openTx(id,preset={}){
   let picked=!!id;
   openModal(`<form novalidate id="fTx">${head(id?'Editar lançamento':t.type==='entrada'?'Novo recebimento':'Novo Pix / gasto')}
    <div class="chips">${radio('type','saida','↑ Gasto / Pix enviado',t.type)}${radio('type','entrada','↓ Recebimento',t.type)}</div>
-   <label class="f">Valor (R$)</label><input type="text" class="big" name="amount" inputmode="decimal" placeholder="0,00" value="${t.amount!==''?fmtNum(t.amount):''}" required autocomplete="off">
+   <label class="f" id="amtLbl">Valor (R$)</label><input type="text" class="big" name="amount" inputmode="decimal" placeholder="0,00" value="${t.amount!==''?fmtNum(t.amount):''}" required autocomplete="off">
    <label class="f">Descrição</label><input type="text" name="desc" placeholder="Ex.: Pix para João, iFood, gasolina" value="${esc(t.desc)}" autocomplete="off">
    <div class="g2"><div><label class="f">Data</label><input type="date" name="date" value="${t.date}" required></div><div><label class="f">Forma</label><select name="method">${METHODS.map(([v,n])=>`<option value="${v}" ${t.method===v?'selected':''}>${n}</option>`).join('')}</select></div></div>
    <div id="catOut"><label class="f">Categoria</label><div class="chips catgrid">${CATS.map(c=>radio('catO',c.id,`<em>${c.i}</em>${c.n}`,t.type==='saida'?t.cat:'classificar')).join('')}</div></div>
    <div id="catIn"><label class="f">Tipo de recebimento</label><div class="chips catgrid">${INC.map(c=>radio('catI',c.id,`<em>${c.i}</em>${c.n}`,t.type==='entrada'?t.cat:'salario')).join('')}</div></div>
    <div id="vehRow"><label class="f">Qual veículo?</label><div class="chips">${radio('vehicle','moto','🏍️ Moto',t.vehicle)}${radio('vehicle','carro','🚗 Carro',t.vehicle)}</div></div>
    ${id?'':`<div id="parcRow"><label class="ck"><input type="checkbox" name="parc"> 💳 Compra ou conta parcelada</label>
-    <div id="parcBox" style="display:none"><div class="chips">${radio('pmode','total','O valor acima é o total','total')}${radio('pmode','parcela','O valor acima é de cada parcela','total')}</div>
+    <div id="parcBox" style="display:none"><div class="chips">${radio('pmode','parcela','Valor digitado = parcela do mês','parcela')}${radio('pmode','total','Valor digitado = total da compra','parcela')}</div>
     <div class="g2"><div><label class="f">Nº de parcelas</label><input type="number" name="pn" min="2" max="480" value="10" inputmode="numeric"></div><div><label class="f">Dia de pagamento</label><input type="number" name="pday" min="1" max="31" inputmode="numeric" value="${Number(t.date.slice(8))}"></div></div>
     <label class="f">1ª parcela vence em</label><input type="month" name="pstart" value="${ymOf(t.date)}">
     <label class="ck"><input type="checkbox" name="ppaid"> Já paguei a 1ª parcela</label>
@@ -873,7 +874,7 @@ function openTx(id,preset={}){
     const sync=()=>{const ty=radioVal(fm,'type');$('#catOut',s).style.display=ty==='saida'?'':'none';$('#catIn',s).style.display=ty==='entrada'?'':'none';
       $('#vehRow',s).style.display=ty==='saida'&&radioVal(fm,'catO')==='veiculo'?'':'none';$('#remRow',s).style.display=ty==='saida'?'':'none';
       const pr=$('#parcRow',s);if(pr){pr.style.display=ty==='saida'?'':'none';const on=ty==='saida'&&fm.parc.checked;$('#parcBox',s).style.display=on?'':'none';
-        $('[data-submit]',s).textContent=on?'Salvar parcelamento':'Salvar';
+        $('[data-submit]',s).textContent=on?'Salvar parcelamento':'Salvar';const al=$('#amtLbl',s);if(al)al.textContent=on?(radioVal(fm,'pmode')==='total'?'Valor total da compra (R$)':'Valor de cada parcela, por mês (R$)'):'Valor (R$)';
         if(on){const v=Math.abs(parseMoney(fm.amount.value)),n=Math.max(2,parseInt(fm.pn.value)||2);const per=radioVal(fm,'pmode')==='parcela'?v:v/n;const tot=radioVal(fm,'pmode')==='parcela'?v*n:v;
           const st=fm.pstart.value||ymOf(fm.date.value||today());const pi=parcInfo(n,fm.pday.value,st);
           $('#parcPrev',s).innerHTML=v>0?`<b>${n}x de ${brl(Math.round(per*100)/100)}</b> · total ${brl(tot)}<br>1ª parcela: <b>${dNice(pi.first)}/${pi.first.slice(0,4)}</b><br>Última parcela: <b>${dNice(pi.last)}/${pi.last.slice(0,4)}</b><br>✅ Termina de pagar em <b>${mExt(pi.endM)}</b>`:'Digite o valor para ver as parcelas.'}}};
@@ -1312,6 +1313,33 @@ function openSetBal(){const banks=[...new Set([...(S.settings.banks||[]),...Obje
     fm.onsubmit=()=>{const b=fm.b.value==='__new'?fm.nb.value.trim():fm.b.value;const v=parseMoney(fm.v.value);if(!b){toast('Escreva o nome do banco');return}if(isNaN(v)){toast('Informe o valor');return}
       S.settings.balances=S.settings.balances||{};S.settings.balances[b]={value:Math.round(v*100)/100,date:today(),src:'manual'};S.settings.banks=S.settings.banks||[];if(!S.settings.banks.includes(b))S.settings.banks.push(b);save('settings');closeModal();render();toast('Saldo atualizado')};
     const d=$('#balDel',s);if(d)d.onclick=()=>{const b=fm.b.value;if(S.settings.balances)delete S.settings.balances[b];save('settings');closeModal();render()}})}
+/* ---------- salário do mês: pergunta no dia 1º (ou na 1ª vez que abrir no mês) ---------- */
+function lastSalary(){const s=allTx().filter(t=>t.type==='entrada'&&t.cat==='salario').sort((a,b)=>a.date.localeCompare(b.date));return s.length?s[s.length-1]:null}
+function maybeAskSalary(){try{const M=ymOf(today());S.settings.salaryAsked=S.settings.salaryAsked||{};if(S.settings.salaryAsked[M])return;
+  if($('#login'))return;if(!$('#modal').classList.contains('hidden')){clearTimeout(maybeAskSalary._t);maybeAskSalary._t=setTimeout(maybeAskSalary,4000);return}
+  if(monthTx(M).some(t=>t.type==='entrada'&&t.cat==='salario')){S.settings.salaryAsked[M]=1;save('settings');return}
+  const last=lastSalary();openSalary(M,last)}catch(e){console.warn(e)}}
+function openSalary(M,last){const nome=MESES[Number(M.slice(5))-1].toLowerCase();
+  openModal(`<form novalidate id="fSal">${head('💰 Salário de '+nome)}
+   <div class="small muted" style="margin-bottom:6px">Começou um mês novo! Quanto você recebeu (ou vai receber) de salário em <b>${nome}</b>? Assim eu já calculo o que dá para pagar.</div>
+   <label class="f">Valor (R$)</label><input type="text" class="big" name="v" inputmode="decimal" placeholder="0,00" value="${last?fmtNum(last.amount):''}">
+   <div class="g2"><div><label class="f">Dia que cai</label><input type="date" name="d" value="${M}-${pad(Math.min(last?Number(last.date.slice(8)):Number(today().slice(8)),dim(M)))}"></div><div><label class="f">Descrição</label><input type="text" name="desc" value="${esc(last?last.desc||'Salário':'Salário')}"></div></div>
+   ${last?`<div class="s" style="margin-top:8px">Mês passado: ${brl(last.amount)} em ${dFull(last.date)}</div>`:''}
+   <div class="mf"><button type="button" class="btn" id="salSkip">Não recebo salário / pular</button><button type="button" class="btn pri" data-submit="1">Salvar</button></div></form>`,s=>{
+    const fm=$('#fSal',s);
+    $('#salSkip',s).onclick=()=>{S.settings.salaryAsked=S.settings.salaryAsked||{};S.settings.salaryAsked[M]=1;save('settings');closeModal()};
+    fm.onsubmit=()=>{const v=Math.abs(parseMoney(fm.v.value));if(!(v>0)){toast('Informe o valor');fm.v.focus();return}const d=fm.d.value||today();
+      const t={id:uid(),type:'entrada',amount:Math.round(v*100)/100,date:d,desc:fm.desc.value.trim()||'Salário',cat:'salario',method:'pix',bank:'',vehicle:'',src:'manual'};
+      S.settings.salaryAsked=S.settings.salaryAsked||{};S.settings.salaryAsked[M]=1;const k=addTx(t);save('settings',k);closeModal();cur=ymOf(d);render();toast('Salário de '+nome+' registrado 💰')}})}
+/* ---------- datas sempre atualizadas: virou o dia/mês, o app acompanha ---------- */
+let lastDay=today();
+function checkDayChange(){const td=today();if(td===lastDay)return;const prevM=ymOf(lastDay);lastDay=td;
+  if(cur===prevM)cur=ymOf(td);if(selDay&&selDay<td)selDay=null;
+  if($('#modal').classList.contains('hidden'))render();
+  if(ymOf(td)!==prevM)setTimeout(maybeAskSalary,800)}
+setInterval(checkDayChange,60000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkDayChange()});
+window.addEventListener('focus',checkDayChange);
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>go(d.tab),close:closeModal,
@@ -1341,6 +1369,7 @@ loadLocal();
 {const h=location.hash.slice(1);if(TABS.includes(h))tab=h}
 render();
 initSb();
+if(MODE!=='hosted')setTimeout(()=>{if(!dirty.size)maybeAskSalary()},4000);
 setInterval(()=>{if(document.visibilityState==='visible')refresh()},120000);
 setInterval(()=>{if($('#modal').classList.contains('hidden')&&document.visibilityState==='visible')render()},5*60*1000);
 </script>
