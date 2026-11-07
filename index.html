@@ -285,26 +285,30 @@ async function flush(){if(!sbOk)return;const ks=[...dirty].filter(k=>!inflight.h
     if(!(e&&e.retryable)&&e&&e.code!=='parse'&&e.code!=='tool_error'){sbOk=false;sbErr=errMsg(e);ks.forEach(k=>inflight.delete(k));savePending();setSync('error',sbErr);toast(sbErr);return}}
   finally{ks.forEach(k=>inflight.delete(k));savePending()}
   if(dirty.size){clearTimeout(flushT);flushT=setTimeout(flush,Math.min(30000,2000*Math.max(1,fails)))}else setSync('cloud')}
-async function pull(){const rows=await sql('select key, body from meubolso.docs');const remote={};(rows||[]).forEach(r=>{let b=r.body;if(typeof b==='string'){try{b=JSON.parse(b)}catch(e){b={}}}remote[r.key]=b||{}});return remote}
+const OWNER_SQL="(select u.id from auth.users u where lower(u.email)=(select lower(c.owner_email) from meubolso.config c where c.id=1))";
+async function pull(){const rows=await sql(`select key, body from meubolso.docs where user_id=${OWNER_SQL}`);const remote={};(rows||[]).forEach(r=>{let b=r.body;if(typeof b==='string'){try{b=JSON.parse(b)}catch(e){b={}}}remote[r.key]=b||{}});return remote}
 async function bkPush(docs){
   if(MODE==='hosted'){const{error}=await sbc.rpc('mb_push',{docs});if(error)throw hostErr(error);return}
-  const vals=Object.keys(docs).map(k=>`('${k}',${dq(JSON.stringify(docs[k]))}::jsonb,now())`).join(',');
-  await sql(`insert into meubolso.docs(key,body,updated_at) values ${vals} on conflict (key) do update set body=excluded.body, updated_at=now() returning key`)}
+  const vals=Object.keys(docs).map(k=>`('${k}',${dq(JSON.stringify(docs[k]))})`).join(',');
+  await sql(`insert into meubolso.docs(user_id,key,body,updated_at) select o.id, v.k, v.b::jsonb, now() from (values ${vals}) v(k,b) cross join ${OWNER_SQL} o(id) on conflict (user_id,key) do update set body=excluded.body, updated_at=now() returning key`)}
 async function bkPull(){
   if(MODE==='hosted'){const{data,error}=await sbc.rpc('mb_pull');if(error)throw hostErr(error);return data||{}}
   return pull()}
-function hostErr(e){const m=(e&&e.message)||'';if(e&&e.code==='42501')return{code:'denied',message:'Este e-mail não tem acesso a este app.'};
-  if((e&&(e.status===401||e.code==='PGRST301'))||/jwt|token/i.test(m))return{code:'auth',message:'Sessão expirada.'};
+function hostErr(e){const m=(e&&e.message)||'';if(e&&e.code==='42501')return{code:'denied',message:/bloqueada/i.test(m)?'Sua conta foi bloqueada pelo administrador.':'Sem permissão.'};
+  if((e&&(e.status===401||e.code==='PGRST301'||e.code==='28000'))||/jwt|token|autenticado/i.test(m))return{code:'auth',message:'Sessão expirada.'};
   return{code:'net',message:'Sem conexão com o Supabase agora.',retryable:true}}
 async function startSync(){
   setSync('loading');
-  try{const remote=await bkPull();sbOk=true;sbErr='';
+  try{
+    if(MODE==='hosted'){const{data,error}=await sbc.rpc('mb_me');if(error)throw hostErr(error);me=data||{};switchUser(me.id)}
+    const remote=await bkPull();sbOk=true;sbErr='';
     loadPending().forEach(k=>dirty.add(k));
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
-    applyRemote(remote);
-    if(dirty.size)flush();else setSync('cloud')}
+    applyRemote(remote);render();
+    if(dirty.size)flush();else setSync('cloud');
+    if(MODE==='hosted')setTimeout(sysNotify,1500)}
   catch(e){console.warn(e);sbOk=false;
-    if(e&&e.code==='denied'){try{await sbc.auth.signOut()}catch(_){}showLogin('Este e-mail não tem acesso a este app.');return}
+    if(e&&e.code==='denied'){try{await sbc.auth.signOut()}catch(_){}showLogin(e.message);return}
     if(e&&e.code==='auth'){showLogin('Sua sessão expirou. Entre de novo.');return}
     sbErr=errMsg(e);setSync('error',sbErr)}}
 async function initSb(){
@@ -313,42 +317,72 @@ async function initSb(){
   if(!mcp){try{mcp=await claude.use('mcp')}catch(e){mcp=null}}
   if(!mcp){setSync('local');return}
   return startSync()}
-/* ---------- versão hospedada: login Supabase ---------- */
-let sbc=null,userEmail='';
+/* ---------- versão hospedada: contas no Supabase ---------- */
+let sbc=null,userEmail='',me={};
+function switchUser(id){if(!id)return;let prev='';try{prev=localStorage.getItem('meubolso.uid')||''}catch(e){}
+  if(prev&&prev!==id){S=emptyState();dirty.clear();try{localStorage.removeItem(LS);localStorage.removeItem(PK)}catch(e){}}
+  try{localStorage.setItem('meubolso.uid',id)}catch(e){}}
 async function initHosted(){
-  if(!window.supabase||!supabase.createClient){setSync('error','Sem internet para conectar ao Supabase.');sbErr='Sem internet para conectar ao Supabase.';return}
-  if(!sbc){sbc=supabase.createClient(SBURL,SBKEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  if(!window.supabase||!supabase.createClient){sbErr='Sem internet para conectar ao Supabase.';setSync('error',sbErr);return}
+  if(!sbc){sbc=supabase.createClient(SBURL,SBKEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'meubolso-auth'}});
     sbc.auth.onAuthStateChange((ev,session)=>{if(ev==='PASSWORD_RECOVERY')setTimeout(openNewPassword,300);if(session&&session.user)userEmail=session.user.email||''})}
   let session=null;try{session=(await sbc.auth.getSession()).data.session}catch(e){}
   if(!session){showLogin();return}
   userEmail=session.user.email||'';hideLogin();return startSync()}
 function hideLogin(){const l=$('#login');if(l)l.remove()}
+let lgTab='in';
 function showLogin(msg){setSync('local');let l=$('#login');if(!l){l=document.createElement('div');l.id='login';document.body.appendChild(l)}
+  const up=lgTab==='up';
   l.innerHTML=`<div class="lg-card"><div class="logo" style="width:52px;height:52px;border-radius:16px;font-size:18px;margin:0 auto 14px">R$</div>
-   <h3 style="text-align:center;font-size:24px">Meu Bolso</h3><div class="s" style="text-align:center;margin:4px 0 18px">Finanças e agenda — entre para ver seus dados</div>
-   <form novalidate id="fLogin"><label class="f">E-mail</label><input type="text" name="email" inputmode="email" autocomplete="username" placeholder="voce@email.com">
-   <label class="f">Senha</label><input type="password" name="pass" autocomplete="current-password" placeholder="mínimo 6 caracteres">
+   <h3 style="text-align:center;font-size:24px">Meu Bolso</h3><div class="s" style="text-align:center;margin:4px 0 16px">Controle seus gastos, contas e agenda</div>
+   <div class="fchips" style="justify-content:center;margin-bottom:6px"><button type="button" class="${up?'':'on'}" data-tab-lg="in">Entrar</button><button type="button" class="${up?'on':''}" data-tab-lg="up">Criar conta</button></div>
+   <form novalidate id="fLogin">${up?`<label class="f">Seu nome</label><input type="text" name="name" autocomplete="name" placeholder="Como quer ser chamado">`:''}
+   <label class="f">E-mail</label><input type="text" name="email" inputmode="email" autocomplete="username" placeholder="voce@email.com">
+   <label class="f">Senha</label><input type="password" name="pass" autocomplete="${up?'new-password':'current-password'}" placeholder="mínimo 6 caracteres">
    <div id="lgMsg" class="small" style="margin-top:12px;min-height:20px;color:var(--amb)">${esc(msg||'')}</div>
-   <button type="button" class="btn pri block" data-lg="in" style="margin-top:8px;padding:13px">Entrar</button>
-   <div style="display:flex;justify-content:space-between;margin-top:12px;gap:8px"><button type="button" class="btn sm" data-lg="up">Criar conta</button><button type="button" class="btn sm" data-lg="reset">Esqueci a senha</button></div></form></div>`;
+   <button type="button" class="btn pri block" data-lg="${up?'up':'in'}" style="margin-top:8px;padding:13px">${up?'Criar conta e entrar':'Entrar'}</button>
+   ${up?'':`<div style="text-align:center;margin-top:12px"><button type="button" class="btn sm" data-lg="reset">Esqueci a senha</button></div>`}
+   <div class="s" style="text-align:center;margin-top:14px">Você continua conectado neste aparelho; não precisa entrar toda vez.</div></form></div>`;
   const fm=$('#fLogin',l),out=$('#lgMsg',l);
-  const go_=async kind=>{const email=fm.email.value.trim(),pass=fm.pass.value;if(!/^\S+@\S+\.\S+$/.test(email)){out.textContent='Digite um e-mail válido.';return}
+  $$('[data-tab-lg]',l).forEach(b=>b.onclick=()=>{lgTab=b.dataset.tabLg;showLogin()});
+  const go_=async kind=>{const email=fm.email.value.trim().toLowerCase(),pass=fm.pass.value;if(!/^\S+@\S+\.\S+$/.test(email)){out.textContent='Digite um e-mail válido.';return}
     const btns=$$('button',l);btns.forEach(b=>b.disabled=true);out.style.color='var(--mute)';out.textContent='Aguarde…';
     try{
       if(kind==='reset'){const{error}=await sbc.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;out.style.color='var(--acc3)';out.textContent='Enviamos um link para trocar a senha no seu e-mail.';return}
       if(pass.length<6){out.style.color='var(--amb)';out.textContent='A senha precisa ter pelo menos 6 caracteres.';return}
-      if(kind==='up'){const{data,error}=await sbc.auth.signUp({email,password:pass,options:{emailRedirectTo:location.origin+location.pathname}});if(error)throw error;
-        if(!data.session){out.style.color='var(--acc3)';out.textContent='Conta criada! Abra o e-mail de confirmação que enviamos e depois volte aqui para entrar.';return}}
+      if(kind==='up'){const name=(fm.name&&fm.name.value.trim())||'';
+        const{data,error}=await sbc.auth.signUp({email,password:pass,options:{data:{app:'meubolso',name},emailRedirectTo:location.origin+location.pathname}});if(error)throw error;
+        if(!data.session){const r=await sbc.auth.signInWithPassword({email,password:pass});if(r.error)throw r.error}}
       else{const{error}=await sbc.auth.signInWithPassword({email,password:pass});if(error)throw error}
-      userEmail=email;hideLogin();await startSync();render()}
+      userEmail=email;hideLogin();await startSync()}
     catch(e){out.style.color='var(--amb)';const m=(e&&e.message)||'';
-      out.textContent=/invalid login/i.test(m)?'E-mail ou senha incorretos.':/not confirmed/i.test(m)?'Confirme seu e-mail antes de entrar (veja a caixa de entrada e o spam).':/already registered|already exists/i.test(m)?'Esse e-mail já tem conta. Use “Entrar”.':/rate|too many/i.test(m)?'Muitas tentativas. Espere um pouco e tente de novo.':'Não deu certo: '+m}
+      out.textContent=/invalid login/i.test(m)?'E-mail ou senha incorretos.':/not confirmed/i.test(m)?'Confirme seu e-mail antes de entrar (veja a caixa de entrada e o spam).':/already registered|already exists/i.test(m)?'Esse e-mail já tem conta. Use “Entrar”.':/rate|too many|security purposes/i.test(m)?'Muitas tentativas. Espere um minuto e tente de novo.':'Não deu certo: '+m}
     finally{btns.forEach(b=>b.disabled=false)}};
   $$('[data-lg]',l).forEach(b=>b.onclick=()=>go_(b.dataset.lg));
-  fm.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go_('in')}})}
+  fm.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go_(up?'up':'in')}})}
 function openNewPassword(){openModal(`${head('Nova senha')}<form novalidate id="fNp"><label class="f">Digite a nova senha</label><input type="password" name="p" autocomplete="new-password"><div class="mf"><button type="button" class="btn pri" data-submit="1">Salvar senha</button></div></form>`,s=>{
   const fm=$('#fNp',s);fm.onsubmit=async()=>{if(fm.p.value.length<6){toast('Mínimo 6 caracteres');return}const{error}=await sbc.auth.updateUser({password:fm.p.value});if(error){toast('Não deu: '+error.message);return}closeModal();toast('Senha alterada');hideLogin();startSync()}})}
-async function doLogout(){try{await sbc.auth.signOut()}catch(e){}try{localStorage.removeItem(LS);localStorage.removeItem(PK)}catch(e){}location.reload()}
+async function doLogout(){try{await sbc.auth.signOut()}catch(e){}try{localStorage.removeItem(LS);localStorage.removeItem(PK);localStorage.removeItem('meubolso.uid')}catch(e){}location.reload()}
+/* avisos do sistema (com o app aberto): hoje e amanhã, uma vez por dia */
+function sysNotify(){try{if(!('Notification' in window)||Notification.permission!=='granted')return;const k='meubolso.notified',td=today();if(localStorage.getItem(k)===td)return;
+  const al=alerts();if(!al.length)return;const txt=al.slice(0,6).map(a=>`${a.w}: ${a.e?a.e.title+(a.e.time?' '+a.e.time:''):a.x.label+' '+brl(a.x.b.amount)}`).join('\n');
+  new Notification('Meu Bolso — lembretes',{body:txt,icon:'icon-192.png'});localStorage.setItem(k,td)}catch(e){}}
+async function askNotify(){try{const p=await Notification.requestPermission();if(p==='granted'){toast('Avisos ativados');localStorage.removeItem('meubolso.notified');sysNotify()}else toast('Avisos não permitidos no navegador')}catch(e){toast('Este navegador não aceita avisos')}render()}
+/* painel do administrador: só quem usa o app, nunca os dados pessoais */
+let ADM=null;
+async function loadAdmin(){ADM={loading:true};render();const{data,error}=await sbc.rpc('mb_admin_users');ADM=error?{error:error.message}:{users:data||[]};render()}
+async function admBlock(id,block){const{error}=await sbc.rpc('mb_admin_block',{target:id,block});if(error){toast('Não deu: '+error.message);return}toast(block?'Usuário bloqueado':'Usuário desbloqueado');loadAdmin()}
+function vAdmin(){if(MODE!=='hosted'||!me.admin)return '';
+  if(!ADM)setTimeout(loadAdmin,0);
+  const dt=s=>s?new Date(s).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'})+' '+new Date(s).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'—';
+  let h=`<div class="card"><h2>👑 Administrador <button class="btn sm" data-act="admReload">Atualizar</button></h2><div class="small muted" style="margin-bottom:8px">Quem usa o app. Os gastos, contas e agenda de cada pessoa são privados — nem o administrador vê.</div>`;
+  if(!ADM||ADM.loading)h+='<div class="empty">Carregando…</div>';
+  else if(ADM.error)h+=`<div class="empty">Não consegui carregar: ${esc(ADM.error)}</div>`;
+  else{const u=ADM.users;const ativos=u.filter(x=>x.ultima_atividade&&(Date.now()-new Date(x.ultima_atividade))<7*864e5).length;
+    h+=`<div class="tiles" style="margin-bottom:6px"><div class="tile"><div class="l">Pessoas cadastradas</div><div class="v">${u.length}</div></div><div class="tile"><div class="l">Ativas nos últimos 7 dias</div><div class="v pos">${ativos}</div></div></div>`;
+    h+=`<div class="list">${u.map(x=>`<div class="row"><div class="ic">${x.admin?'👑':x.bloqueado?'⛔':'👤'}</div><div class="grow"><div class="t">${esc(x.nome||x.email)}</div><div class="s">${x.nome?esc(x.email)+' · ':''}desde ${dt(x.criado_em).split(' ')[0]}</div><div class="s">Último acesso ${dt(x.ultimo_login)} · ${x.usando?'usou em '+dt(x.ultima_atividade):'ainda não lançou nada'}</div></div>
+      ${x.admin?'<span class="badge b-ok">admin</span>':x.bloqueado?`<button class="btn sm" data-act="admBlock" data-id="${x.id}" data-b="0">Desbloquear</button>`:`<button class="btn sm danger" data-act="admBlock" data-id="${x.id}" data-b="1">Bloquear</button>`}</div>`).join('')}</div>`}
+  return h+'</div>'}
 let pulling=false;
 async function refresh(){if(!sbOk||pulling||dirty.size||inflight.size)return;pulling=true;try{applyRemote(await bkPull())}catch(e){}finally{pulling=false}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh()});
@@ -510,12 +544,12 @@ function vAgenda(){
   const items=[...dayEv.map(e=>({k:e.date+(e.time||'00:00'),h:evRow(e)})),...dayBl.map(x=>({k:x.due+'99',h:`<div class="row click" data-act="editBill" data-id="${x.b.id}"><div class="ic">${catOf(x.b.cat).i}</div><div class="grow"><div class="t">${esc(x.label)}</div><div class="s">${dNice(x.due)} · conta${x.paid?' · paga ✅':''}</div></div><div class="amt">${brl(x.b.amount)}</div></div>`}))].sort((a,b)=>a.k.localeCompare(b.k));
   const nServ=evs.filter(e=>e.type==='servico').length;
   h+=`<div class="card"><h2>${selDay?dNice(selDay):'Tudo em '+mLabel(M)}${selDay?`<button class="btn sm" data-act="newEv" data-date="${selDay}">+ Neste dia</button>`:''}</h2>${!selDay&&nServ?`<div class="s" style="margin-bottom:4px">💼 ${nServ} dia(s) de serviço neste mês</div>`:''}${items.length?`<div class="list">${items.map(i=>i.h).join('')}</div>`:'<div class="empty">Nada marcado.</div>'}</div>`;
-  h+=`<div class="callout small">🔔 <b>Avisos:</b> todo dia de manhã você recebe uma notificação no celular (app do Claude) com o que tem <b>amanhã</b> e o que é <b>hoje</b> — eventos, dias de serviço e contas que vencem. Aqui no app eles também aparecem em “Lembretes” na tela inicial.</div>`;
+  h+=(MODE==='hosted'&&!me.admin)?`<div class="callout small">🔔 <b>Avisos:</b> o que tem <b>hoje</b> e <b>amanhã</b> (eventos, dias de serviço e contas) aparece em “Lembretes” na tela inicial. Ative os avisos do navegador em <b>Mais</b> para receber uma notificação quando abrir o app.</div>`:`<div class="callout small">🔔 <b>Avisos:</b> todo dia de manhã você recebe uma notificação no celular (app do Claude) com o que tem <b>amanhã</b> e o que é <b>hoje</b> — eventos, dias de serviço e contas que vencem. Aqui no app eles também aparecem em “Lembretes” na tela inicial.</div>`;
   return h}
 
 function vMais(){
   const banks=S.settings.banks||[],rules=S.settings.rules||[];
-  let h=`<div class="card"><h2>🏦 Bancos vinculados</h2>
+  let h=vAdmin()+`<div class="card"><h2>🏦 Bancos vinculados</h2>
    <div class="small muted" style="margin-bottom:8px">A ligação automática direta com o banco (Open Finance) só pode ser feita por empresas autorizadas pelo Banco Central, então aqui o vínculo é pelo <b>extrato</b>: exporte do app do banco em <b>OFX</b> (melhor) ou <b>CSV</b> e importe. Eu separo os Pix, reconheço iFood, 99, Uber, posto, Netflix etc. e não duplico o que já foi importado.</div>
    ${banks.length?`<div class="list">${banks.map(b=>`<div class="row"><div class="ic">🏦</div><div class="grow"><div class="t">${esc(b)}</div><div class="s">${S.settings.lastImport&&S.settings.lastImport[b]?'Última importação: '+dShort(S.settings.lastImport[b]):'Ainda sem importação'}</div></div><button class="btn sm" data-act="import" data-bank="${esc(b)}">Importar</button><button class="btn sm danger" data-act="delBank" data-bank="${esc(b)}">✕</button></div>`).join('')}</div>`:'<div class="empty">Nenhum banco vinculado ainda.</div>'}
    <button class="btn pri" data-act="import" style="margin-top:10px">+ Vincular banco / importar extrato</button>
@@ -527,8 +561,9 @@ function vMais(){
   h+=`<div class="card"><h2>🏷️ Regras de categoria</h2><div class="small muted" style="margin-bottom:8px">Quando a descrição tiver a palavra, o lançamento entra direto na categoria. Já venho com ${BASE_RULES.length} regras prontas (iFood, 99, Uber, postos, streaming, petshops…). As suas têm prioridade.</div>
    ${rules.length?`<div class="list">${rules.map((r,i)=>`<div class="row"><div class="ic">${catOf(r.cat).i}</div><div class="grow"><div class="t">“${esc(r.kw)}”</div><div class="s">→ ${catOf(r.cat).n}</div></div><button class="btn sm danger" data-act="delRule" data-i="${i}">✕</button></div>`).join('')}</div>`:'<div class="empty">Nenhuma regra sua ainda.</div>'}
    <form novalidate id="fRule" class="g2" style="margin-top:10px;grid-template-columns:1fr 1fr auto;align-items:end"><input type="text" name="kw" placeholder="palavra (ex.: joao silva)" required><select name="cat">${CATS.filter(c=>c.id!=='classificar').map(c=>`<option value="${c.id}">${c.i} ${c.n}</option>`).join('')}</select><button class="btn" type="button" data-submit="1">Adicionar</button></form></div>`;
-  h+=`<div class="card"><h2>💾 Seus dados</h2><div class="small muted" style="margin-bottom:10px">${sbOk?'Os dados ficam salvos no seu <b>Supabase</b> (esquema <b>meubolso</b>) e aparecem em qualquer aparelho em que você abrir este app. No painel do Supabase dá para ver as tabelas <b>lancamentos</b>, <b>contas</b> e <b>eventos</b>.':'Sem conexão com o Supabase agora: os dados ficam guardados neste aparelho e sobem sozinhos quando a conexão voltar.'}</div>
-   ${MODE==='hosted'&&userEmail?`<div class="row" style="border:0;padding-top:0"><div class="ic">👤</div><div class="grow"><div class="t">${esc(userEmail)}</div><div class="s">Conta conectada</div></div><button class="btn sm" data-act="logout">Sair</button></div>`:''}<div class="actions" style="margin:0"><button class="btn" data-act="backup">Baixar backup</button><button class="btn" data-act="restore">Restaurar backup</button><button class="btn" data-act="csv">Exportar planilha (CSV)</button><button class="btn danger" data-act="wipe">Apagar tudo</button></div></div>`;
+  if(MODE==='hosted'&&'Notification' in window&&Notification.permission!=='granted')h+=`<div class="callout small">🔔 Quer receber aviso no celular/computador dos eventos e contas de hoje e amanhã quando abrir o app? <button class="btn sm pri" data-act="askNotify" style="margin-top:8px">Ativar avisos</button></div>`;
+  h+=`<div class="card"><h2>💾 Seus dados</h2><div class="small muted" style="margin-bottom:10px">${sbOk?(MODE==='hosted'?'Seus dados ficam guardados na nuvem, só na sua conta, e aparecem em qualquer aparelho em que você entrar.':'Os dados ficam salvos no seu <b>Supabase</b> (esquema <b>meubolso</b>) e aparecem em qualquer aparelho em que você abrir este app.'):'Sem conexão com o Supabase agora: os dados ficam guardados neste aparelho e sobem sozinhos quando a conexão voltar.'}</div>
+   ${MODE==='hosted'&&userEmail?`<div class="row" style="border:0;padding-top:0"><div class="ic">👤</div><div class="grow"><div class="t">${esc(userEmail)}</div><div class="s">${me.admin?'Administrador':'Conta conectada'}</div></div><button class="btn sm" data-act="logout">Sair</button></div>`:''}<div class="actions" style="margin:0"><button class="btn" data-act="backup">Baixar backup</button><button class="btn" data-act="restore">Restaurar backup</button><button class="btn" data-act="csv">Exportar planilha (CSV)</button><button class="btn danger" data-act="wipe">Apagar tudo</button></div></div>`;
   return h}
 
 /* ---------- modal ---------- */
@@ -746,7 +781,7 @@ const ACT={
   filter:d=>{txFilter=d.f;render()},filterGo:d=>{txFilter=d.f;go('movimentos')},
   delRule:d=>{S.settings.rules.splice(+d.i,1);save('settings');render()},
   delBank:d=>confirmBox(`Desvincular “${esc(d.bank)}”? Os lançamentos já importados continuam.`,'Desvincular',()=>{S.settings.banks=S.settings.banks.filter(b=>b!==d.bank);save('settings');render()}),
-  resync:()=>initSb(),logout:doLogout,
+  resync:()=>initSb(),logout:doLogout,askNotify,admReload:()=>loadAdmin(),admBlock:d=>{if(d.b==='1')confirmBox('Bloquear esta pessoa? Ela não vai mais conseguir abrir os dados dela até você desbloquear.','Bloquear',()=>admBlock(d.id,true));else admBlock(d.id,false)},
   backup:doBackup,csv:doCSV,restore:doRestore,wipe:doWipe,
 };
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const f=ACT[el.dataset.act];if(f){e.preventDefault();e.stopPropagation();f(el.dataset,el)}});
