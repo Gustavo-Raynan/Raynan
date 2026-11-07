@@ -567,6 +567,8 @@ body.hidev .mv,body.hidev .amt,body.hidev .tile .v,body.hidev .hero2 .v,body.hid
 @media (max-width:520px){.seg.scroll button{padding:9px 9px;font-size:13px}}
 .agtop .seg.segm{flex-wrap:nowrap}
 
+.h2-k.warn{border-color:rgba(255,192,120,.45);background:rgba(255,192,120,.1)}.h2-k.warn b{color:#ffd59e}
+
 </style>
 </head>
 <body>
@@ -806,7 +808,7 @@ async function startSync(){
     const remote=await bkPull();sbOk=true;sbErr='';
     loadPending().forEach(k=>dirty.add(k));
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
-    applyRemote(remote);render();
+    applyRemote(remote);migrateFuture();render();
     if(!remote.upcoming||remote.upcoming.updated!==today())dirty.add('upcoming');
     if(dirty.size)flush();else setSync('cloud');
     setTimeout(maybeAskSalary,2500);
@@ -1356,6 +1358,7 @@ function openTx(id,preset={}){
       const nt={...t,id:t.id||uid(),type:ty,amount:Math.round(amount*100)/100,desc:fm.desc.value.trim(),date:fm.date.value,method:fm.method.value,bank:bankVal(fm,'bank'),cat,vehicle:cat==='veiculo'?radioVal(fm,'vehicle'):'',src:t.src||'manual'};
       if(!id&&!dupOk){const dup=allTx().find(o=>o.type===nt.type&&Math.abs(o.amount-nt.amount)<0.01&&Math.abs(dnum(o.date)-dnum(nt.date))<=1&&(!nt.desc||!o.desc||norm(prettyDesc(o.desc)).includes(norm(prettyDesc(nt.desc)))||norm(prettyDesc(nt.desc)).includes(norm(prettyDesc(o.desc)))));
         if(dup){dupOk=true;$('#dupWarn',s).innerHTML=`<div class="callout amb small" style="margin-top:12px">⚠️ Parece repetido: já existe <b>${esc(prettyDesc(dup.desc)||catOf(dup.cat).n)}</b> de ${brl(dup.amount)} em ${dFull(dup.date)}${dup.src==='import'?' (veio do extrato)':''}. Toque em <b>Salvar</b> de novo se for outro lançamento.</div>`;return}}
+      if(ty==='saida'&&nt.date>today()&&nt.src!=='import'&&!nt.billId){mark(`Cadastrou conta a pagar “${nt.desc||catOf(cat).n}” ${brl(nt.amount)}`);const ks=['bills'];if(id)ks.push(removeTx(id));const nb=futureToBill(nt);save(ks);closeModal();render();toast(`Data futura: salvei como conta a pagar em ${dFull(nb.date)} — sai do saldo quando você marcar como paga`);return}
       mark(`${id?'Editou':'Lançou'} ${ty==='entrada'?'recebimento':'gasto'} “${nt.desc||catOf(cat).n}” ${brl(nt.amount)}`);const keys=[];if(id)keys.push(removeTx(id));keys.push(addTx(nt));
       if(ty==='saida'&&fm.remember.checked&&fm.kw.value.trim())keys.push(...addRule(fm.kw.value,cat));
       save(keys);closeModal();render();toast(id?'Lançamento atualizado':'Lançamento salvo')};
@@ -1814,7 +1817,7 @@ function regBank(n){if(!n)return;S.settings.banks=S.settings.banks||[];if(!S.set
 /* Saldo de um banco = saldo informado (ou do extrato) + tudo que entrou/saiu DEPOIS dele.
    Lançamentos do próprio extrato até a data do saldo já estão dentro dele, então não contam de novo. */
 function bankBal(name){const a=(S.settings.balances||{})[name];if(!a)return null;let v=+a.value||0;const at=+a.at||0;
-  allTx().forEach(t=>{if(txBank(t)!==name)return;if(t.date>a.date||(t.date===a.date&&t.src!=='import'&&(+t.ts||0)>at))v+=t.type==='entrada'?+t.amount:-t.amount});return r2(v)}
+  const td=today();allTx().forEach(t=>{if(txBank(t)!==name||t.date>td)return;if(t.date>a.date||(t.date===a.date&&t.src!=='import'&&(+t.ts||0)>at))v+=t.type==='entrada'?+t.amount:-t.amount});return r2(v)}
 function bankList(){return accounts().map(n=>({n,v:bankBal(n),a:(S.settings.balances||{})[n]})).sort((a,b)=>(b.v!=null)-(a.v!=null)||(b.v||0)-(a.v||0))}
 function totalBal(){const l=bankList();const k=l.filter(b=>b.v!=null);return{has:k.length>0,v:r2(tot(k.map(b=>b.v))),list:l}}
 /* saldo total no fim de um dia (para o gráfico de evolução) */
@@ -1913,6 +1916,11 @@ function pairTransfers(ids,names){let n=0;const ks=new Set();const all=allTx();
     if(o){t.cat='transferencia';ks.add('m-'+ymOf(t.date));if(o.cat!=='transferencia'){o.cat='transferencia';ks.add('m-'+ymOf(o.date))}n++}});
   return{n,keys:[...ks]}}
 
+/* gasto com data futura ainda não saiu do banco: vira conta a pagar (dívida pendente) */
+function futureToBill(t){const c=catOf(t.cat);const b={id:uid(),name:t.desc||c.n,amount:r2(t.amount),kind:'unica',date:t.date,first:t.date,start:ymOf(t.date),dueDay:+t.date.slice(8),cat:isOutCat(t.cat)&&t.cat!=='classificar'?t.cat:'dividas',prio:t.cat==='dividas'?'alta':'normal',vehicle:t.vehicle||'',group:'',paid:{},over:{},bank:t.bank||''};S.bills.items.push(b);return b}
+function migrateFuture(){const td=today();const L=allTx().filter(t=>t.type==='saida'&&t.date>td&&t.src!=='import'&&!t.billId);if(!L.length)return false;
+  const ks=new Set(['bills']);mark(`Moveu ${L.length} gasto(s) com data futura para Dívidas e contas`);L.forEach(t=>{futureToBill(t);const k=removeTx(t.id);if(k)ks.add(k)});save([...ks]);return true}
+
 /* ================= PAINEL INICIAL (fintech) ================= */
 let CHP='mes',CHI=null;
 function scoreFin(M){const st=mStats(M),m=money();let s=55;
@@ -1967,16 +1975,16 @@ function vInicio(){const M=cur,m=money(),st=mStats(M),pv=mStats(addMonths(M,-1))
   let h=installBanner('home');
   if(!hasData())h+=`<div class="card onb"><h2>👋 Bem-vindo ao Tico</h2><div class="small muted">Em 3 passos o painel fica completo:</div><ol class="steps small"><li><b>Importe o extrato</b> do seu banco (ou informe o saldo) — assim eu sei quanto você tem.</li><li><b>Cadastre as dívidas e contas</b> com o vencimento: elas ficam pendentes até você pagar.</li><li><b>Registre seus recebimentos</b> por fonte de renda (salário, 99, freela…).</li></ol></div>`;
   const dOut=pv.out>0?Math.round((st.out-pv.out)/pv.out*100):null;const res=r2(st.inc-st.out);
-  h+=`<div class="dash"><section class="hero2 d-hero"><div class="h2-top"><div class="h2-main"><div class="l">Saldo nos bancos</div>
+  h+=`<div class="dash"><section class="hero2 d-hero"><div class="h2-top"><div class="h2-main"><div class="l">Saldo atual nos bancos</div>
      ${m.hasBal?`<div class="v mv">${brl(m.bal)}</div>`:`<div class="v" style="font-size:24px;line-height:1.3">Informe seu saldo</div><div class="s" style="color:rgba(255,255,255,.75)">Importe o extrato ou digite quanto tem em cada banco.</div>`}
      <div class="h2-banks">${m.banks.map(b=>`<button class="bchip" data-act="setBal" data-bank="${esc(b.n)}">${b.n===WALLET?'👛':'🏦'} ${esc(b.n)} <b class="mv">${b.v!=null?brl(b.v):'informar'}</b></button>`).join('')}<button class="bchip add" data-act="setBal">+ ${m.banks.length?'Conta':'Informar saldo'}</button></div></div>
      <div class="h2-ind"><div class="ring" style="--p:${scoreFin(M).s}"><b>${scoreFin(M).s}</b></div><span>${scoreFin(M).l}</span><small>desempenho</small></div></div>
     <div class="h2-grid">
      <button class="h2-k" data-act="tab" data-tab="contas" data-pt="prox"><span>Dívidas pendentes</span><b class="mv">${brl(m.pend)}</b><i>${m.now.length?`${m.now.length} conta(s) até ${dShort(cm+'-'+pad(dim(cm)))}${m.late.length?` · <u>${m.late.length} atrasada(s)</u>`:''}`:'nada pendente este mês'}</i></button>
-     <div class="h2-k"><span>Saldo livre após compromissos</span><b class="mv ${m.livre<0?'neg':''}">${m.hasBal?(m.livre<0?'− ':'')+brl(Math.abs(m.livre)):'—'}</b><i>${m.hasBal?(m.livre<0?'faltam para pagar tudo':'livre para gastar'):'informe o saldo'}</i></div>
+     ${!m.hasBal?`<div class="h2-k"><span>Livre após as dívidas do mês</span><b>—</b><i>informe o saldo</i></div>`:m.livre>=0?`<div class="h2-k"><span>Livre após as dívidas do mês</span><b class="mv">${brl(m.livre)}</b><i>pode gastar sem atrasar contas</i></div>`:`<div class="h2-k warn"><span>Falta para as dívidas do mês</span><b class="mv">${brl(-m.livre)}</b><i>saldo ainda não cobre tudo</i></div>`}
      <div class="h2-k"><span>Recebido em ${mon}</span><b class="mv">+ ${brl(st.inc)}</b><i>${pv.inc?`mês passado ${brlc(pv.inc)}`:'entradas do mês'}</i></div>
      <div class="h2-k"><span>Gasto em ${mon}</span><b class="mv">− ${brl(st.out)}</b><i>${dOut==null?'saídas do mês':`<em class="${dOut>0?'up':'dn'}">${dOut>0?'▲':'▼'} ${Math.abs(dOut)}%</em> vs ${MESES[Number(addMonths(M,-1).slice(5))-1].slice(0,3).toLowerCase()}`}</i></div></div>
-    ${m.hasBal&&m.bal>0?`<div class="h2-bar"><i style="width:${Math.min(100,m.comp/m.bal*100)}%"></i></div><div class="h2-note"><span>🔒 Comprometido <b class="mv">${brl(m.comp)}</b></span><span>✨ Livre <b class="mv">${brl(Math.max(0,m.livre))}</b></span>${m.futT?`<span>📅 Próximos meses <b class="mv">${brl(m.futT)}</b></span>`:''}${metaSaved()?`<span>🎯 Reservado em metas <b class="mv">${brl(metaSaved())}</b></span>`:''}</div>`:''}
+    ${m.hasBal&&m.bal>0?`<div class="h2-bar"><i style="width:${Math.min(100,m.comp/m.bal*100)}%"></i></div><div class="h2-note"><span>🔒 Comprometido <b class="mv">${brl(m.comp)}</b></span>${m.livre>=0?`<span>✨ Livre <b class="mv">${brl(m.livre)}</b></span>`:`<span>⚠️ Faltam <b class="mv">${brl(-m.livre)}</b> para as dívidas do mês</span>`}${m.futT?`<span>📅 Próximos meses <b class="mv">${brl(m.futT)}</b></span>`:''}${metaSaved()?`<span>🎯 Reservado em metas <b class="mv">${brl(metaSaved())}</b></span>`:''}</div>`:''}
    </section>`;
   h+=`<div class="d-short">${shortsHTML()}</div>`;
   const nx=[...m.late,...m.now.filter(x=>x.due>=td),...m.fut];
@@ -2225,7 +2233,7 @@ const SUBCATS=new Set(['assinaturas','internet','operadora','academia']);
 const subOff=b=>bEnded(b)||!!b.cancel;
 const isSub=b=>isRec(b)&&(b.sub===true||(b.sub!==false&&SUBCATS.has(b.cat)));
 function vProx(){const m=money();const td=today();const by={};m.all.forEach(x=>{const k=ymOf(x.due)<ymOf(td)?ymOf(td):ymOf(x.due);(by[k]=by[k]||[]).push(x)});
-  let h=`<div class="tiles t3"><div class="tile"><div class="l">Pendente até o fim do mês</div><div class="v mv">${brl(m.pend)}</div><div class="n">${m.now.length} conta(s)${m.late.length?` · <span class="red">${m.late.length} atrasada(s)</span>`:''}</div></div><div class="tile"><div class="l">Próximos 12 meses</div><div class="v mv">${brl(m.futT)}</div><div class="n">${m.fut.length} lançamento(s)</div></div>${m.hasBal?`<div class="tile"><div class="l">Saldo livre após compromissos</div><div class="v mv ${m.livre<0?'red':'pos'}">${brl(m.livre)}</div><div class="n">saldo ${brl(m.bal)} − pendentes ${brl(m.pend)}</div></div>`:''}</div>`;
+  let h=`<div class="tiles t3"><div class="tile"><div class="l">Pendente até o fim do mês</div><div class="v mv">${brl(m.pend)}</div><div class="n">${m.now.length} conta(s)${m.late.length?` · <span class="red">${m.late.length} atrasada(s)</span>`:''}</div></div><div class="tile"><div class="l">Próximos 12 meses</div><div class="v mv">${brl(m.futT)}</div><div class="n">${m.fut.length} lançamento(s)</div></div>${m.hasBal?`<div class="tile"><div class="l">Saldo atual nos bancos</div><div class="v mv">${brl(m.bal)}</div><div class="n">${m.livre>=0?'sobra '+brl(m.livre)+' após as dívidas do mês':'faltam '+brl(-m.livre)+' para as dívidas do mês'}</div></div>`:''}</div>`;
   h+=`<div class="actions"><button class="btn pri" data-act="newDebt">+ Adicionar dívida ou conta</button><button class="btn" data-act="tab" data-tab="agenda">📅 Ver no calendário</button></div>`;
   if(!m.all.length)return h+`<div class="card"><div class="empty-st"><div>✅</div>Nenhuma dívida pendente. Cadastre as próximas com a data exata do vencimento.</div></div>`;
   h+=Object.keys(by).sort().map(k=>`<div class="card"><h2>${mLabel(k)}<span class="amt mv">${brl(tot(by[k].map(x=>x.amt)))}</span></h2><div class="list">${by[k].map(commitRow).join('')}</div></div>`).join('');return h}
@@ -2419,7 +2427,7 @@ function submitRule(fm){if(!fm.kw.value.trim()){toast('Digite a palavra');return
 /* ---------- início ---------- */
 loadLocal();
 {const h=location.hash.slice(1);if(TABS.includes(h))tab=h}
-showLock();render();
+showLock();migrateFuture();render();
 initSb();
 if(MODE!=='hosted')setTimeout(()=>{if(!dirty.size)maybeAskSalary()},4000);
 setInterval(()=>{if(document.visibilityState==='visible')refresh()},120000);
