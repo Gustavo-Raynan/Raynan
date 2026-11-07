@@ -1,6 +1,8 @@
 {
+ "id": "./",
  "name": "Tico Finances — Finanças e Agenda",
- "short_name": "Tico Finances",
+ "short_name": "Tico",
+ "description": "Controle de gastos, contas e agenda",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
