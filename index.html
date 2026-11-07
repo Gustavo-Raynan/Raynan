@@ -861,6 +861,19 @@ body.touring .ntoast{display:none!important}
 body.dropping::after{content:'📄 Solte os extratos para importar';position:fixed;inset:12px;z-index:90;border:3px dashed rgba(var(--accRGB),.8);border-radius:24px;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;pointer-events:none}
 #iTxt{width:100%;resize:vertical;min-height:110px}
 #iTxt{font-family:inherit;font-size:14px}
+/* Tico Inteligente na tela inicial */
+.th{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(var(--accRGB),.16),rgba(var(--secRGB),.10)),var(--card2);border:1px solid rgba(var(--accRGB),.28)!important}
+.th-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}.th-h img{width:40px;height:40px;border-radius:12px;box-shadow:0 4px 14px rgba(var(--accRGB),.35)}
+.th-h b{display:block;font-size:15.5px}.th-h span{font-size:12px;opacity:.7}
+.th-tip{display:flex;gap:10px;align-items:flex-start;background:rgba(var(--accRGB),.08);border:1px solid rgba(var(--accRGB),.14);border-radius:14px;padding:10px 12px}
+.th-ti{font-size:18px;line-height:1.2}.th-tt{font-size:13.5px;line-height:1.45}.th-go{margin-top:4px;padding:0;font-size:13px}
+.th-chat{display:flex;flex-direction:column;gap:8px}.th-chat .ti-a{max-height:260px;overflow:auto}
+.th-more{display:flex;gap:14px}.th-more .lnk2{padding:0;font-size:12.5px}
+.th-chips{display:flex;gap:6px;overflow-x:auto;margin:10px -2px 8px;padding:0 2px;scrollbar-width:none}.th-chips::-webkit-scrollbar{display:none}
+.th-chips button{flex:none;border:1px solid rgba(var(--accRGB),.35);background:rgba(var(--accRGB),.10);color:inherit;border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.th-chips button:hover{background:rgba(var(--accRGB),.2)}
+.th-in{display:flex;gap:8px}.th-in input{flex:1;min-width:0}.th-in .btn{min-width:44px;display:flex;align-items:center;justify-content:center}
+.th-in .btn svg{width:18px;height:18px}
 
 </style>
 </head>
@@ -3386,6 +3399,23 @@ const _vImports0=vImports;
 vImports=function(){const C=impCfg();const accs=accounts().filter(a=>a!==WALLET);const old=accs.filter(a=>{const d=daysSince(lastImportOf(a));return d==null||(C.remind&&d>=C.remind)});
   return (accs.length?`<div class="callout small ${old.length?'amb':'ok'}">${old.length?`📄 Hora de atualizar: <b>${old.map(esc).join(', ')}</b>.`:'✅ Todos os extratos estão em dia.'} ${C.auto?'Importação automática <b>ligada</b> — só peço conferência quando tiver dúvida.':'Você confere tudo antes de gravar.'}</div>`:'')+_vImports0()};
 
+/* ================= TICO INTELIGENTE NA TELA INICIAL ================= */
+let HTI=null;
+const HTIQ=[['Quanto posso gastar?','quanto posso gastar sem comprometer minhas contas'],['Como estou este mês?','como está minha situação financeira'],['Onde gasto mais?','onde estou gastando mais'],['O que vence primeiro?','quais contas vencem primeiro']];
+function tiHome(q,label){q=String(q||'').trim();if(!q)return;const a=tiAnswer(q);const ql=label||q;HTI={q:ql,a};TI.push({q:ql,a});if(TI.length>20)TI.shift();render();
+  setTimeout(()=>{const c=$('#tiHome');if(c){const r=c.getBoundingClientRect();if(r.bottom>innerHeight-80||r.top<60)c.scrollIntoView({block:'center',behavior:'smooth'})}const i=$('#tiHq');if(i&&innerWidth>700)i.focus()},40)}
+function tiHomeCard(){const sg=tiSuggestions();const pick=sg.length?sg[(dnum(today()))%Math.min(sg.length,3)]:null;
+  const tip=pick?`<div class="th-tip"><span class="th-ti">${pick.i}</span><div class="grow"><div class="th-tt">${pick.t}</div>${pick.a?`<button type="button" class="lnk2 th-go" data-act="${pick.a[0]}" ${pick.a[0]==='tabPt'?`data-tab="${pick.a[2]}" data-pt="${pick.a[3]}"`:pick.a[2]?`data-k="${esc(pick.a[2])}" data-id="${esc(pick.a[2])}"`:''}>${pick.a[1]} ›</button>`:''}</div></div>`
+    :`<div class="th-tip"><span class="th-ti">✅</span><div class="grow"><div class="th-tt">Tudo em ordem por aqui. Me pergunte qualquer coisa sobre o seu dinheiro.</div></div></div>`;
+  return `<section class="sect th" id="tiHome"><div class="th-h"><img alt="" src="${svgURL(themedLogo('icon'))}"><div class="grow"><b>Tico Inteligente</b><span>${sg.length>1?`${sg.length} dicas para você`:'seu assistente financeiro'}</span></div><button type="button" class="lnk2" data-act="tab" data-tab="tico">Ver tudo</button></div>
+   ${HTI?`<div class="th-chat"><div class="ti-q">${esc(HTI.q)}</div><div class="ti-a">${HTI.a}</div><div class="th-more"><button type="button" class="lnk2" data-act="tab" data-tab="tico">Continuar conversa ›</button><button type="button" class="lnk2" data-act="tiHomeClr">Limpar</button></div></div>`:tip}
+   <div class="th-chips">${HTIQ.map(([l,q])=>`<button type="button" data-act="tiHome" data-q="${esc(q)}" data-l="${esc(l)}">${l}</button>`).join('')}</div>
+   <div class="th-in"><input type="text" id="tiHq" placeholder="Pergunte ao Tico…" autocomplete="off" enterkeyhint="send"><button type="button" class="btn pri sm" id="tiHgo" aria-label="Perguntar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button></div></section>`}
+const _vInicio10=vInicio;
+vInicio=function(){const h=_vInicio10();const mk='<section class="sect"><div class="sect-h">Este mês';const i=h.indexOf(mk);if(i<0)return h;return h.slice(0,i)+tiHomeCard()+h.slice(i)};
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#tiHgo')){const i=$('#tiHq');if(i)tiHome(i.value)}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='tiHq'){e.preventDefault();tiHome(e.target.value)}});
+
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>{if(d.pt)payTab=d.pt;closeModal();go(d.tab)},close:closeModal,
@@ -3406,7 +3436,7 @@ const ACT={
   backup:doBackup,csv:doCSV,restore:doRestore,wipe:doWipe,
 };
 Object.assign(ACT,{
-  tour:()=>tourStart(),onboarding:()=>openOnboarding(0),
+  tour:()=>tourStart(),tiHome:d=>tiHome(d.q,d.l),tiHomeClr:()=>{HTI=null;render()},onboarding:()=>openOnboarding(0),
   movTab:d=>{movTab=d.t;render()},bankF:d=>{txBankF=d.b;render()},recF:d=>{recF=recF===d.f?'':d.f;movTab='receb';render()},incGoal:d=>openIncGoal(d.c),cats:d=>openCats(d.t),
   goAn:()=>{anTab='analise';closeModal();go('analises')},reports:()=>{anTab='relat';closeModal();go('analises')},subsGo:()=>{payTab='assin';go('contas')},
   anPer:d=>{AN.per=d.p;if(d.p==='custom'&&!AN.from){AN.from=cur+'-01';AN.to=cur+'-'+pad(dim(cur))}render()},anCatSet:d=>{AN.cat=AN.cat===d.c?'':d.c;render()},anClear:()=>{AN={...AN,cat:'',bank:'',min:'',max:''};render()},
