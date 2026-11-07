@@ -2913,6 +2913,7 @@ function openAppearance(){const c=themeCfg();const base=THEMES.find(t=>t.id===c.
    ${saved.length?`<div class="sec" style="margin-top:14px">Suas combinações</div><div class="tgrid">${saved.map((t,i)=>`<div class="tcard"><button type="button" class="tc-use" data-ct="${i}">${themeSwatch({...(THEMES.find(x=>x.id===t.base)||THEMES[0]),acc:t.acc||base.acc,sec:t.sec||base.sec,hl:t.hl||base.hl})}<b>${esc(t.name)}</b></button><button type="button" class="btn sm danger" data-ctd="${i}">✕</button></div>`).join('')}</div>`:''}
    <div class="sec" style="margin-top:14px">Modo</div><div class="seg">${[['auto','Do tema'],['dark','🌙 Escuro'],['light','☀️ Claro']].map(([k,n])=>`<button type="button" class="${c.mode===k?'on':''}" data-md="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Suas cores</div><div class="cpick">${[['acc','Cor principal'],['sec','Cor secundária'],['hl','Destaque (botões e seleções)']].map(([k,n])=>`<label><input type="color" data-col="${k}" value="${c[k]||base[k]}"><span>${n}</span></label>`).join('')}</div>
+   <div class="callout small" style="margin-top:12px">📱💻 <b>Ícone na tela inicial e na área de trabalho:</b> dentro do app o logo já muda na hora. O ícone do app instalado é fixo no celular/computador — para ele ficar na cor do tema, <b>remova o app e instale de novo</b> com este tema escolhido (no Android às vezes atualiza sozinho em 1 a 2 dias). <button type="button" class="btn sm" data-act="installGuide" style="margin-top:6px">Como instalar de novo</button></div>
    <div class="sec">Estilo dos cartões</div><div class="seg">${[['limpo','Limpo'],['vidro','Vidro'],['contorno','Contorno'],['elevado','Elevado']].map(([k,n])=>`<button type="button" class="${c.cards===k?'on':''}" data-cs="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Efeitos visuais</div><div class="seg">${[['off','Sem efeitos'],['suave','Suaves'],['normal','Normais']].map(([k,n])=>`<button type="button" class="${c.fx===k?'on':''}" data-fx="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Gráficos</div><div class="seg">${[['classico','Clássico (verde/rosa)'],['tema','Cores do tema'],['suave','Suave']].map(([k,n])=>`<button type="button" class="${c.chart===k?'on':''}" data-chs="${k}">${n}</button>`).join('')}</div>
@@ -3138,9 +3139,14 @@ let LOGO_SIG='';
 function themedLogo(kind){const c=themeCfg();const b=THEMES.find(t=>t.id===c.base)||THEMES[0];const acc=c.acc||b.acc,sec=c.sec||b.sec;
   let s=LOGOS[kind]||LOGOS.icon;if(c.base==='rose'&&!c.acc&&!c.sec)return s;
   return s.replace(/#ff4f9c/gi,mixHex(acc,'#ffffff',.12)).replace(/#d93a9e/gi,mixHex(acc,sec,.5)).replace(/#8a3dff/gi,sec).replace(/#ff7ab5/gi,mixHex(acc,'#ffffff',.25))}
-function updateLogos(){const sig=JSON.stringify(themeCfg());const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(themedLogo('icon'));
+function updateLogos(){updateInstallIcons();const sig=JSON.stringify(themeCfg());const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(themedLogo('icon'));
   $$('.logo img,img.tico,.lk img,.brand img').forEach(i=>{if(i.src!==url)i.src=url});
   if(sig!==LOGO_SIG){LOGO_SIG=sig;let l=document.querySelector('link[rel=icon][data-themed]');if(!l){l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.dataset.themed='1';document.head.appendChild(l)}l.href=url}}
+// ícone do app instalado (tela inicial / área de trabalho) na cor do tema: o próximo "instalar" já usa estas versões
+const ICON_THEMES=['rose','dark','midnight','emerald','crimson','neon','ocean','light','gold','gray'];
+function updateInstallIcons(){if(MODE!=='hosted')return;const id=ICON_THEMES.includes(themeCfg().base)?themeCfg().base:'rose';
+  const m=document.querySelector('link[rel=manifest]');if(m&&!m.href.endsWith(`manifest-${id}.webmanifest`))m.setAttribute('href',`manifest-${id}.webmanifest`);
+  const a=document.querySelector('link[rel=apple-touch-icon]');if(a)a.setAttribute('href',`icons/${id}-apple.png`)}
 
 /* ---------- ações (cliques) ---------- */
 const ACT={
