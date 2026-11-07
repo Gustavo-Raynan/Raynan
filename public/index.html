@@ -857,6 +857,10 @@ body.touring .tabs,body.touring header{z-index:auto}
 .ob .ck{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px}
 .ob .tgrid{margin-top:8px}
 body.touring .ntoast{display:none!important}
+/* importação 2.0 */
+body.dropping::after{content:'📄 Solte os extratos para importar';position:fixed;inset:12px;z-index:90;border:3px dashed rgba(var(--accRGB),.8);border-radius:24px;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;pointer-events:none}
+#iTxt{width:100%;resize:vertical;min-height:110px}
+#iTxt{font-family:inherit;font-size:14px}
 
 </style>
 </head>
@@ -3215,10 +3219,10 @@ document.addEventListener('keydown',e=>{if(!TOUR)return;if(e.key==='Escape')tour
 
 /* ----- primeiros passos (configuração guiada para quem acabou de chegar) ----- */
 let ONB=0;
-function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Salário','Primeira conta','Avisos','Aparência'];const dots=`<div class="ob-dots">${steps.map((s,k)=>`<i class="${k<=ONB?'on':''}"></i>`).join('')}</div>`;
+function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Salário','Primeira conta','Avisos'];const dots=`<div class="ob-dots">${steps.map((s,k)=>`<i class="${k<=ONB?'on':''}"></i>`).join('')}</div>`;
   const nav=(next,label)=>`<div class="mf ob-nav">${ONB>0?'<button type="button" class="btn" id="obBack">Voltar</button>':''}<button type="button" class="btn" id="obSkip">${ONB===0?'Agora não':'Pular'}</button><button type="button" class="btn pri" id="obNext">${label||'Continuar'}</button></div>`;
   let h='';
-  if(ONB===0)h=`<div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>Bem-vindo ao Tico Finances</h3><p>Em 5 passos rápidos eu deixo tudo pronto: seu saldo, o salário, a primeira conta a pagar, os avisos e a cor do app. Dá para pular qualquer passo.</p></div>${nav(0,'Começar')}`;
+  if(ONB===0)h=`<div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>Bem-vindo ao Tico Finances</h3><p>Em 4 passos rápidos eu deixo tudo pronto: seu saldo, o salário, a primeira conta a pagar e os avisos. Dá para pular qualquer passo.</p></div>${nav(0,'Começar')}`;
   if(ONB===1)h=`<h3 class="ob-t">🏦 Quanto você tem no banco?</h3><p class="s">É o seu ponto de partida. Depois, cada gasto, recebimento e conta paga atualiza o saldo sozinho.</p>
     <label class="f">Banco ou conta</label><input type="text" id="obBank" placeholder="Ex.: Nubank, Mercado Pago" value="${esc(defBank()||'')}"><label class="f">Saldo de hoje (R$)</label><input type="text" class="big" id="obBal" inputmode="decimal" placeholder="0,00">
     <div class="ob-or">ou</div><button type="button" class="btn block" id="obImp">📄 Importar o extrato do banco</button>${nav()}`;
@@ -3228,10 +3232,9 @@ function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Sal�
     <label class="f">Nome</label><input type="text" id="obBn" placeholder="Ex.: Internet, Aluguel, Cartão"><div class="g2"><div><label class="f">Valor (R$)</label><input type="text" id="obBv" inputmode="decimal" placeholder="0,00"></div><div><label class="f">Vencimento</label><input type="date" id="obBd" value="${addDays(today(),7)}"></div></div>
     <label class="ck"><input type="checkbox" id="obBm" checked> Repete todo mês</label>${nav()}`;
   if(ONB===4)h=`<h3 class="ob-t">🔔 Quer ser avisado?</h3><p class="s">Vencimentos 7, 3 e 1 dia antes, contas atrasadas, salário e resumo do dia. ${MODE==='hosted'?'Funciona mesmo com o app fechado.':''}</p>
-    ${MODE==='hosted'?`<button type="button" class="btn pri block" id="obPush">Ativar notificações neste aparelho</button><div class="s" id="obPushS" style="margin-top:8px;text-align:center"></div>`:'<div class="callout small">Os avisos aparecem no sino 🔔 dentro do app.</div>'}${nav()}`;
-  if(ONB===5)h=`<h3 class="ob-t">🎨 Escolha a cara do seu Tico</h3><p class="s">Dá para mudar quando quiser em Configurações → Aparência.</p><div class="tgrid">${THEMES.slice(0,9).map(t=>`<button type="button" class="tcard ${themeCfg().base===t.id?'on':''}" data-obth="${t.id}">${themeSwatch(t)}<b>${t.n}</b></button>`).join('')}</div>${nav(0,'Concluir')}`;
+    ${MODE==='hosted'?`<button type="button" class="btn pri block" id="obPush">Ativar notificações neste aparelho</button><div class="s" id="obPushS" style="margin-top:8px;text-align:center"></div>`:'<div class="callout small">Os avisos aparecem no sino 🔔 dentro do app.</div>'}${nav(0,'Concluir')}`;
   openModal(`<div class="ob">${ONB>0?dots:''}${h}</div>`,s=>{
-    const next=()=>{ONB++;if(ONB>5)return obDone();openOnboarding(ONB)};
+    const next=()=>{ONB++;if(ONB>4)return obDone();openOnboarding(ONB)};
     const nx=$('#obNext',s);nx.onclick=()=>{
       if(ONB===1){const b=$('#obBank',s).value.trim(),v=parseMoney($('#obBal',s).value);if(b&&!isNaN(v)&&$('#obBal',s).value.trim()){S.settings.balances=S.settings.balances||{};S.settings.balances[b]={value:r2(v),date:today(),at:Date.now(),src:'manual'};regBank(b);if(!S.settings.defBank)S.settings.defBank=b;logAct(`Informou o saldo de ${b}: ${brl(v)}`);save('settings')}}
       if(ONB===2){const v=Math.abs(parseMoney($('#obSal',s).value)),d=parseInt($('#obDay',s).value);if(v>0)S.settings.income=r2(v);if(d>=1&&d<=31)S.settings.np={...(S.settings.np||{}),salaryDay:d};save('settings')}
@@ -3242,17 +3245,146 @@ function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Sal�
     const bk=$('#obBack',s);if(bk)bk.onclick=()=>openOnboarding(ONB-1);
     const im=$('#obImp',s);if(im)im.onclick=()=>{S.settings.onbStep=2;save('settings');closeModal();openImport()};
     const ps=$('#obPush',s);if(ps)ps.onclick=async()=>{await pushEnable();const st=await pushState();$('#obPushS',s).textContent=st==='on'?'✅ Ativado!':st==='ios-install'?'No iPhone, instale o Tico na tela inicial primeiro.':'Não foi possível ativar agora — dá para fazer depois em Configurações.'};
-    $$('[data-obth]',s).forEach(b=>b.onclick=()=>{setTheme({base:b.dataset.obth,acc:'',sec:'',hl:'',mode:'auto'});render();openOnboarding(5)})})}
+  })}
 function obDone(){S.settings.onbDone=1;save('settings');closeModal();render();toast('Tudo pronto! 🎉');if(S.settings.tourSeen!==TOUR_V)setTimeout(tourStart,450)}
+
+/* ----- escolha do tema no primeiro acesso (novos e antigos) ----- */
+function openThemePick(then){const cur=themeCfg().base;
+  openModal(`<div class="ob"><div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>Escolha a cara do seu Tico 🎨</h3><p>Toque em um tema para ver como fica. Dá para mudar quando quiser em Configurações → Aparência.</p></div>
+   <div class="tgrid">${THEMES.map(t=>`<button type="button" class="tcard ${cur===t.id?'on':''}" data-pkth="${t.id}">${themeSwatch(t)}<b>${t.n}</b></button>`).join('')}</div>
+   <div class="mf ob-nav"><button type="button" class="btn pri" id="pkOk">Usar este tema</button></div></div>`,s=>{
+    $$('[data-pkth]',s).forEach(b=>b.onclick=()=>{setTheme({base:b.dataset.pkth,acc:'',sec:'',hl:'',mode:'auto'});render();openThemePick(then)});
+    $('#pkOk',s).onclick=()=>{S.settings.themePicked=1;save('settings');closeModal();render();if(then)setTimeout(then,300)}})}
 
 /* ----- quando mostrar ----- */
 let tourAsked=false;
 function maybeIntro(){if(tourAsked||TOUR)return;if($('#lock')||(document.getElementById('login')&&!document.getElementById('login').classList.contains('hidden')))return;
   if(!$('#modal').classList.contains('hidden')){setTimeout(maybeIntro,2500);return}tourAsked=true;
+  if(!S.settings.themePicked){openThemePick(()=>{tourAsked=false;maybeIntro()});return}
   if(!hasData()&&!S.settings.onbDone){openOnboarding(0);return}
   if(S.settings.tourSeen!==TOUR_V){openModal(`<div class="ob"><div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>O Tico está de cara nova ✨</h3><p>Novo visual, temas, notificações, Tico Inteligente e mais. Quer um tour rápido para ver onde ficou cada coisa?</p></div>
     <div class="mf ob-nav"><button type="button" class="btn" id="tqNo">Agora não</button><button type="button" class="btn pri" id="tqYes">Ver o tour</button></div></div>`,s=>{
     $('#tqYes',s).onclick=()=>tourStart();$('#tqNo',s).onclick=()=>{S.settings.tourSeen=TOUR_V;save('settings');closeModal();toast('O tutorial fica em Configurações → Tutorial do app')}})}}
+
+/* ================= IMPORTAÇÃO 2.0: vários arquivos, colar texto, modo automático, conferência de saldo, lembretes ================= */
+function impCfg(){return{auto:true,remind:7,...(S.settings.imp||{})}}
+function setImpCfg(p){S.settings.imp={...impCfg(),...p};save('settings')}
+function daysSince(d){return d?Math.max(0,Math.round((dnum(today())-dnum(d)))):null}
+function lastImportOf(b){return (S.settings.lastImport||{})[b]||''}
+
+/* conta certa sem perguntar: lembra a escolha feita para cada banco detectado, ou acha a conta com nome parecido */
+function resolveBank(r,hint){if(hint)return hint;const accs=accounts().filter(a=>a!==WALLET);const det=r.bank||'';const map=S.settings.bankMap||{};
+  if(det&&map[norm(det)]&&accs.includes(map[norm(det)]))return map[norm(det)];
+  if(det&&accs.includes(det))return det;
+  if(det){const L=accs.filter(a=>norm(a).includes(norm(det).split(' ')[0])||norm(det).includes(norm(a).split(' ')[0]));if(L.length===1)return L[0]}
+  if(!det&&accs.length===1)return accs[0];return det}
+function rememberBank(det,chosen){if(!det||!chosen||det===chosen)return;S.settings.bankMap={...(S.settings.bankMap||{}),[norm(det)]:chosen};save('settings')}
+
+/* texto colado: extrato copiado ou notificações do banco (Pix recebido, compra aprovada…) */
+function parseNotifText(text){const rows=[];const yr=today().slice(0,4);
+  String(text).split(/\n\s*\n|\n(?=[^\n]*(?:pix|compra|transfer|pagamento|recebe|enviou|d[eé]bito|cr[eé]dito))/i).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean).forEach(b=>{
+    const mv=b.match(/R\$\s*-?\s*(\d{1,3}(?:\.\d{3})*(?:,\d{2})?|\d+(?:[.,]\d{2})?)/i);if(!mv)return;const amount=Math.abs(parseMoney(mv[1]));if(!(amount>0))return;const n=norm(b);
+    let type=null;if(/(recebe|recebido|recebida|credit|deposit|estorno|devolu|caiu na conta|entrou)/.test(n))type='entrada';if(/(enviou|enviado|enviada|voce fez|pagamento|pagou|compra|debito|saque|transferiu|tarifa|fatura)/.test(n))type=type&&/(recebe|recebido|recebida)/.test(n)?'entrada':'saida';if(!type)return;
+    let date=today();const md=b.match(/(\d{2})\/(\d{2})(?:\/(\d{2,4}))?/);if(md){const y=md[3]?(md[3].length===2?'20'+md[3]:md[3]):yr;const d=`${y}-${md[2]}-${md[1]}`;if(validDate(d)&&d<=today())date=d}
+    const stop=String.raw`(?=\s+(?:em|no dia|no valor|valor|às|as|via|com|pelo|pela|de R\$)\b|\s*R\$|[,.;—–]|\s-\s|$)`;const W=pre=>(b.match(new RegExp(String.raw`\b(?:${pre})\s+(?!R\$)([A-ZÀ-Ú0-9][^,.;\n]{1,40}?)`+stop))||[])[1]||'';
+    let who=((type==='entrada'?W('de|do|da'):W('para|pra')||W('em|no|na'))||W('de|para|em')||(b.match(/\s[-–—]\s*([A-ZÀ-Ú0-9][^,.;\n]{1,40})\s*$/)||[])[1]||'').replace(/\s+(aprovad[ao]|realizad[ao]|confirmad[ao])$/i,'');
+    const kind=/pix/.test(n)?'PIX':/compra|cartao/.test(n)?'COMPRA':/transfer|ted|doc/.test(n)?'TRANSFERENCIA':/pagamento|boleto/.test(n)?'PAGAMENTO':'';
+    const desc=((kind?(type==='entrada'?kind+(kind==='TRANSFERENCIA'?' RECEBIDA':' RECEBIDO'):kind+(kind==='PIX'?' ENVIADO':'')):'')+(who?' '+who:'')).trim()||b.slice(0,60);rows.push({date,amount,type,desc})});
+  return rows}
+function parsePasted(text){let r=parseTextStatement(text);if(!r.rows.length){const n=parseNotifText(text);r={rows:n,balance:null}}
+  const bal=(text.match(/saldo(?: dispon[ií]vel| atual| em conta)?[^\d\n-]{0,20}(-?\s*R?\$?\s*-?\d{1,3}(?:\.\d{3})*,\d{2})/i)||[])[1];if(bal&&!r.balance){const v=parseMoney(bal.replace(/\s/g,''));if(!isNaN(v))r.balance={value:v,date:today()}}
+  return{kind:'Texto',rows:r.rows,balance:r.balance,bank:detectBank(text,'')}}
+
+/* fila de arquivos */
+let IMPQ=null;
+function needsLook(r,bank){if(!bank)return 'conta';if(!r.rows.length)return '';const keys0=new Set(allTx().map(t=>t.key).filter(Boolean));const mem=catMemory();
+  const unk=r.rows.filter(x=>{const key=x.fitid?'f:'+x.fitid:`k:${x.date}|${x.amount}|${norm(x.desc)}`;if(keys0.has(key))return false;const nd=norm(x.desc);
+    if((S.settings.rules||[]).some(rr=>kwMatch(nd,rr.kw))||mem.has(x.type+'|'+keyFromDesc(x.desc)))return false;return guessCat(x.desc,x.type)==='classificar'}).length;
+  return unk?'classificar':''}
+function impStart(files,hint,pasted){IMPQ={items:files.map(f=>({f})),hint,done:[],busy:true};if(pasted)IMPQ.items=[{r:pasted}];impNext()}
+async function impNext(){if(!IMPQ)return;const it=IMPQ.items.shift();if(!it)return impFinish();const tot=IMPQ.done.length+IMPQ.items.length+1,pos=IMPQ.done.length+1;
+  const st=$('#iStatus');if(st)st.innerHTML=`<div class="callout small" style="margin-top:10px">⏳ Lendo ${tot>1?`${pos} de ${tot}: `:''}<b>${esc(it.f?it.f.name||'arquivo':'texto colado')}</b>…</div>`;
+  let r=it.r;if(!r){try{r=await readAny(it.f)}catch(e){console.warn(e);IMPQ.done.push({err:it.f.name||'arquivo',why:/lib/.test(e&&e.message)?'sem internet para carregar o leitor':'não consegui abrir'});return impNext()}}
+  if(!r.rows.length&&!r.balance){IMPQ.done.push({err:it.f?it.f.name:'texto colado',why:r.kind==='PDF'?'PDF sem texto (foto/escaneado) — exporte em OFX, Excel ou CSV':'não encontrei lançamentos'});return impNext()}
+  const bank=resolveBank(r,IMPQ.hint);const look=needsLook(r,bank);r.detBank=r.bank;
+  if(impCfg().auto&&!look){IMPQ.cur={file:it.f?it.f.name:'texto colado'};autoImport({...r,bank},bank);return}
+  IMPQ.cur={file:it.f?it.f.name:'texto colado'};closeModal();openReview({...r,bank},bank);
+  setTimeout(()=>{const s=$('#sheet');if(!s)return;const why=look==='conta'?'Não reconheci de qual conta é este extrato — escolha abaixo.':'Algumas movimentações eu não sei classificar — confira as marcadas com ❓.';
+    const h=s.querySelector('.s');if(h)h.insertAdjacentHTML('afterend',`${tot>1?`<div class="s"><b>Extrato ${pos} de ${tot}</b> · ${esc(IMPQ.cur.file)}</div>`:''}<div class="callout amb small" style="margin-top:8px">${why}</div>`);
+    const c=s.querySelector('[data-act=close]');if(c&&IMPQ&&IMPQ.items.length){c.textContent='Pular este';c.removeAttribute('data-act');c.onclick=()=>{IMPQ.done.push({err:IMPQ.cur.file,why:'pulado por você'});impNext()}}},30)}
+function impFinish(){const Q=IMPQ;IMPQ=null;if(!Q)return;const ok=Q.done.filter(x=>!x.err);
+  if(Q.done.length===1&&ok.length===1){IMP=ok[0].imp;openModal('<div></div>');drawResult();return}
+  const ins=ok.reduce((a,x)=>a+x.inc,0),outs=ok.reduce((a,x)=>a+x.out,0),n=ok.reduce((a,x)=>a+x.n,0);
+  openModal(`${head('✅ Extratos importados')}<div class="callout ok small"><b>${ok.length}</b> extrato(s) · <b>${n}</b> movimentação(ões) nova(s) · entradas <b class="pos">${brl(ins)}</b> · saídas <b>${brl(outs)}</b></div>
+   <div class="list">${Q.done.map(x=>x.err?`<div class="row"><div class="ic">⚠️</div><div class="grow"><div class="t">${esc(x.err)}</div><div class="s">${esc(x.why)}</div></div></div>`
+     :`<div class="row"><div class="ic">🏦</div><div class="grow"><div class="t">${esc(x.bank)}</div><div class="s">${x.n} nova(s)${x.dups?` · ${x.dups} já estavam no app`:''}${x.balTxt?' · '+x.balTxt:''}</div></div><button type="button" class="btn sm" data-act="undoBatch" data-b="${x.imp.batch}">Desfazer</button></div>`).join('')}</div>
+   ${(()=>{const c=ok.flatMap(x=>x.imp.ids).map(id=>findTx(id)).filter(f=>f&&f.t.cat==='classificar').length;return c?`<div class="callout amb small" style="margin-top:8px">❓ ${c} movimentação(ões) sem categoria. <button type="button" class="btn sm" data-act="classify">Classificar agora</button></div>`:''})()}
+   ${impSuggest(ok.flatMap(x=>x.imp.ids))}<div class="mf"><button type="button" class="btn pri" data-act="close">Pronto</button></div>`)}
+
+/* envolve a importação: guarda o saldo de antes, lembra o banco escolhido e segue a fila */
+const _autoImport0=autoImport;
+autoImport=function(r,bankHint){const bank=r.bank||bankHint;const prev=bank?bankBal(bank):null;if(r.detBank||r.bankDet)rememberBank(r.detBank||r.bankDet,bank);
+  const inQ=!!(IMPQ&&IMPQ.busy);if(inQ)IMPQ.silent=true;_autoImport0(r,bankHint);if(!IMP)return;IMP.prevBal=prev;IMP.rows=r.rows;
+  const ds=(r.rows||[]).map(x=>x.date).sort();IMP.from=ds[0];IMP.to=ds[ds.length-1];
+  if(inQ){IMPQ.silent=false;const txs=IMP.ids.map(id=>findTx(id)).filter(Boolean).map(f=>f.t);IMPQ.done.push({imp:IMP,bank:IMP.bank,n:IMP.ids.length,dups:IMP.dups,inc:sum(txs.filter(t=>t.type==='entrada'&&counted(t))),out:sum(txs.filter(t=>t.type==='saida'&&counted(t))),balTxt:balCheckTxt(IMP,true)});
+    if(IMPQ.items.length){impNext()}else impFinish()}};
+const _drawResult0=drawResult;
+drawResult=function(){if(IMPQ&&IMPQ.silent)return;_drawResult0();const s=$('#sheet');if(!s||!IMP)return;const mf=s.querySelector('.mf');if(!mf)return;
+  const per=IMP.from?`<div class="s" style="margin-top:6px">📅 Período do extrato: ${dFull(IMP.from)} a ${dFull(IMP.to)}</div>`:'';
+  const bc=balCheckTxt(IMP);mf.insertAdjacentHTML('beforebegin',per+(bc?`<div class="callout small ${/difere/.test(bc)?'amb':'ok'}" style="margin-top:8px">${bc}</div>`:'')+impSuggest(IMP.ids))};
+function balCheckTxt(I,short){if(!I.balance||I.prevBal==null)return '';const diff=r2(I.balance.value-I.prevBal);const now=bankBal(I.bank);
+  if(Math.abs(diff)<0.01||(now!=null&&Math.abs(now-I.prevBal)<0.01&&Math.abs(now-I.balance.value)<0.01))return short?'saldo conferido ✅':`🏦 <b>Saldo conferido:</b> o app e o extrato batem (${brl(I.balance.value)}). ✅`;
+  return short?`saldo ajustado para ${brl(I.balance.value)}`:`🏦 <b>Saldo conferido:</b> o app dizia ${brl(I.prevBal)} e o extrato ${brl(I.balance.value)}${I.balance.date?` em ${dFull(I.balance.date)}`:''} — difere em ${brl(Math.abs(diff))}. ${I.balOk?'Usei o valor do banco, que é o correto.':'Mantive o saldo que você informou depois, por ser mais recente.'}`}
+function impSuggest(ids){const keys=new Set(ids.map(id=>findTx(id)).filter(Boolean).map(f=>keyFromDesc(f.t.desc)));const L=recurringCandidates().filter(c=>keys.has(c.k)).slice(0,3);if(!L.length)return '';
+  return `<div class="card" style="margin-top:10px"><h2>🔁 Encontrei gastos que se repetem</h2><div class="s">Quer que eu cadastre como conta mensal? Assim eu aviso antes de vencer e já marco como paga quando aparecer no próximo extrato.</div><div class="list">${L.map(c=>`<div class="row"><div class="grow"><div class="t">${esc(prettyDesc(c.k)||c.k)}</div><div class="s">~${brl(c.md)} · todo dia ${c.day} · ${c.n} meses seguidos</div></div><button type="button" class="btn sm pri" data-act="mkRec" data-k="${esc(c.k)}">Cadastrar</button><button type="button" class="btn sm" data-act="recIgn" data-k="${esc(c.k)}">Não</button></div>`).join('')}</div></div>`}
+
+/* tela de importar */
+openImport=function(bank,file){const C=impCfg();const accs=accounts().filter(a=>a!==WALLET);
+  openModal(`<div>${head('Importar extrato do banco')}
+   <label class="drop" id="iDrop"><input type="file" id="iFile" multiple accept=".pdf,.ofx,.csv,.txt,.xls,.xlsx,application/pdf,text/csv"><div class="drop-ic">📄</div><b>Escolha um ou vários extratos</b><span>PDF, Excel, OFX ou CSV · de um ou mais bancos de uma vez</span></label>
+   <button type="button" class="btn block" id="iPaste" style="margin-top:8px">📋 Colar texto ou notificação do banco</button>
+   <div id="iPasteBox" class="hidden" style="margin-top:8px"><textarea id="iTxt" rows="5" placeholder="Cole aqui o extrato copiado ou as notificações (ex.: “Pix recebido de Fulano — R$ 50,00”, “Compra aprovada R$ 35,90 em Mercado”)."></textarea><button type="button" class="btn pri block" id="iTxtGo" style="margin-top:6px">Ler texto</button></div>
+   <div id="iStatus"></div>
+   <div class="card" style="margin-top:12px"><label class="ck" style="margin:0"><input type="checkbox" id="iAuto" ${C.auto?'checked':''}> <span><b>Importar sozinho quando estiver tudo claro</b><br><span class="s">Sem duplicadas, conta reconhecida e categorias conhecidas: eu gravo direto e mostro o resumo (dá para desfazer). Só peço para conferir quando tiver dúvida.</span></span></label>
+    <label class="f" style="margin-top:10px">Lembrar de importar o extrato</label><select id="iRem">${[[0,'Não lembrar'],[3,'A cada 3 dias'],[7,'Toda semana'],[15,'A cada 15 dias'],[30,'Uma vez por mês']].map(([v,l])=>`<option value="${v}" ${+C.remind===v?'selected':''}>${l}</option>`).join('')}</select></div>
+   ${accs.length?`<div class="card"><h2>Suas contas</h2><div class="list">${accs.map(a=>{const d=daysSince(lastImportOf(a));return `<div class="row"><div class="ic">🏦</div><div class="grow"><div class="t">${esc(a)}</div><div class="s">${d==null?'nunca importado':d===0?'extrato importado hoje':`último extrato há ${d} dia(s)`}</div></div>${d!=null&&C.remind&&d>=C.remind?'<span class="badge b-amb">atualizar</span>':''}</div>`}).join('')}</div></div>`:''}
+   <details class="small" style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Como pego o extrato no meu banco?</summary>
+    <select id="iHow" style="margin-top:8px"><option value="">Escolha seu banco…</option>${Object.keys(BANK_HOWTO).map(b=>`<option>${b}</option>`).join('')}<option value="outro">Outro banco</option></select><div id="iHowTxt" class="small" style="margin-top:8px"></div>
+    <div class="s" style="margin-top:8px">${/android/i.test(navigator.userAgent)?'💡 No Android, com o Tico instalado, dá para <b>compartilhar</b> o arquivo direto do app do banco para o Tico.':'💡 No computador, dá para <b>arrastar</b> os arquivos para qualquer lugar da tela do Tico.'}</div></details>
+   </div>`,s=>{
+    const go=fs=>{fs=[...(fs||[])].filter(Boolean);if(fs.length)impStart(fs,bank)};
+    $('#iFile',s).onchange=()=>go($('#iFile',s).files);
+    const d=$('#iDrop',s);['dragover','dragenter'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add('over')}));['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();d.classList.remove('over')}));
+    d.addEventListener('drop',e=>go(e.dataTransfer&&e.dataTransfer.files));
+    $('#iPaste',s).onclick=()=>{$('#iPasteBox',s).classList.toggle('hidden');$('#iTxt',s).focus()};
+    $('#iTxtGo',s).onclick=()=>{const t=$('#iTxt',s).value;if(!t.trim()){toast('Cole o texto primeiro');return}const r=parsePasted(t);
+      if(!r.rows.length&&!r.balance){$('#iStatus',s).innerHTML='<div class="callout amb small" style="margin-top:10px">Não achei valores nesse texto. Ele precisa ter pelo menos o valor (R$) e se foi recebido, enviado ou compra.</div>';return}impStart([],bank,r)};
+    $('#iAuto',s).onchange=()=>setImpCfg({auto:$('#iAuto',s).checked});$('#iRem',s).onchange=()=>setImpCfg({remind:+$('#iRem',s).value});
+    $('#iHow',s).onchange=()=>{const v=$('#iHow',s).value;$('#iHowTxt',s).innerHTML=BANK_HOWTO[v]||(v?'Procure no app do banco por <b>Extrato → Exportar/Compartilhar</b> e escolha <b>OFX</b>, <b>Excel</b>, <b>CSV</b> ou <b>PDF</b>.':'')};
+    if(file)go(Array.isArray(file)?file:[file])})};
+
+/* lembra a conta escolhida na conferência */
+const _openReview0=openReview;
+openReview=function(r,bankHint){_openReview0(r,bankHint);if(REV)REV.det=r.detBank||r.bank||''};
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='rvOk'&&REV&&REV.det&&REV.bank)rememberBank(REV.det,REV.bank)},true);
+
+/* arrastar arquivos para qualquer lugar (computador) */
+let dragN=0;
+addEventListener('dragenter',e=>{if(!e.dataTransfer||![...e.dataTransfer.types].includes('Files'))return;dragN++;document.body.classList.add('dropping')});
+addEventListener('dragleave',()=>{dragN=Math.max(0,dragN-1);if(!dragN)document.body.classList.remove('dropping')});
+addEventListener('dragover',e=>{if(e.dataTransfer&&[...e.dataTransfer.types].includes('Files'))e.preventDefault()});
+addEventListener('drop',e=>{dragN=0;document.body.classList.remove('dropping');const fs=e.dataTransfer&&e.dataTransfer.files;if(!fs||!fs.length||e.defaultPrevented)return;e.preventDefault();if($('#lock'))return;closeModal();openImport('',[...fs])});
+
+/* aviso: hora de importar o extrato */
+const _stateAlerts0=stateAlerts;
+stateAlerts=function(){const out=_stateAlerts0();const C=impCfg();if(!C.remind)return out;const td=today();
+  Object.entries(S.settings.lastImport||{}).forEach(([b,d])=>{const n=daysSince(d);if(n!=null&&n>=C.remind)out.push({at:Date.now(),key:`imp:old:${b}:${Math.floor(dnum(td)/C.remind)}`,cat:'import',lvl:'info',link:'import',title:`📄 Hora de atualizar o extrato do ${b}`,body:`O último foi importado há ${n} dias. Importe para manter o saldo e as contas pagas em dia.`})});
+  return out};
+
+/* aba Importações: status de cada conta */
+const _vImports0=vImports;
+vImports=function(){const C=impCfg();const accs=accounts().filter(a=>a!==WALLET);const old=accs.filter(a=>{const d=daysSince(lastImportOf(a));return d==null||(C.remind&&d>=C.remind)});
+  return (accs.length?`<div class="callout small ${old.length?'amb':'ok'}">${old.length?`📄 Hora de atualizar: <b>${old.map(esc).join(', ')}</b>.`:'✅ Todos os extratos estão em dia.'} ${C.auto?'Importação automática <b>ligada</b> — só peço conferência quando tiver dúvida.':'Você confere tudo antes de gravar.'}</div>`:'')+_vImports0()};
 
 /* ---------- ações (cliques) ---------- */
 const ACT={
