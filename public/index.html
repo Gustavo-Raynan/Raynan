@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#08080a">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -158,7 +158,6 @@ details summary{color:var(--acc3)}
 .cols{display:block}
 .col{min-width:0}
 .brand .sync{font-size:12px;color:var(--mute);font-weight:500}
-@media (max-width:1023px){.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.actions .btn{white-space:normal;line-height:1.2;padding:11px 8px;font-size:13.5px;text-align:center}.actions:has(> :only-child){grid-template-columns:1fr}}
 @media (max-width:420px){.monthnav span{min-width:92px;font-size:12.5px}.brand{font-size:16px}.hero .v{font-size:34px}}
 @media (min-width:1024px){
   body{padding-left:256px;padding-bottom:40px}
@@ -229,6 +228,40 @@ details summary{color:var(--acc3)}
 .ig-arrow div{background:var(--grad);padding:6px 12px;border-radius:99px;margin-bottom:2px;box-shadow:0 8px 20px -8px rgba(255,61,143,.9)}
 .ig-arrow span{display:block;font-size:34px;line-height:1;animation:igb 1s ease-in-out infinite;color:#ff7ab5}
 @keyframes igb{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+.drop{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:22px 14px;border:2px dashed rgba(255,61,143,.45);border-radius:20px;background:rgba(255,61,143,.06);cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{background:rgba(255,61,143,.14);border-color:var(--acc)}
+.drop input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.drop-ic{font-size:30px}
+.drop span{font-size:12.5px;color:var(--mute)}
+
+/* ---- celular: cara de app nativo ---- */
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+.qa{font-style:normal;font-size:20px;line-height:1}
+@media (max-width:1023px){
+  body{background-attachment:scroll;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+  .top{padding:calc(10px + env(safe-area-inset-top)) 14px 10px;background:rgba(8,8,10,.88)}
+  main{padding:14px 12px 20px}
+  .tabs{left:0;right:0;bottom:0;transform:none;width:100%;border-radius:0;border:0;border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:rgba(12,12,15,.94);box-shadow:none;justify-content:space-around}
+  .tabs button{border-radius:0;padding:4px 2px;gap:3px;font-size:10.5px;background:none!important;box-shadow:none!important}
+  .tabs svg{width:22px;height:22px;padding:4px 16px;border-radius:999px;box-sizing:content-box;transition:background .2s}
+  .tabs button.on{color:var(--ink)}
+  .tabs button.on svg{background:var(--acc2);stroke:var(--acc3)}
+  input[type=text],input[type=number],input[type=date],input[type=time],input[type=month],input[type=search],input[type=password],select,textarea{font-size:16px}
+  input.big{font-size:28px}
+  .qa-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .qa-row .btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px 4px;border-radius:18px;font-size:12.5px;line-height:1.15;white-space:nowrap;min-height:66px}
+  .actions:not(.qa-row) .btn{width:100%}
+  .actions:not(.qa-row){display:block}
+  .sheet{padding-bottom:calc(22px + env(safe-area-inset-bottom));max-height:94vh}
+  .modal.top .sheet{padding-top:calc(16px + env(safe-area-inset-top))}
+  .card{padding:14px;border-radius:22px}
+  .hero{border-radius:26px}
+  .monthnav span{min-width:104px}
+  #toast{top:calc(64px + env(safe-area-inset-top))}
+  #login{padding:calc(20px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom))}
+}
+@media (min-width:1024px){.qa{display:none}}
 </style>
 </head>
 <body>
@@ -303,6 +336,8 @@ const CATS=[
  {id:'saude',n:'Saúde',i:'💊',c:'#12a4b8'},
  {id:'lazer',n:'Lazer',i:'🎉',c:'#ff8ad1'},
  {id:'compras',n:'Compras',i:'🛍️',c:'#689f38'},
+ {id:'operadora',n:'Operadora',i:'📱',c:'#4dd0e1'},
+ {id:'internet',n:'Internet',i:'🌐',c:'#7c9cff'},
  {id:'outros',n:'Outros',i:'📦',c:'#a3a0ab'},
  {id:'classificar',n:'A classificar',i:'❓',c:'#6e6a75'},
 ];
@@ -323,7 +358,9 @@ const BASE_RULES=[
  ['netflix','assinaturas'],['spotify','assinaturas'],['disney','assinaturas'],['hbo','assinaturas'],['globoplay','assinaturas'],['youtube','assinaturas'],['deezer','assinaturas'],['apple.com','assinaturas'],['google one','assinaturas'],['icloud','assinaturas'],['paramount','assinaturas'],['crunchyroll','assinaturas'],['chatgpt','assinaturas'],['openai','assinaturas'],['claude.ai','assinaturas'],['xbox','assinaturas'],['playstation','assinaturas'],['wellhub','assinaturas'],['gympass','assinaturas'],['smart fit','assinaturas'],['smartfit','assinaturas'],
  ['petz','pets'],['cobasi','pets'],['petlove','pets'],['veterinar','pets'],['pet shop','pets'],['petshop','pets'],['racao','pets'],['agropecuaria','pets'],
  ['emprestimo','dividas'],['financiamento','dividas'],['acordo','dividas'],['serasa','dividas'],['pagamento de fatura','dividas'],['fatura','dividas'],['juros','dividas'],['parcela','dividas'],
- ['aluguel','moradia'],['condominio','moradia'],['enel','moradia'],['cemig','moradia'],['copel','moradia'],['light','moradia'],['sabesp','moradia'],['energia','moradia'],['internet','moradia'],['vivo','moradia'],['claro','moradia'],['tim','moradia'],['comgas','moradia'],['agua','moradia'],
+ ['vivo fibra','internet'],['claro net','internet'],['net servicos','internet'],['net virtua','internet'],['oi fibra','internet'],['tim live','internet'],['fibra','internet'],['banda larga','internet'],['internet','internet'],['brisanet','internet'],['desktop','internet'],['algar','internet'],['starlink','internet'],['provedor','internet'],
+ ['recarga celular','operadora'],['recarga vivo','operadora'],['recarga claro','operadora'],['recarga tim','operadora'],['vivo','operadora'],['claro','operadora'],['tim','operadora'],['oi movel','operadora'],['nextel','operadora'],['surf telecom','operadora'],['correios celular','operadora'],['telefonica','operadora'],['operadora','operadora'],
+ ['aluguel','moradia'],['condominio','moradia'],['enel','moradia'],['cemig','moradia'],['copel','moradia'],['light','moradia'],['sabesp','moradia'],['energia','moradia'],['comgas','moradia'],['agua','moradia'],
  ['farmacia','saude'],['drogasil','saude'],['droga raia','saude'],['drogaria','saude'],['pague menos','saude'],['hospital','saude'],['clinica','saude'],['laboratorio','saude'],['unimed','saude'],['plano de saude','saude'],
  ['cinema','lazer'],['ingresso','lazer'],['sympla','lazer'],['steam','lazer'],
  ['shopee','compras'],['amazon','compras'],['magalu','compras'],['magazine luiza','compras'],['shein','compras'],['aliexpress','compras'],
@@ -396,7 +433,7 @@ async function startSync(){
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
     applyRemote(remote);render();
     if(dirty.size)flush();else setSync('cloud');
-    if(MODE==='hosted')setTimeout(sysNotify,1500)}
+    if(MODE==='hosted'){setTimeout(sysNotify,1500);setTimeout(checkSharedFile,300)}}
   catch(e){console.warn(e);sbOk=false;
     if(e&&e.code==='denied'){try{await sbc.auth.signOut()}catch(_){}showLogin(e.message);return}
     if(e&&e.code==='auth'){showLogin('Sua sessão expirou. Entre de novo.');return}
@@ -562,7 +599,7 @@ function vInicio(){
   h+=`<div class="hero"><div class="l">Saldo de ${MESES[Number(M.slice(5))-1]}</div><div class="v">${brl(p.saldo)}</div>
     <div class="sub">${p.bl.length?(p.proj>=0?`Depois das contas sobra <b>${brl(p.proj)}</b>`:`Faltam <b>${brl(-p.proj)}</b> para pagar tudo`):'recebido − gasto'}</div>
     <div class="stats"><div><span>Recebido</span><b>${brl(p.inc)}</b></div><div><span>Gasto</span><b>${brl(p.out)}</b></div><div><span>Em aberto</span><b>${brl(p.unpaidTotal)}</b></div></div></div>`;
-  h+=`<div class="actions"><button class="btn pri" data-act="newTx" data-type="saida">+ Pix / gasto</button><button class="btn" data-act="newTx" data-type="entrada">+ Recebimento</button><button class="btn" data-act="import">Importar extrato</button></div>`;
+  h+=`<div class="actions qa-row"><button class="btn pri" data-act="newTx" data-type="saida"><i class="qa">💸</i>Pix / gasto</button><button class="btn" data-act="newTx" data-type="entrada"><i class="qa">💰</i>Recebimento</button><button class="btn" data-act="import"><i class="qa">📄</i>Extrato</button></div>`;
   // plano
   h+=`<div class="card"><h2>🧭 O que pagar em ${MESES[Number(M.slice(5))-1]}</h2>`;
   if(!p.bl.length)h+=`<div class="empty">Nenhuma conta para este mês. Cadastre suas contas e eu monto a ordem de pagamento.</div><button class="btn sm" data-act="newBill">+ Cadastrar conta</button>`;
@@ -603,7 +640,7 @@ function vMov(){
   const chips=[['todos','Todos'],['entradas','💰 Entradas'],['classificar','❓ A classificar'],...CATS.filter(c=>c.id!=='classificar').map(c=>[c.id,c.i+' '+c.n])].filter(([k])=>k==='todos'||cnt[k]||k===txFilter);
   let list=tx.filter(t=>txFilter==='todos'||(txFilter==='entradas'?t.type==='entrada':t.type==='saida'&&t.cat===txFilter));
   if(txSearch){const q=norm(txSearch);list=list.filter(t=>norm(t.desc+' '+catOf(t.cat).n+' '+(t.bank||'')).includes(q))}
-  let h=`<div class="actions"><button class="btn pri" data-act="newTx" data-type="saida">+ Pix / gasto</button><button class="btn" data-act="newTx" data-type="entrada">+ Recebimento</button><button class="btn" data-act="import">Importar extrato</button></div>`;
+  let h=`<div class="actions qa-row"><button class="btn pri" data-act="newTx" data-type="saida"><i class="qa">💸</i>Pix / gasto</button><button class="btn" data-act="newTx" data-type="entrada"><i class="qa">💰</i>Recebimento</button><button class="btn" data-act="import"><i class="qa">📄</i>Extrato</button></div>`;
   h+=`<input type="search" id="txSearch" placeholder="Buscar (ex.: ifood, posto, João)" value="${esc(txSearch)}" style="margin-bottom:10px">`;
   h+=`<div class="fchips">${chips.map(([k,n])=>`<button class="${txFilter===k?'on':''}" data-act="filter" data-f="${k}">${n}${k!=='todos'&&cnt[k]?' · '+cnt[k]:''}</button>`).join('')}</div>`;
   const tot=sum(list.filter(t=>t.type==='saida')),tin=sum(list.filter(t=>t.type==='entrada'));
@@ -652,8 +689,8 @@ function vAgenda(){
 
 function vMais(){
   const banks=S.settings.banks||[],rules=S.settings.rules||[];
-  let h='<div class="mais">'+(canShowInstall()?`<div class="card"><h2>📲 Instalar o app</h2>${installBanner('mais')}</div>`:'')+vAdmin()+`<div class="card"><h2>🏦 Bancos vinculados</h2>
-   <div class="small muted" style="margin-bottom:8px">A ligação automática direta com o banco (Open Finance) só pode ser feita por empresas autorizadas pelo Banco Central, então aqui o vínculo é pelo <b>extrato</b>: exporte do app do banco em <b>OFX</b> (melhor) ou <b>CSV</b> e importe. Eu separo os Pix, reconheço iFood, 99, Uber, posto, Netflix etc. e não duplico o que já foi importado.</div>
+  let h='<div class="mais">'+(canShowInstall()?installBanner('mais'):'')+vAdmin()+`<div class="card"><h2>🏦 Bancos vinculados</h2>
+   <div class="small muted" style="margin-bottom:8px">A ligação automática direta com o banco (Open Finance) só pode ser feita por empresas autorizadas pelo Banco Central, então aqui o vínculo é pelo <b>extrato</b>: exporte o extrato no app do banco (<b>PDF</b>, <b>Excel</b>, <b>OFX</b> ou <b>CSV</b>) e importe aqui. Eu reconheço o banco, separo os Pix, classifico iFood, 99, Uber, posto, operadora, internet etc. e não duplico o que já foi importado.${MODE==='hosted'&&DEV.android?' <b>No Android</b>, com o Tico instalado, dá para compartilhar o arquivo direto do app do banco para o Tico.':''}</div>
    ${banks.length?`<div class="list">${banks.map(b=>`<div class="row"><div class="ic">🏦</div><div class="grow"><div class="t">${esc(b)}</div><div class="s">${S.settings.lastImport&&S.settings.lastImport[b]?'Última importação: '+dShort(S.settings.lastImport[b]):'Ainda sem importação'}</div></div><button class="btn sm" data-act="import" data-bank="${esc(b)}">Importar</button><button class="btn sm danger" data-act="delBank" data-bank="${esc(b)}">✕</button></div>`).join('')}</div>`:'<div class="empty">Nenhum banco vinculado ainda.</div>'}
    <button class="btn pri" data-act="import" style="margin-top:10px">+ Vincular banco / importar extrato</button>
    <details style="margin-top:12px" class="small"><summary style="cursor:pointer;font-weight:600">Onde acho o extrato no meu banco?</summary><ul class="steps">
@@ -809,63 +846,140 @@ function openEvent(id,date){
       else confirmBox('Excluir este evento?','Excluir',()=>{S.events.items=S.events.items.filter(x=>x.id!==id);save('events');render();toast('Excluído')})};
   })}
 
-/* ---------- importação de extrato ---------- */
+/* ---------- importação de extrato (OFX, CSV, Excel, PDF) ---------- */
 function splitCSV(line,dl){const out=[];let cur_='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(q){if(ch==='"'){if(line[i+1]==='"'){cur_+='"';i++}else q=false}else cur_+=ch}else if(ch==='"')q=true;else if(ch===dl){out.push(cur_);cur_=''}else cur_+=ch}out.push(cur_);return out.map(s=>s.trim())}
 function parseOFX(txt){const rows=[];const re=/<STMTTRN>([\s\S]*?)(?:<\/STMTTRN>|(?=<STMTTRN>)|<\/BANKTRANLIST>)/gi;let m;
   const g=(b,tag)=>{const r=b.match(new RegExp('<'+tag+'>([^<\\r\\n]*)','i'));return r?r[1].trim():''};
-  while(m=re.exec(txt)){const b=m[1];const v=parseMoney(g(b,'TRNAMT'));const date=parseDate(g(b,'DTPOSTED'));if(isNaN(v)||!date)continue;
+  while(m=re.exec(txt)){const b=m[1];const v=parseMoney(g(b,'TRNAMT'));const date=parseDate(g(b,'DTPOSTED'));if(isNaN(v)||!date||v===0)continue;
     const desc=[g(b,'NAME'),g(b,'MEMO')].filter(Boolean).filter((x,i,a)=>a.indexOf(x)===i).join(' - ');
     rows.push({date,amount:Math.abs(v),type:v<0?'saida':'entrada',desc:desc||g(b,'TRNTYPE'),fitid:g(b,'FITID')})}
   return rows}
-function parseCSV(txt){const lines=txt.split(/\r?\n/).filter(l=>l.trim());if(!lines.length)return[];
-  const dl=(lines[0].match(/;/g)||[]).length>=(lines[0].match(/,/g)||[]).length&&lines[0].includes(';')?';':(lines[0].includes('\t')?'\t':',');
-  let hi=lines.findIndex(l=>/data|date/i.test(l)&&/valor|amount|value|quantia/i.test(l));let H=hi>=0?splitCSV(lines[hi],dl).map(norm):null;
-  let di=-1,vi=-1,ti=-1,ii=-1,card=false,deb=-1,cre=-1;
-  if(H){di=H.findIndex(h=>/^data|date/.test(h));vi=H.findIndex(h=>/valor|amount|value|quantia/.test(h));ti=H.findIndex(h=>/descri|title|histor|memo|lancamento|estabelecimento|detalhe/.test(h));ii=H.findIndex(h=>/^identificador|^id$|fitid/.test(h));
-    card=H.includes('title')&&H.includes('amount');deb=H.findIndex(h=>/^debito|saida/.test(h));cre=H.findIndex(h=>/^credito|entrada/.test(h))}
-  const body=lines.slice(hi>=0?hi+1:0);const rows=[];
-  for(const l of body){const c=splitCSV(l,dl);let date=null,v=NaN,desc='';
-    if(di>=0){date=parseDate(c[di]);if(vi>=0&&c[vi]!==undefined&&c[vi]!=='')v=parseMoney(c[vi]);else if(deb>=0||cre>=0){const d_=parseMoney(c[deb]),c_=parseMoney(c[cre]);v=!isNaN(c_)&&c_?Math.abs(c_):!isNaN(d_)?-Math.abs(d_):NaN}
-      desc=ti>=0?c[ti]:c.filter((x,i)=>i!==di&&i!==vi).sort((a,b)=>b.length-a.length)[0]||''}
-    else{for(const x of c){if(!date&&parseDate(x)){date=parseDate(x);continue}if(isNaN(v)&&/^[-+R$\s(]*\d[\d.,]*\)?$/.test(x)&&/[.,]\d{2}\)?$/.test(x)){v=parseMoney(x);continue}if(x.length>desc.length)desc=x}}
-    if(!date||isNaN(v)||v===0)continue;if(card)v=-v;
+/* tabela (CSV ou Excel) já separada em linhas e colunas */
+function parseTable(T){T=T.map(r=>r.map(c=>String(c??'').trim())).filter(r=>r.some(c=>c));if(!T.length)return[];
+  const isHead=r=>{const n=r.map(norm);return n.some(h=>/^(data|date|dt)\b/.test(h))&&n.some(h=>/valor|amount|value|quantia|debito|credito|entrada|saida/.test(h))};
+  const hi=T.findIndex(isHead);const H=hi>=0?T[hi].map(norm):null;
+  let di=-1,vi=-1,ti=-1,ii=-1,card=false,deb=-1,cre=-1,tyi=-1;
+  if(H){di=H.findIndex(h=>/^(data|date|dt)\b/.test(h));vi=H.findIndex(h=>/^(valor|amount|value|quantia)/.test(h)&&!/saldo/.test(h));
+    ti=H.findIndex(h=>/descri|title|histor|memo|lancamento|estabelecimento|detalhe|nome/.test(h));ii=H.findIndex(h=>/^identificador|^id$|fitid|documento/.test(h));
+    card=H.includes('title')&&H.includes('amount');deb=H.findIndex(h=>/^(debito|saida|saidas)/.test(h));cre=H.findIndex(h=>/^(credito|entrada|entradas)/.test(h));tyi=H.findIndex(h=>/^(tipo|natureza|d\/c|dc)$/.test(h))}
+  const rows=[];
+  for(const c of T.slice(hi>=0?hi+1:0)){let date=null,v=NaN,desc='';
+    if(di>=0){date=parseDate(c[di]);
+      if(vi>=0&&c[vi])v=parseMoney(c[vi]);else if(deb>=0||cre>=0){const d_=parseMoney(c[deb]),c_=parseMoney(c[cre]);v=!isNaN(c_)&&c_?Math.abs(c_):!isNaN(d_)&&d_?-Math.abs(d_):NaN}
+      if(tyi>=0&&!isNaN(v)){const t=norm(c[tyi]);if(/^d|debito|saida/.test(t))v=-Math.abs(v);else if(/^c|credito|entrada/.test(t))v=Math.abs(v)}
+      desc=ti>=0?c[ti]:c.filter((x,i)=>i!==di&&i!==vi&&!parseDate(x)&&isNaN(parseMoney(x))).sort((a,b)=>b.length-a.length)[0]||''}
+    else{for(const x of c){if(!date&&parseDate(x)){date=parseDate(x);continue}if(isNaN(v)&&/^[-+R$\s(]*\d[\d.,]*\)?\s*[DC]?$/i.test(x)&&/[.,]\d{2}\)?\s*[DC]?$/i.test(x)){v=parseMoney(x.replace(/\s*[DC]$/i,''));if(/D$/i.test(x))v=-Math.abs(v);continue}if(x.length>desc.length)desc=x}}
+    if(!date||isNaN(v)||v===0)continue;if(/^saldo|saldo (anterior|do dia|final|disponivel)/i.test(norm(desc)))continue;if(card)v=-v;
     rows.push({date,amount:Math.abs(v),type:v<0?'saida':'entrada',desc:desc||'Lançamento',fitid:ii>=0?c[ii]:''})}
   return rows}
+function parseCSV(txt){const lines=txt.split(/\r?\n/).filter(l=>l.trim());if(!lines.length)return[];
+  const probe=lines.slice(0,10).join('\n');const cnt=ch=>(probe.match(new RegExp(ch==='\t'?'\t':'\\'+ch,'g'))||[]).length;
+  const dl=[';','\t',','].sort((a,b)=>cnt(b)-cnt(a))[0];return parseTable(lines.map(l=>splitCSV(l,dl)))}
+/* PDF: lê o texto do extrato linha por linha */
+const MESN={jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12,janeiro:1,fevereiro:2,marco:3,abril:4,maio:5,junho:6,julho:7,agosto:8,setembro:9,outubro:10,novembro:11,dezembro:12};
+function lineDate(l,yr){const n=norm(l);let m;
+  if(m=n.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{2,4})\b/))return `${m[3].length===2?'20'+m[3]:m[3]}-${pad(m[2])}-${pad(m[1])}`;
+  if(m=n.match(/\b(\d{4})-(\d{2})-(\d{2})\b/))return `${m[1]}-${m[2]}-${m[3]}`;
+  if(m=n.match(/\b(\d{1,2})\s+de\s+([a-z]+)\s+de\s+(\d{4})\b/)){const mm=MESN[m[2]];if(mm)return `${m[3]}-${pad(mm)}-${pad(m[1])}`}
+  if(m=n.match(/\b(\d{1,2})\s+([a-z]{3})\.?\s+(\d{4})\b/)){const mm=MESN[m[2]];if(mm)return `${m[3]}-${pad(mm)}-${pad(m[1])}`}
+  if(m=n.match(/^(\d{1,2})\s+([a-z]{3})\b/)){const mm=MESN[m[2]];if(mm)return `${yr}-${pad(mm)}-${pad(m[1])}`}
+  if(m=n.match(/^(\d{1,2})\/(\d{1,2})\b/))return `${yr}-${pad(m[2])}-${pad(m[1])}`;
+  return null}
+const AMT_RE=/(-|−|–)?\s*(?:R\$\s*)?(-|−)?\s*\d{1,3}(?:\.\d{3})*,\d{2}(?:\s*(?:-|D\b|C\b))?/g;
+const IN_RE=/recebid|credito|deposito|estorno|rendimento|reembolso|salario|devolucao|resgate|cashback|entrada/;
+const OUT_RE=/enviad|pagamento|pagto|compra|debito|saque|tarifa|transferencia enviada|pix enviado|boleto|aplicacao|saida|iof|juros|anuidade/;
+function parseTextStatement(text){const lines=text.split(/\n/).map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean);
+  const yrs=(text.match(/\b20\d{2}\b/g)||[]).map(Number);const yr=yrs.length?yrs.sort((a,b)=>yrs.filter(x=>x===b).length-yrs.filter(x=>x===a).length)[0]:new Date().getFullYear();
+  let curDate=null,mode=null;const rows=[];
+  for(const l of lines){const n=norm(l);const d=lineDate(l,yr);if(d)curDate=d;
+    if(/total de entradas/.test(n)){mode='entrada';continue}if(/total de saidas/.test(n)){mode='saida';continue}
+    const amts=[...l.matchAll(AMT_RE)].map(m=>m[0]);if(!amts.length||!curDate)continue;
+    if(/saldo|total|limite|resumo|periodo|extrato|pagina|valor total|rendimento bruto do periodo/.test(n)&&!/pix|compra|pagamento|transferencia/.test(n))continue;
+    let desc=l;amts.forEach(a=>desc=desc.replace(a,' '));desc=desc.replace(/\b\d{1,2}\/\d{1,2}(\/\d{2,4})?\b/g,' ').replace(/\b\d{1,2}\s+(de\s+)?[A-Za-zçÇ]{3,9}\.?(\s+(de\s+)?\d{4})?\b/,' ').replace(/R\$/g,' ').replace(/\s+/g,' ').trim();
+    if(desc.length<3)continue;
+    const a=amts[0];let v=parseMoney(a.replace(/\s*[DC]$/i,'').replace(/[−–]/g,'-').replace(/\s/g,''));if(isNaN(v)||v===0)continue;
+    const neg=/^[-−–]|R\$\s*[-−]|-\s*$|D$/i.test(a.trim());const pos=/C$/i.test(a.trim());const nd=norm(desc);
+    let type=neg?'saida':pos?'entrada':IN_RE.test(nd)&&!OUT_RE.test(nd)?'entrada':OUT_RE.test(nd)?'saida':mode||'saida';
+    rows.push({date:curDate,amount:Math.abs(v),type,desc,fitid:''})}
+  return rows}
+const libCache={};function loadScript(src){return libCache[src]||(libCache[src]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>{delete libCache[src];no(new Error('lib'))};document.head.appendChild(s)}))}
+async function pdfText(buf){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');const pj=window.pdfjsLib;
+  pj.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const doc=await pj.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;let out='';
+  for(let p=1;p<=doc.numPages;p++){const pg=await doc.getPage(p);const tc=await pg.getTextContent();const lines={};
+    tc.items.forEach(it=>{if(!it.str||!it.str.trim())return;const y=Math.round(it.transform[5]/3)*3;(lines[y]=lines[y]||[]).push({x:it.transform[4],s:it.str})});
+    Object.keys(lines).map(Number).sort((a,b)=>b-a).forEach(y=>{out+=lines[y].sort((a,b)=>a.x-b.x).map(i=>i.s).join(' ')+'\n'})}
+  return out}
+async function xlsxRows(buf){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');const wb=XLSX.read(buf,{type:'array',cellDates:true});
+  let best=[];wb.SheetNames.forEach(n=>{const r=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,dateNF:'dd/mm/yyyy',defval:''});if(r.length>best.length)best=r});return best}
+const BANKS=[['260','Nubank',/nubank|nu pagamentos|nu financeira/],['077','Inter',/banco inter|inter&co|bancointer/],['341','Itaú',/itau/],['237','Bradesco',/bradesco/],['104','Caixa',/caixa economica|caixa tem|\bcaixa\b/],['001','Banco do Brasil',/banco do brasil|\bbb\b/],['033','Santander',/santander/],['336','C6 Bank',/c6 bank|banco c6|\bc6\b/],['380','PicPay',/picpay/],['323','Mercado Pago',/mercado ?pago/],['290','PagBank',/pagbank|pagseguro/],['756','Sicoob',/sicoob/],['748','Sicredi',/sicredi/],['735','Neon',/\bneon\b/],['208','BTG',/btg/],['212','Original',/banco original/],['655','Votorantim',/neon|votorantim/],['623','Pan',/banco pan\b/],['403','Cora',/\bcora\b/],['197','Stone',/\bstone\b/],['121','Agibank',/agibank/],['218','BS2',/bs2/],['746','Modal',/modal/],['184','Itaú',/iti\b/]];
+function detectBank(text,fname){const t=norm(String(text).slice(0,6000)+' '+(fname||''));const id=(t.match(/<bankid>\s*0*(\d{1,3})/)||[])[1];
+  if(id){const b=BANKS.find(x=>+x[0]===+id);if(b)return b[1]}const b=BANKS.find(x=>x[2].test(t));return b?b[1]:''}
+async function readAny(file){const buf=await file.arrayBuffer();const name=(file.name||'').toLowerCase();const head=new Uint8Array(buf.slice(0,5));
+  const isPdf=head[0]===0x25&&head[1]===0x50&&head[2]===0x44&&head[3]===0x46;const isZip=head[0]===0x50&&head[1]===0x4b;const isXls=head[0]===0xd0&&head[1]===0xcf;
+  if(isPdf||name.endsWith('.pdf')){const t=await pdfText(buf);return{kind:'PDF',rows:parseTextStatement(t),bank:detectBank(t,name),text:t}}
+  if(isZip||isXls||/\.xlsx?$/.test(name)){const r=await xlsxRows(buf);const flat=r.slice(0,30).map(x=>x.join(' ')).join(' ');return{kind:'Excel',rows:parseTable(r),bank:detectBank(flat,name)}}
+  let txt;try{txt=new TextDecoder('utf-8',{fatal:true}).decode(buf)}catch(e){txt=new TextDecoder('windows-1252').decode(buf)}
+  if(/<OFX>|<STMTTRN>|OFXHEADER/i.test(txt))return{kind:'OFX',rows:parseOFX(txt),bank:detectBank(txt,name)};
+  let rows=parseCSV(txt);if(!rows.length)rows=parseTextStatement(txt);return{kind:'CSV',rows,bank:detectBank(txt,name)}}
 async function readText(file){const buf=await file.arrayBuffer();try{return new TextDecoder('utf-8',{fatal:true}).decode(buf)}catch(e){return new TextDecoder('windows-1252').decode(buf)}}
+const BANK_HOWTO={
+ 'Nubank':'App Nubank → <b>Conta</b> → ícone de extrato (canto de cima) → <b>Exportar extrato</b> → escolha o período → <b>OFX</b> ou <b>CSV</b>. O arquivo chega no e-mail ou abre para compartilhar.',
+ 'Inter':'App Inter → <b>Extrato</b> → ícone de compartilhar/baixar → escolha o período → <b>OFX</b>, <b>Excel</b> ou <b>PDF</b>.',
+ 'Itaú':'App Itaú → <b>Extrato</b> → <b>Exportar</b> (ou pelo site: Extrato → Salvar em OFX/Excel). PDF também funciona.',
+ 'Bradesco':'App Bradesco → <b>Saldos e extratos</b> → <b>Extrato</b> → ícone de compartilhar → <b>PDF</b> (no site dá para salvar em OFX).',
+ 'Caixa':'App Caixa → <b>Extrato</b> → <b>Compartilhar</b> → PDF. No internet banking: Extrato → <b>Exportar</b> OFX.',
+ 'Banco do Brasil':'App BB → <b>Extrato</b> → ícone de exportar → <b>PDF</b> ou <b>OFX</b>.',
+ 'Santander':'App Santander → <b>Extrato</b> → <b>Exportar</b> → PDF/Excel/OFX.',
+ 'C6 Bank':'App C6 → <b>Extrato</b> → ícone de baixar → escolha o período → <b>PDF</b> ou <b>Excel</b>.',
+ 'PicPay':'App PicPay → <b>Extrato</b> → <b>Exportar extrato</b> → PDF ou CSV.',
+ 'Mercado Pago':'App Mercado Pago → <b>Sua atividade</b> → <b>Relatórios</b> → Extrato da conta → <b>Excel/CSV</b> ou PDF.'};
 let IMP=null;
-function openImport(bank){
+function openImport(bank,file){
   const banks=S.settings.banks||[];
   openModal(`<div>${head('Importar extrato do banco')}
-   <div class="callout small" style="margin-bottom:6px">No app do seu banco, abra o <b>extrato</b>, escolha o período e exporte em <b>OFX</b> (melhor) ou <b>CSV</b>. Depois escolha o arquivo aqui. O que já foi importado antes não é duplicado.</div>
-   <label class="f">Banco</label><select id="iBank">${banks.map(b=>`<option ${b===bank?'selected':''}>${esc(b)}</option>`).join('')}<option value="__new" ${!banks.length?'selected':''}>+ Vincular novo banco…</option></select>
-   <input type="text" id="iNew" placeholder="Nome do banco (ex.: Nubank, Inter, Caixa)" style="margin-top:8px;${banks.length?'display:none':''}">
-   <label class="f">Arquivo do extrato (.ofx ou .csv)</label><input type="file" id="iFile" accept=".ofx,.qfx,.csv,.txt,text/csv">
-   <label class="ck"><input type="checkbox" id="iPix" checked> Importar só os Pix</label>
-   <div id="iPrev"></div></div>`,s=>{
-    IMP={rows:[],sel:[]};
-    $('#iBank',s).onchange=()=>{$('#iNew',s).style.display=$('#iBank',s).value==='__new'?'':'none'};
-    $('#iFile',s).onchange=async()=>{const f=$('#iFile',s).files[0];if(!f)return;const txt=await readText(f);
-      let rows=/<OFX>|<STMTTRN>/i.test(txt)?parseOFX(txt):parseCSV(txt);
-      if(!rows.length){$('#iPrev',s).innerHTML=`<div class="callout amb" style="margin-top:10px">Não consegui ler lançamentos neste arquivo. Tente exportar em OFX, ou um CSV com colunas de data, valor e descrição.</div>`;return}
-      const keys=new Set(allTx().map(t=>t.key).filter(Boolean));
-      rows.forEach(r=>{r.key=r.fitid?'f:'+r.fitid:`k:${r.date}|${r.amount}|${norm(r.desc)}`;r.dup=keys.has(r.key);r.cat=guessCat(r.desc,r.type);r.pix=norm(r.desc).includes('pix')});
-      rows.sort((a,b)=>b.date.localeCompare(a.date));IMP.rows=rows;drawPrev(s)};
-    $('#iPix',s).onchange=()=>drawPrev(s);
+   <label class="drop" id="iDrop"><input type="file" id="iFile"><div class="drop-ic">📄</div><b>Toque para escolher o extrato</b><span>PDF, Excel, OFX ou CSV · ou arraste o arquivo aqui</span></label>
+   <div id="iStatus"></div><div id="iPrev"></div>
+   <details class="small" style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Como pego o extrato no meu banco?</summary>
+    <select id="iHow" style="margin-top:8px"><option value="">Escolha seu banco…</option>${Object.keys(BANK_HOWTO).map(b=>`<option>${b}</option>`).join('')}<option value="outro">Outro banco</option></select><div id="iHowTxt" class="small" style="margin-top:8px"></div></details>
+   </div>`,s=>{
+    IMP={rows:[],bank:bank||'',kind:''};
+    const handle=async f=>{if(!f)return;const st=$('#iStatus',s);st.innerHTML=`<div class="callout small" style="margin-top:10px">⏳ Lendo <b>${esc(f.name||'arquivo')}</b>…</div>`;$('#iPrev',s).innerHTML='';
+      try{const r=await readAny(f);IMP.kind=r.kind;if(!IMP.bank)IMP.bank=r.bank;
+        if(!r.rows.length){st.innerHTML=`<div class="callout amb small" style="margin-top:10px">Não encontrei lançamentos em <b>${esc(f.name||'')}</b> (${r.kind}). ${r.kind==='PDF'?'Se o PDF for uma foto/imagem escaneada, não dá para ler: exporte o extrato de novo em <b>OFX</b>, <b>Excel</b> ou <b>CSV</b>.':'Confira se é mesmo o extrato da conta (com data, descrição e valor). Se puder, exporte em <b>OFX</b>.'}</div>`;return}
+        const keys=new Set(allTx().map(t=>t.key).filter(Boolean));
+        r.rows.forEach(x=>{x.key=x.fitid?'f:'+x.fitid:`k:${x.date}|${x.amount}|${norm(x.desc)}`;x.dup=keys.has(x.key);x.cat=guessCat(x.desc,x.type);x.pix=norm(x.desc).includes('pix')});
+        r.rows.sort((a,b)=>b.date.localeCompare(a.date));IMP.rows=r.rows;st.innerHTML='';drawPrev(s)}
+      catch(e){console.warn(e);st.innerHTML=`<div class="callout amb small" style="margin-top:10px">Não consegui abrir esse arquivo${/lib/.test(e&&e.message)?' (sem internet para carregar o leitor de PDF/Excel)':''}. Tente de novo ou exporte o extrato em <b>OFX</b> ou <b>CSV</b>.</div>`}};
+    $('#iFile',s).onchange=()=>handle($('#iFile',s).files[0]);
+    const d=$('#iDrop',s);['dragover','dragenter'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add('over')}));['dragleave','drop'].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove('over')}));
+    d.addEventListener('drop',e=>{const f=e.dataTransfer&&e.dataTransfer.files[0];if(f)handle(f)});
+    $('#iHow',s).onchange=()=>{const v=$('#iHow',s).value;$('#iHowTxt',s).innerHTML=BANK_HOWTO[v]||(v?'Procure no app do banco por <b>Extrato → Exportar/Compartilhar</b> e escolha <b>OFX</b>, <b>Excel</b>, <b>CSV</b> ou <b>PDF</b>. Depois escolha o arquivo aqui.':'')};
+    if(file)handle(file);
   })}
-function drawPrev(s){const only=$('#iPix',s).checked;const rows=IMP.rows.filter(r=>!only||r.pix);
-  const novos=rows.filter(r=>!r.dup);const P=$('#iPrev',s);
-  if(!rows.length){P.innerHTML=`<div class="callout amb" style="margin-top:10px">Encontrei ${IMP.rows.length} lançamento(s), mas nenhum com “Pix” na descrição. Desmarque “Importar só os Pix” para ver todos.</div>`;return}
-  P.innerHTML=`<div class="s" style="margin-top:12px"><b>${rows.length}</b> lançamento(s) · <b>${novos.length}</b> novo(s)${rows.length-novos.length?` · ${rows.length-novos.length} já importado(s)`:''} · ${novos.filter(r=>r.cat==='classificar').length} para classificar</div>
+function drawPrev(s){const P=$('#iPrev',s);const only=IMP.onlyPix;const rows=IMP.rows.filter(r=>!only||r.pix);const novos=rows.filter(r=>!r.dup);
+  const banks=S.settings.banks||[];const bOpts=[...new Set([IMP.bank,...banks].filter(Boolean))];
+  const outT=novos.filter(r=>r.type==='saida').reduce((a,r)=>a+r.amount,0),inT=novos.filter(r=>r.type==='entrada').reduce((a,r)=>a+r.amount,0);
+  P.innerHTML=`<div class="callout ok small" style="margin-top:10px">✅ ${IMP.kind} lido${IMP.bank?` · banco reconhecido: <b>${esc(IMP.bank)}</b>`:''}<br><b>${novos.length}</b> lançamento(s) novo(s)${rows.length-novos.length?` · ${rows.length-novos.length} já estavam no app`:''} · saídas ${brl(outT)} · entradas ${brl(inT)}${novos.filter(r=>r.cat==='classificar').length?` · ${novos.filter(r=>r.cat==='classificar').length} para classificar`:''}</div>
+   <div class="g2" style="margin-top:8px;align-items:end"><div><label class="f">Banco</label><select id="iBank">${bOpts.map(b=>`<option ${b===IMP.bank?'selected':''}>${esc(b)}</option>`).join('')}<option value="__new" ${!bOpts.length?'selected':''}>+ Outro banco…</option></select><input type="text" id="iNew" placeholder="Nome do banco" style="margin-top:8px;${bOpts.length?'display:none':''}"></div>
+   <div><label class="ck" style="margin:0 0 10px"><input type="checkbox" id="iPix" ${only?'checked':''}> Só os Pix</label></div></div>
    <div class="imp list">${rows.map(r=>{const i=IMP.rows.indexOf(r);const opts=(r.type==='entrada'?INC:CATS).map(c=>`<option value="${c.id}" ${r.cat===c.id?'selected':''}>${c.i} ${c.n}</option>`).join('');
-     return `<div class="row ${r.dup?'dup':''}"><input type="checkbox" class="iSel" data-i="${i}" ${r.dup?'':'checked'} style="width:18px;height:18px;accent-color:var(--acc)"><div class="grow"><div class="t small">${esc(r.desc)}</div><div class="s">${dShort(r.date)}${r.dup?' · já importado':''}</div></div><div style="text-align:right"><div class="amt small ${r.type==='entrada'?'pos':''}">${r.type==='entrada'?'+':'−'} ${brl(r.amount)}</div><select class="iCat" data-i="${i}">${opts}</select></div></div>`}).join('')}</div>
-   <div class="mf"><button class="btn" data-act="close">Cancelar</button><button class="btn pri" id="iGo">Importar selecionados</button></div>`;
+     return `<div class="row ${r.dup?'dup':''}"><input type="checkbox" class="iSel" data-i="${i}" ${r.dup?'':'checked'} style="width:18px;height:18px;accent-color:var(--acc)"><div class="grow"><div class="t small">${esc(r.desc)}</div><div class="s">${dShort(r.date)}/${r.date.slice(2,4)}${r.dup?' · já importado':''}</div></div><div style="text-align:right"><div class="amt small ${r.type==='entrada'?'pos':''}">${r.type==='entrada'?'+':'−'} ${brl(r.amount)}</div><select class="iCat" data-i="${i}">${opts}</select></div></div>`}).join('')}</div>
+   <div class="mf"><button class="btn" data-act="close">Cancelar</button><button class="btn pri" id="iGo">Importar ${novos.length} lançamento(s)</button></div>`;
+  $('#iBank',P).onchange=()=>{$('#iNew',P).style.display=$('#iBank',P).value==='__new'?'':'none'};
+  $('#iPix',P).onchange=()=>{IMP.onlyPix=$('#iPix',P).checked;drawPrev(s)};
   $$('.iCat',P).forEach(el=>el.onchange=()=>{IMP.rows[+el.dataset.i].cat=el.value});
-  $('#iGo',P).onclick=()=>{let bank=$('#iBank',s).value;if(bank==='__new'){bank=$('#iNew',s).value.trim();if(!bank){toast('Dê um nome ao banco');$('#iNew',s).focus();return}}
+  $('#iGo',P).onclick=()=>{let bank=$('#iBank',P).value;if(bank==='__new'){bank=$('#iNew',P).value.trim();if(!bank){toast('Escreva o nome do banco');$('#iNew',P).focus();return}}
     const sel=$$('.iSel',P).filter(c=>c.checked).map(c=>IMP.rows[+c.dataset.i]);if(!sel.length){toast('Nenhum lançamento selecionado');return}
     const keys=new Set(['settings']);sel.forEach(r=>keys.add(addTx({id:uid(),type:r.type,amount:Math.round(r.amount*100)/100,date:r.date,desc:r.desc,cat:r.cat,method:r.pix?'pix':'outro',bank,vehicle:'',src:'import',key:r.key})));
     S.settings.banks=S.settings.banks||[];if(!S.settings.banks.includes(bank))S.settings.banks.push(bank);S.settings.lastImport=S.settings.lastImport||{};S.settings.lastImport[bank]=today();
     save([...keys]);closeModal();const pend=sel.filter(r=>r.cat==='classificar').length;cur=ymOf(sel[0].date);render();
     toast(`${sel.length} lançamento(s) importado(s)${pend?` · ${pend} para classificar`:''}`);if(pend)setTimeout(openClassify,700)}}
+/* Android: arquivo compartilhado direto do app do banco para o Tico */
+async function checkSharedFile(){if(MODE!=='hosted'||!/[?&]shared=1/.test(location.search)||!('caches' in window))return;
+  try{const c=await caches.open('tico-share');const r=await c.match('shared-file');if(!r)return;const blob=await r.blob();const name=decodeURIComponent(r.headers.get('x-name')||'extrato');await c.delete('shared-file');
+    history.replaceState(null,'',location.pathname+location.hash);openImport('',new File([blob],name,{type:blob.type}))}catch(e){console.warn(e)}}
+if(MODE==='hosted'&&'serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js')}catch(e){}}
 
 /* ---------- classificar ---------- */
 function openClassify(){
