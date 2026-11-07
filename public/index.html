@@ -185,6 +185,50 @@ details summary{color:var(--acc3)}
   #toast{top:24px}
 }
 @media (min-width:1500px){main{max-width:1320px}}
+
+/* ---- guia de instalação ---- */
+.lg-wrap{width:100%;max-width:400px}
+.lg-wrap .ig-banner{margin-bottom:12px}
+.ig-banner{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:22px;margin-bottom:12px;background:linear-gradient(135deg,rgba(255,61,143,.18),rgba(155,61,255,.16));border:1px solid rgba(255,61,143,.35)}
+.ig-ic{width:46px;height:46px;border-radius:14px;overflow:hidden;flex:none;box-shadow:0 6px 18px -8px rgba(255,61,143,.8)}
+.ig-ic img{width:100%;height:100%;display:block}
+.ig-btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ig-step{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.ig-step:first-of-type{border-top:0}
+.ig-num{width:30px;height:30px;border-radius:50%;background:var(--grad);color:#fff;font-weight:700;display:grid;place-items:center;flex:none;font-size:14px}
+.ig-txt{font-size:14.5px;line-height:1.5}
+.ig-txt svg{vertical-align:middle;color:var(--acc3)}
+.ig-demo{margin-top:10px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.ig-link{font:12px ui-monospace,monospace;background:#0b0b0e;border:1px solid var(--line2);border-radius:10px;padding:8px 10px;word-break:break-all;max-width:100%}
+.ig-ios-bar,.ig-ios-row,.ig-ios-top,.ig-and-bar,.ig-and-menu,.ig-and-dlg{background:#f2f2f7;color:#111;border-radius:14px;font-size:14px}
+.ig-ios-bar{display:flex;gap:26px;align-items:center;padding:10px 18px;color:#0a84ff;font-size:22px}
+.ig-ios-row{display:flex;justify-content:space-between;align-items:center;gap:30px;padding:12px 14px;min-width:250px;font-weight:500}
+.ig-ios-top{display:flex;gap:14px;align-items:center;padding:10px 14px;font-size:13px}
+.ig-blue{color:#0a84ff}
+.ig-hl{color:#0a84ff;display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;box-shadow:0 0 0 3px #ff3d8f;animation:igp 1.4s ease-in-out infinite}
+.ig-and-bar{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 12px;min-width:250px;justify-content:space-between}
+.ig-and-bar .ig-hl{color:#333}
+.ig-url{font-size:13px;color:#333}
+.ig-and-menu{padding:6px 0;min-width:250px}
+.ig-and-menu>div{padding:9px 14px;color:#333}
+.ig-hl2{display:flex;align-items:center;gap:10px;background:#ffe3ef;font-weight:600;box-shadow:inset 3px 0 0 #ff3d8f}
+.ig-and-dlg{padding:14px;min-width:250px}
+.ig-and-app{display:flex;align-items:center;gap:10px;margin:10px 0;font-weight:500}
+.ig-and-app img{width:30px;height:30px;border-radius:8px}
+.ig-and-actions{display:flex;justify-content:flex-end;gap:18px;font-weight:600;color:#1a73e8}
+.ig-green{background:#1a73e8;color:#fff;border-radius:99px;padding:6px 14px}
+.ig-home{background:linear-gradient(160deg,#2b2350,#4a2357);border-radius:16px;padding:14px 18px}
+.ig-app{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:#fff}
+.ig-app img{width:52px;height:52px;border-radius:13px;box-shadow:0 0 0 3px #ff3d8f}
+@keyframes igp{0%,100%{box-shadow:0 0 0 3px #ff3d8f}50%{box-shadow:0 0 0 8px rgba(255,61,143,.25)}}
+.modal{z-index:50}
+#toast{z-index:60}
+.modal.top{align-items:flex-start}
+.modal.top .sheet{border-radius:0 0 28px 28px;max-height:84vh;border-bottom:1px solid var(--line2)}
+.ig-arrow{position:fixed;left:50%;bottom:6px;transform:translateX(-50%);text-align:center;color:#fff;font-weight:700;font-size:13px;z-index:55;pointer-events:none}
+.ig-arrow div{background:var(--grad);padding:6px 12px;border-radius:99px;margin-bottom:2px;box-shadow:0 8px 20px -8px rgba(255,61,143,.9)}
+.ig-arrow span{display:block;font-size:34px;line-height:1;animation:igb 1s ease-in-out infinite;color:#ff7ab5}
+@keyframes igb{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 </style>
 </head>
 <body>
@@ -379,7 +423,7 @@ function hideLogin(){const l=$('#login');if(l)l.remove()}
 let lgTab='in';
 function showLogin(msg){setSync('local');let l=$('#login');if(!l){l=document.createElement('div');l.id='login';document.body.appendChild(l)}
   const up=lgTab==='up';
-  l.innerHTML=`<div class="lg-card"><div class="logo" style="width:84px;height:84px;border-radius:26px;margin:0 auto 14px"><img class="tico" alt="Tico" src="${TICO}"></div>
+  l.innerHTML=`<div class="lg-wrap">${installBanner('login')}<div class="lg-card"><div class="logo" style="width:84px;height:84px;border-radius:26px;margin:0 auto 14px"><img class="tico" alt="Tico" src="${TICO}"></div>
    <h3 style="text-align:center;font-size:24px">Tico Finances</h3><div class="s" style="text-align:center;margin:4px 0 16px">Controle seus gastos, contas e agenda</div>
    <div class="fchips" style="justify-content:center;margin-bottom:6px"><button type="button" class="${up?'':'on'}" data-tab-lg="in">Entrar</button><button type="button" class="${up?'on':''}" data-tab-lg="up">Criar conta</button></div>
    <form novalidate id="fLogin">${up?`<label class="f">Seu nome</label><input type="text" name="name" autocomplete="name" placeholder="Como quer ser chamado">`:''}
@@ -388,7 +432,7 @@ function showLogin(msg){setSync('local');let l=$('#login');if(!l){l=document.cre
    <div id="lgMsg" class="small" style="margin-top:12px;min-height:20px;color:var(--amb)">${esc(msg||'')}</div>
    <button type="button" class="btn pri block" data-lg="${up?'up':'in'}" style="margin-top:8px;padding:13px">${up?'Criar conta e entrar':'Entrar'}</button>
    ${up?'':`<div style="text-align:center;margin-top:12px"><button type="button" class="btn sm" data-lg="reset">Esqueci a senha</button></div>`}
-   <div class="s" style="text-align:center;margin-top:14px">Você continua conectado neste aparelho; não precisa entrar toda vez.</div></form></div>`;
+   <div class="s" style="text-align:center;margin-top:14px">Você continua conectado neste aparelho; não precisa entrar toda vez.</div></form></div></div>`;
   const fm=$('#fLogin',l),out=$('#lgMsg',l);
   $$('[data-tab-lg]',l).forEach(b=>b.onclick=()=>{lgTab=b.dataset.tabLg;showLogin()});
   const go_=async kind=>{const email=fm.email.value.trim().toLowerCase(),pass=fm.pass.value;if(!/^\S+@\S+\.\S+$/.test(email)){out.textContent='Digite um e-mail válido.';return}
@@ -506,7 +550,7 @@ function alertRow(a){
 
 function vInicio(){
   const M=cur,p=plan(M),al=alerts(),tx=monthTx(M),pend=tx.filter(t=>t.cat==='classificar');
-  let h='<div class="cols"><div class="col">';
+  let h=installBanner('home')+'<div class="cols"><div class="col">';
   if(!hasData()){
     h+=`<div class="card"><h2>👋 Vamos começar</h2><ol class="steps small">
       <li><b>Registre quanto você recebe</b> neste mês (salário, extras).</li>
@@ -608,7 +652,7 @@ function vAgenda(){
 
 function vMais(){
   const banks=S.settings.banks||[],rules=S.settings.rules||[];
-  let h='<div class="mais">'+vAdmin()+`<div class="card"><h2>🏦 Bancos vinculados</h2>
+  let h='<div class="mais">'+(canShowInstall()?`<div class="card"><h2>📲 Instalar o app</h2>${installBanner('mais')}</div>`:'')+vAdmin()+`<div class="card"><h2>🏦 Bancos vinculados</h2>
    <div class="small muted" style="margin-bottom:8px">A ligação automática direta com o banco (Open Finance) só pode ser feita por empresas autorizadas pelo Banco Central, então aqui o vínculo é pelo <b>extrato</b>: exporte do app do banco em <b>OFX</b> (melhor) ou <b>CSV</b> e importe. Eu separo os Pix, reconheço iFood, 99, Uber, posto, Netflix etc. e não duplico o que já foi importado.</div>
    ${banks.length?`<div class="list">${banks.map(b=>`<div class="row"><div class="ic">🏦</div><div class="grow"><div class="t">${esc(b)}</div><div class="s">${S.settings.lastImport&&S.settings.lastImport[b]?'Última importação: '+dShort(S.settings.lastImport[b]):'Ainda sem importação'}</div></div><button class="btn sm" data-act="import" data-bank="${esc(b)}">Importar</button><button class="btn sm danger" data-act="delBank" data-bank="${esc(b)}">✕</button></div>`).join('')}</div>`:'<div class="empty">Nenhum banco vinculado ainda.</div>'}
    <button class="btn pri" data-act="import" style="margin-top:10px">+ Vincular banco / importar extrato</button>
@@ -628,7 +672,7 @@ function vMais(){
 
 /* ---------- modal ---------- */
 function openModal(html,mount){$('#sheet').innerHTML=html;$('#modal').classList.remove('hidden');document.body.style.overflow='hidden';if(mount)mount($('#sheet'));const f=$('#sheet input:not([type=hidden]):not([type=radio]):not([type=checkbox])');if(f&&window.innerWidth>700)f.focus()}
-function closeModal(){$('#modal').classList.add('hidden');$('#sheet').innerHTML='';document.body.style.overflow=''}
+function closeModal(){$('#modal').classList.add('hidden');$('#modal').classList.remove('top');$('#sheet').innerHTML='';document.body.style.overflow=''}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').classList.contains('hidden'))closeModal()});
 const head=t=>`<div class="mh"><h3>${t}</h3><button type="button" class="x" data-act="close" aria-label="Fechar">✕</button></div>`;
@@ -851,6 +895,57 @@ function doRestore(){openModal(`${head('Restaurar backup')}<div class="small mut
     const old=keysAll();S=fixState(j.data);const ks=new Set([...old,...keysAll()]);ks.forEach(k=>{if(k.startsWith('m-'))ensureMonth(k.slice(2))});save([...ks]);closeModal();render();toast('Backup restaurado')}catch(e){toast('Arquivo de backup inválido')}}})}
 function doWipe(){confirmBox('Apagar <b>todos</b> os lançamentos, contas, eventos e regras? Isso não tem volta — se quiser, baixe um backup antes.','Apagar tudo',()=>{const ks=keysAll();const months=Object.keys(S.months);S=emptyState();months.forEach(m=>ensureMonth(m));save(ks);render();toast('Tudo apagado')})}
 
+/* ---------- instalar na tela inicial (detecta iPhone / Android / computador) ---------- */
+const UA=navigator.userAgent||'';
+const DEV=(()=>{const ios=/iPhone|iPad|iPod/i.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const android=/Android/i.test(UA);
+  const inApp=/FBAN|FBAV|Instagram|Line\/|; wv\)|WhatsApp|TikTok|musical_ly|Snapchat/i.test(UA);
+  const iosSafari=ios&&/Safari/i.test(UA)&&!/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//i.test(UA)&&!inApp;
+  const samsung=/SamsungBrowser/i.test(UA);const androidChrome=android&&/Chrome\//i.test(UA)&&!samsung&&!inApp&&!/EdgA|OPR|Firefox/i.test(UA);
+  return{ios,android,inApp,iosSafari,samsung,androidChrome,ipad:ios&&!/iPhone|iPod/i.test(UA),desktop:!ios&&!android}})();
+const isStandalone=()=>{try{return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}catch(e){return false}};
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;if(MODE==='hosted'){const l=$('#login');if(l&&!l.querySelector('#fLogin input:focus'))showLogin($('#lgMsg')?$('#lgMsg').textContent:'');else render()}});
+window.addEventListener('appinstalled',()=>{deferredPrompt=null;try{localStorage.setItem('tico.installed','1')}catch(e){}toast('Tico Finances instalado! 🎉');render()});
+const devName=()=>DEV.ios?(DEV.ipad?'iPad':'iPhone'):DEV.android?'celular Android':'computador';
+function installDismissed(){try{const d=localStorage.getItem('tico.installLater');return d&&(Date.now()-Number(d))<5*864e5}catch(e){return false}}
+function canShowInstall(){return MODE==='hosted'&&!isStandalone()}
+function installBanner(where){if(!canShowInstall())return '';if(where!=='mais'&&installDismissed())return '';
+  const one=!!deferredPrompt;
+  return `<div class="ig-banner"><div class="ig-ic"><img alt="" src="${TICO}"></div><div class="grow"><div class="t" style="white-space:normal">📲 Coloque o Tico na tela inicial do seu ${devName()}</div><div class="s">${one?'Fica igual a um aplicativo: abre com um toque, em tela cheia.':'Leva 10 segundos. Abre com um toque, em tela cheia, igual a um aplicativo.'}</div>
+   <div class="ig-btns">${one?`<button type="button" class="btn sm pri" data-act="installNow">Instalar agora</button>`:`<button type="button" class="btn sm pri" data-act="installGuide">Ver como fazer</button>`}${where!=='mais'?`<button type="button" class="btn sm" data-act="installLater">Agora não</button>`:''}</div></div></div>`}
+async function installNow(){if(!deferredPrompt){openInstallGuide();return}const p=deferredPrompt;deferredPrompt=null;try{p.prompt();const r=await p.userChoice;if(r&&r.outcome==='accepted')toast('Instalando… 🎉');}catch(e){openInstallGuide()}render()}
+const IG_ICON={
+ share:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M7 10H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1"/></svg>',
+ plus:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>',
+ dots:'<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>',
+ more:'<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+ install:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 7v6M9 10.5l3 3 3-3"/></svg>',
+ phone:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M11 18.5h2"/></svg>'};
+function igStep(n,html,demo){return `<div class="ig-step"><div class="ig-num">${n}</div><div class="grow"><div class="ig-txt">${html}</div>${demo?`<div class="ig-demo">${demo}</div>`:''}</div></div>`}
+function openInstallGuide(){
+  const link=location.origin+location.pathname;let steps=[],n=1,title='',arrow='';
+  const copyBtn=`<button type="button" class="btn sm" data-act="copyLink">Copiar o link</button>`;
+  if(DEV.ios){title=`Instalar no ${devName()}`;
+    if(!DEV.iosSafari)steps.push(igStep(n++,`Abra este link no <b>Safari</b> (o navegador da bússola 🧭). Em outros apps, como Instagram ou Chrome, não aparece a opção de instalar. Copie o link e cole no Safari:`,`<div class="ig-link">${esc(link)}</div>${copyBtn}`));
+    steps.push(igStep(n++,`Toque no botão <b>Compartilhar</b>, o quadrado com a setinha para cima. No iPhone ele fica na barra de baixo do Safari${DEV.ipad?' (no iPad, em cima, à direita)':''}. Se não aparecer, toque primeiro nos <b>•••</b>.`,`<div class="ig-ios-bar"><span>‹</span><span>›</span><span class="ig-hl">${IG_ICON.share}</span><span>${IG_ICON.more}</span></div>`));
+    steps.push(igStep(n++,`Role a lista para baixo e toque em <b>Adicionar à Tela de Início</b>.`,`<div class="ig-ios-row"><span>Adicionar à Tela de Início</span><span class="ig-blue">${IG_ICON.plus}</span></div>`));
+    steps.push(igStep(n++,`Confira o nome <b>Tico Finances</b> e toque em <b>Adicionar</b>, no canto de cima.`,`<div class="ig-ios-top"><span class="ig-blue">Cancelar</span><b>Adicionar à Tela de Início</b><span class="ig-blue"><b>Adicionar</b></span></div>`));
+    if(DEV.iosSafari&&!DEV.ipad)arrow=`<div class="ig-arrow" aria-hidden="true"><div>Compartilhar fica aqui embaixo</div><span>⬇</span></div>`}
+  else if(DEV.android){title='Instalar no Android';
+    if(deferredPrompt)steps.push(igStep(n++,`Toque no botão abaixo e depois em <b>Instalar</b>. Pronto!`,`<button type="button" class="btn pri" data-act="installNow">Instalar agora</button>`));
+    else{
+      if(DEV.inApp)steps.push(igStep(n++,`Abra este link no <b>Chrome</b>. Dentro do WhatsApp/Instagram não dá para instalar: toque nos <b>⋮</b> e em <b>Abrir no Chrome</b> (ou copie o link e cole no Chrome).`,`<div class="ig-link">${esc(link)}</div>${copyBtn}`));
+      steps.push(igStep(n++,`Toque nos <b>três pontinhos ⋮</b>, no canto de cima à direita do ${DEV.samsung?'navegador (no Samsung Internet, no menu ☰ embaixo)':'Chrome'}.`,`<div class="ig-and-bar"><span class="ig-url">🔒 ${esc(location.host)}</span><span class="ig-hl">${IG_ICON.dots}</span></div>`));
+      steps.push(igStep(n++,`Toque em <b>Instalar app</b> ou em <b>Adicionar à tela inicial</b>.`,`<div class="ig-and-menu"><div>Nova guia</div><div>Histórico</div><div class="ig-hl2">${IG_ICON.phone} Instalar app / Adicionar à tela inicial</div></div>`));
+      steps.push(igStep(n++,`Confirme em <b>Instalar</b> (ou <b>Adicionar</b>).`,`<div class="ig-and-dlg"><b>Instalar app?</b><div class="ig-and-app"><img alt="" src="${TICO}"> Tico Finances</div><div class="ig-and-actions"><span>Cancelar</span><span class="ig-green">Instalar</span></div></div>`))}}
+  else{title='Instalar no computador';
+    if(deferredPrompt)steps.push(igStep(n++,`Clique no botão abaixo e confirme em <b>Instalar</b>.`,`<button type="button" class="btn pri" data-act="installNow">Instalar agora</button>`));
+    else{steps.push(igStep(n++,`No <b>Chrome</b> ou no <b>Edge</b>, clique no ícone de instalar ${IG_ICON.install} no canto direito da barra de endereço.`,''));
+      steps.push(igStep(n++,`Se o ícone não aparecer: menu <b>⋮</b> → <b>Transmitir, salvar e compartilhar</b> → <b>Instalar página como app</b> (no Edge: <b>Aplicativos → Instalar este site como aplicativo</b>).`,''))}}
+  steps.push(igStep(n++,`Pronto! Agora é só abrir o <b>Tico</b> pelo ícone ${DEV.desktop?'na área de trabalho ou no menu Iniciar':'na tela inicial'}. Você continua conectado, sem precisar entrar toda vez.`,`<div class="ig-home"><div class="ig-app"><img alt="" src="${TICO}"><span>Tico</span></div></div>`));
+  openModal(`${head('📲 '+title)}<div class="small muted" style="margin:-4px 0 6px">Reconheci que você está num <b>${devName()}</b>${DEV.ios?(DEV.iosSafari?' usando o Safari':''):DEV.androidChrome?' usando o Chrome':''}.</div>${steps.join('')}<div class="mf"><button class="btn pri" data-act="close">Entendi</button></div>${arrow}`);
+  if(arrow)$('#modal').classList.add('top')}
+
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>go(d.tab),close:closeModal,
@@ -863,6 +958,8 @@ const ACT={
   delRule:d=>{S.settings.rules.splice(+d.i,1);save('settings');render()},
   delBank:d=>confirmBox(`Desvincular “${esc(d.bank)}”? Os lançamentos já importados continuam.`,'Desvincular',()=>{S.settings.banks=S.settings.banks.filter(b=>b!==d.bank);save('settings');render()}),
   resync:()=>initSb(),logout:doLogout,askNotify,admReload:()=>loadAdmin(),admBlock:d=>{if(d.b==='1')confirmBox('Bloquear esta pessoa? Ela não vai mais conseguir abrir os dados dela até você desbloquear.','Bloquear',()=>admBlock(d.id,true));else admBlock(d.id,false)},
+  installNow,installGuide:()=>openInstallGuide(),installLater:()=>{try{localStorage.setItem('tico.installLater',String(Date.now()))}catch(e){}render();const l=$('#login');if(l)showLogin()},
+  copyLink:async()=>{const u=location.origin+location.pathname;try{await navigator.clipboard.writeText(u);toast('Link copiado! Agora cole no navegador')}catch(e){toast(u)}},
   backup:doBackup,csv:doCSV,restore:doRestore,wipe:doWipe,
 };
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const f=ACT[el.dataset.act];if(f){e.preventDefault();e.stopPropagation();f(el.dataset,el)}});
