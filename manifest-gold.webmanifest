@@ -1,0 +1,57 @@
+{
+ "id": "./",
+ "name": "Tico Finances — Finanças e Agenda",
+ "short_name": "Tico",
+ "description": "Controle de gastos, contas e agenda",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "share_target": {
+  "action": "./?share-target",
+  "method": "POST",
+  "enctype": "multipart/form-data",
+  "params": {
+   "files": [
+    {
+     "name": "file",
+     "accept": [
+      "application/pdf",
+      "text/csv",
+      "text/plain",
+      "application/x-ofx",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/octet-stream",
+      ".ofx",
+      ".csv",
+      ".pdf",
+      ".xlsx",
+      ".xls",
+      ".txt"
+     ]
+    }
+   ]
+  }
+ },
+ "background_color": "#08080a",
+ "theme_color": "#08080a",
+ "lang": "pt-BR",
+ "icons": [
+  {
+   "src": "icons/gold-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/gold-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icons/gold-maskable.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
