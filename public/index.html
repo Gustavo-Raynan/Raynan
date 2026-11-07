@@ -724,12 +724,123 @@ body[data-tab=inicio] .monthnav,body[data-tab=metas] .monthnav,body[data-tab=tic
 .hub .shorts{margin-bottom:12px}
 
 .ti-btns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.ti-btns:empty{display:none}
+/* ===================== TICO 4 — visual limpo + app nativo ===================== */
+:root{--mute2:#a19ba9}
+body[data-mode=dark]{--mute:#9a94a3}
+html{-webkit-tap-highlight-color:transparent}
+button,.srow,.nh-act{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+@media (display-mode:standalone){html,body{overscroll-behavior-y:none}}
+/* textura sutil no fundo (efeitos normais) */
+body[data-fx=normal]:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+body[data-mode=light][data-fx=normal]:before{opacity:.05}
+main,#view{position:relative;z-index:1}
+/* cartões "limpos": superfície sólida, sem borda (padrão) */
+body[data-cards=limpo] .card,body[data-cards=limpo] .tile,body[data-cards=limpo] .kpi,body[data-cards=limpo] .sc,body[data-cards=limpo] .sect,body[data-cards=limpo] .nc-it{background:var(--card2);border-color:transparent;backdrop-filter:none}
+body[data-cards=vidro] .sect{background:var(--card);border:1px solid var(--line);backdrop-filter:blur(8px)}
+body[data-cards=contorno] .sect{background:transparent;border:1px solid var(--line2)}
+body[data-cards=elevado] .sect{background:var(--card2);box-shadow:var(--shadow)}
+body[data-mode=light] .sect,body[data-mode=light][data-cards=limpo] .card,body[data-mode=light][data-cards=limpo] .tile{box-shadow:0 1px 2px rgba(24,20,34,.05),0 6px 24px -14px rgba(24,20,34,.18)}
+/* espaçamento e tipografia padronizados */
+main{padding:18px 16px 28px}
+@media (min-width:1024px){main{padding:26px 40px 40px}}
+.card{border-radius:22px;padding:18px;margin-bottom:14px}
+.card>h2{font-size:15.5px;font-weight:700;margin-bottom:12px}
+.tile{border-radius:18px}
+.row{padding:12px 0}
+.list .row+.row{border-top:1px solid var(--line)}
+.amt,.mv{font-variant-numeric:tabular-nums}
+/* cabeçalho de cada aba */
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:2px 2px 16px}
+.phead h1{font-size:28px;font-weight:800;letter-spacing:-.035em;margin:0;line-height:1.1}
+.phead p{margin:4px 0 0;color:var(--mute);font-size:13.5px}
+.phead .btn{flex:none}
+@media (min-width:1024px){.phead h1{display:none}.phead{align-items:center;margin-top:-6px}.phead p{margin:0;font-size:14px}}
+/* título que aparece no cabeçalho ao rolar (celular) */
+#hTitle{display:none}
+@media (max-width:1023px){body.scrolled:not([data-tab=inicio]) #hello,body.scrolled:not([data-tab=inicio]) #hdate{display:none}body.scrolled:not([data-tab=inicio]) #hTitle{display:block;font-size:17px;animation:fadeup .2s}}
+/* abas (segmentos) em pílulas, sem caixa */
+.seg{background:none!important;border:0!important;padding:0!important;gap:8px;margin-bottom:16px;overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:0 0 auto!important;border:1px solid var(--line2)!important;border-radius:999px!important;padding:8px 15px!important;font-size:13.5px!important;font-weight:600;background:transparent;color:var(--ink);box-shadow:none!important}
+.seg button.on{border-color:transparent!important}
+.seg.segm button{padding:6px 12px!important;font-size:12.5px!important}
+/* início */
+.home{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+.hcol{display:flex;flex-direction:column;gap:14px;min-width:0}
+.d-only{display:none}
+@media (min-width:1024px){.home{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}.d-only{display:block}.d-only .card{margin:0}}
+.sect{background:var(--card2);border-radius:24px;padding:6px 18px;margin:0}
+.sect-h{display:flex;justify-content:space-between;align-items:center;font-size:16px;font-weight:750;letter-spacing:-.02em;padding:14px 0 6px}
+.lnk2{background:none;border:0;color:var(--acc3);font-weight:650;font-size:13px;cursor:pointer;padding:4px 0}
+.srow{display:grid;grid-template-columns:auto minmax(0,1fr) auto 18px;gap:12px;align-items:center;width:100%;background:none;border:0;border-top:1px solid var(--line);padding:14px 0;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.sect-h+.srow{border-top:0}
+.srow:active{opacity:.6}
+.sic{width:38px;height:38px;border-radius:50%;background:var(--soft);display:grid;place-items:center}
+.sic.g{background:var(--in2);color:var(--in)}.sic.r{background:var(--red2);color:var(--red)}
+.sl{display:flex;flex-direction:column;min-width:0}.sl b{font-size:14.5px;font-weight:600}.sl i{font-style:normal;font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis}
+.sv{font-weight:700;font-size:15px;white-space:nowrap}
+.ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.chv{width:16px;height:16px;color:var(--mute);stroke-width:2.2}
+.nh-bal{background:var(--card2);border-radius:26px;overflow:hidden}
+.nh-main{position:relative;display:flex;flex-direction:column;gap:4px;width:100%;background:none;border:0;padding:20px 20px 18px;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.nh-main .chv{position:absolute;right:18px;top:22px}
+.nh-l{font-size:14px;font-weight:600;color:var(--mute)}
+.nh-v{font-size:36px;font-weight:800;letter-spacing:-.045em;line-height:1.1;font-variant-numeric:tabular-nums}.nh-v.sm{font-size:24px}
+.nh-s{font-size:13px;color:var(--mute)}.nh-s em{font-style:normal;font-weight:700}.nh-s em.up{color:var(--in)}.nh-s em.dn{color:var(--red)}
+.nh-accs{display:flex;gap:8px;overflow-x:auto;padding:0 20px 18px;scrollbar-width:none}.nh-accs::-webkit-scrollbar{display:none}
+.nh-acc{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px;background:var(--soft);border:0;border-radius:14px;padding:9px 13px;color:var(--ink);font:inherit;cursor:pointer}
+.nh-acc span{font-size:11.5px;color:var(--mute)}.nh-acc b{font-size:14px}
+.nh-acts{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 2px;scrollbar-width:none;scroll-snap-type:x proximity}.nh-acts::-webkit-scrollbar{display:none}
+.nh-act{flex:0 0 auto;width:68px;display:flex;flex-direction:column;align-items:center;gap:7px;background:none;border:0;color:var(--ink);font:inherit;cursor:pointer;scroll-snap-align:start}
+.nh-act span{width:62px;height:62px;border-radius:50%;background:var(--card2);display:grid;place-items:center;transition:transform .12s,background .15s}
+.nh-act span .ico{width:23px;height:23px;color:var(--acc3)}
+.nh-act b{font-size:12px;font-weight:600}
+.nh-act:active span{transform:scale(.92)}.nh-act:hover span{background:rgba(var(--accRGB),.14)}
+body[data-mode=light] .nh-act span{background:#fff;box-shadow:0 1px 2px rgba(24,20,34,.06)}
+@media (min-width:1024px){.nh-acts{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));overflow:visible}.nh-act{width:auto}}
+.nh-health{padding:4px 18px 16px}
+.nh-hb{display:grid;grid-template-columns:auto minmax(0,1fr) 18px;gap:12px;align-items:center;width:100%;background:none;border:0;padding:12px 0;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.nh-hb .sl i{white-space:normal}
+.hdot2{width:12px;height:12px;border-radius:50%;background:var(--mute);box-shadow:0 0 0 5px var(--soft)}
+.lv-ok .hdot2{background:var(--in);box-shadow:0 0 0 5px var(--in2)}.lv-amb .hdot2{background:var(--amb);box-shadow:0 0 0 5px var(--amb2)}.lv-red .hdot2{background:var(--red);box-shadow:0 0 0 5px var(--red2)}
+.nh-cov .bar{height:8px}.nh-cov .bar i{background:var(--in)}.lv-amb .nh-cov .bar i{background:var(--amb)}.lv-red .nh-cov .bar i{background:var(--red)}
+.nh-cl{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mute);margin-top:7px;flex-wrap:wrap}.nh-cl b{color:var(--ink)}
+.nh-warn{display:flex;gap:8px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:14px;background:var(--red2);color:var(--red);font-size:13px}.nh-warn b{color:inherit}
+.empty-st.sm{padding:16px 6px 18px;font-size:13px}
+.sect .list .row{padding:13px 0}
+.onb2{margin-bottom:14px}
+/* menu inferior estilo app (indicador no ícone) */
+@media (max-width:1023px){
+  .tabs button,.tabs button.on{background:none!important;box-shadow:none!important}
+  .tabs button svg{transition:transform .15s}
+  .tabs button.on{color:var(--ink)}
+  .tabs button.on svg{background:var(--hl2);border-radius:999px;padding:3px 14px;box-sizing:content-box;stroke:var(--hl)}
+  .tabs button:not(.nav-plus):active svg{transform:scale(.9)}
+}
+/* folha de baixo com puxador */
+@media (max-width:700px){.sheet{border-radius:26px 26px 0 0;padding-top:26px;position:relative}.sheet:before{content:"";position:absolute;top:9px;left:50%;transform:translateX(-50%);width:40px;height:5px;border-radius:9px;background:var(--line2)}}
+/* puxar para atualizar */
+.ptr{position:fixed;left:50%;top:calc(64px + env(safe-area-inset-top));z-index:30;width:36px;height:36px;border-radius:50%;background:var(--card2);box-shadow:var(--shadow);display:grid;place-items:center;opacity:0;pointer-events:none}
+.ptr i{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--line2);border-top-color:var(--acc)}
+.ptr.ready i{border-color:var(--acc);border-top-color:transparent}
+.ptr.spin i{animation:spin2 .7s linear infinite}@keyframes spin2{to{transform:rotate(360deg)}}
+/* transição entre telas */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.24s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media (max-width:1023px){
+  html[data-dir=fwd]::view-transition-old(root){animation-name:vtOutL}html[data-dir=fwd]::view-transition-new(root){animation-name:vtInR}
+  html[data-dir=back]::view-transition-old(root){animation-name:vtOutR}html[data-dir=back]::view-transition-new(root){animation-name:vtInL}}
+@keyframes vtOutL{to{opacity:0;transform:translateX(-24px)}}@keyframes vtInR{from{opacity:0;transform:translateX(24px)}}
+@keyframes vtOutR{to{opacity:0;transform:translateX(24px)}}@keyframes vtInL{from{opacity:0;transform:translateX(-24px)}}
+.tabs{view-transition-name:navbar}.top{view-transition-name:topbar}
+::view-transition-group(navbar),::view-transition-group(topbar),::view-transition-old(navbar),::view-transition-new(navbar),::view-transition-old(topbar),::view-transition-new(topbar){animation:none}
+
+.bthemed{display:flex;gap:14px;align-items:center;background:var(--soft);border-radius:18px;padding:12px;margin-bottom:12px}.bthemed img{width:72px;height:72px;flex:none}.bthemed b{display:block}.bthemed span{display:block;font-size:12px;color:var(--mute);margin:2px 0 8px}
 
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand"><span class="logo"><img class="tico" alt="Tico" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InRiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmNGY5YyIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjZDkzYTllIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGEzZGZmIi8+PC9saW5lYXJHcmFkaWVudD48cmFkaWFsR3JhZGllbnQgaWQ9InRnbCIgY3g9Ii41IiBjeT0iLjQiIHI9Ii42Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iLjI4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2xpcFBhdGggaWQ9ImljIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ2Ii8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjaWMpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCN0YmcpIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iODgiIHI9IjkyIiBmaWxsPSJ1cmwoI3RnbCkiLz4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwIDk2KSBzY2FsZSguOSkgdHJhbnNsYXRlKC0xMDAgLTEwMCkiPjxnIGlkPSJpYm9keSI+CiAgICAgIDxwYXRoIGQ9Ik00MCAyMzIgQzQwIDE4MiA2NiAxNTYgMTAwIDE1NiBDMTM0IDE1NiAxNjAgMTgyIDE2MCAyMzJaIiBmaWxsPSIjZmJmOWZjIi8+CiAgICAgIDxwYXRoIGQ9Ik00MCAyMzIgQzQxIDE5MiA1MCAxNzIgNjMgMTYzIEM3MSAxODMgNzAgMjEyIDYyIDIzMloiIGZpbGw9IiMxNjE1MWEiLz4KICAgICAgPHBhdGggZD0iTTE2MCAyMzIgQzE1OSAxOTggMTUzIDE4MCAxNDMgMTcwIEMxMzkgMTg4IDE0MSAyMTIgMTQ3IDIzMloiIGZpbGw9IiMxNjE1MWEiLz4KICAgICAgPGcgZmlsbD0iIzJhMjgzMCI+PGNpcmNsZSBjeD0iMTI0IiBjeT0iMTk4IiByPSIzLjIiLz48Y2lyY2xlIGN4PSIxMzMiIGN5PSIxODgiIHI9IjIuMyIvPjxjaXJjbGUgY3g9IjExNyIgY3k9IjE4OCIgcj0iMS45Ii8+PGNpcmNsZSBjeD0iODAiIGN5PSIxOTYiIHI9IjIuNCIvPjwvZz4KICAgICAgPHBhdGggZD0iTTY0IDE1MSBRMTAwIDE3MSAxMzYgMTUxIEwxMzkgMTYzIFExMDAgMTg0IDYxIDE2M1oiIGZpbGw9IiMyNjJhMzMiLz4KICAgICAgPHBhdGggZD0iTTY1IDE1My41IFExMDAgMTcyIDEzNSAxNTMuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y0NTUyIiBzdHJva2Utd2lkdGg9IjEuNiIvPgogICAgICA8ZyBmaWxsPSIjZjJjMTRlIj48cmVjdCB4PSI3MyIgeT0iMTU3LjUiIHdpZHRoPSI1IiBoZWlnaHQ9IjMuMiIgcng9IjEuMiIvPjxyZWN0IHg9IjEyMiIgeT0iMTU3LjUiIHdpZHRoPSI1IiBoZWlnaHQ9IjMuMiIgcng9IjEuMiIvPjwvZz4KICAgICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwIDE2NikiPgogICAgICAgIDxjbGlwUGF0aCBpZD0iaXRpZSI+PHBhdGggZD0iTS0xMiAwIEwxMiAwIEwxNyAyNyBMMCAzOSBMLTE3IDI3WiIvPjwvY2xpcFBhdGg+CiAgICAgICAgPGcgY2xpcC1wYXRoPSJ1cmwoI2l0aWUpIj48cmVjdCB4PSItMTgiIHk9IjAiIHdpZHRoPSI5IiBoZWlnaHQ9IjQyIiBmaWxsPSIjOGZkMGZmIi8+PHJlY3QgeD0iLTkiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjQyIiBmaWxsPSIjZmZlMjdhIi8+PHJlY3QgeD0iLTMiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjQyIiBmaWxsPSIjZmY4ZmM0Ii8+PHJlY3QgeD0iMyIgeT0iMCIgd2lkdGg9IjYiIGhlaWdodD0iNDIiIGZpbGw9IiNmZmUyN2EiLz48cmVjdCB4PSI5IiB5PSIwIiB3aWR0aD0iOSIgaGVpZ2h0PSI0MiIgZmlsbD0iIzlmZTZiOCIvPgogICAgICAgICAgPHBhdGggZD0iTS0xOCAxNCBMMTggMTQgTDE4IDE5IEwtMTggMTlaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMjUiLz48L2c+CiAgICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9IjEuNSIgcj0iNC40IiBmaWxsPSIjYzljZWQ2Ii8+PGNpcmNsZSBjeD0iLTEuMyIgY3k9Ii4zIiByPSIxLjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii44NSIvPgogICAgICA8L2c+PC9nPgo8cGF0aCBkPSJNNjMgNTIgQzQxIDQ1IDIyIDY0IDE3IDkxIEMxMyAxMTMgMTYgMTMzIDI0IDE0NyBDMjggMTQxIDMxIDE0MyAzNCAxNTAgQzM4IDE0MyA0MiAxNDUgNDYgMTUxIEM0OSAxNDMgNTMgMTQ1IDU2IDE0OCBDNTggMTI2IDYyIDk5IDcwIDcwWiIgZmlsbD0iIzE2MTUxYSIvPgogICAgPHBhdGggZD0iTTEzNyA1MiBDMTU5IDQ1IDE3OCA2NCAxODMgOTEgQzE4NyAxMTMgMTg0IDEzMyAxNzYgMTQ3IEMxNzIgMTQxIDE2OSAxNDMgMTY2IDE1MCBDMTYyIDE0MyAxNTggMTQ1IDE1NCAxNTEgQzE1MSAxNDMgMTQ3IDE0NSAxNDQgMTQ4IEMxNDIgMTI2IDEzOCA5OSAxMzAgNzBaIiBmaWxsPSIjMTYxNTFhIi8+CjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJjMmEzMyIgc3Ryb2tlLXdpZHRoPSIxLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTQyIDcyIEMzNCA5MCAzMCAxMTAgMzQgMTMwIi8+PHBhdGggZD0iTTUwIDc2IEM0NCA5NiA0MiAxMTQgNDQgMTM0Ii8+PHBhdGggZD0iTTE1OCA3MiBDMTY2IDkwIDE3MCAxMTAgMTY2IDEzMCIvPjxwYXRoIGQ9Ik0xNTAgNzYgQzE1NiA5NiAxNTggMTE0IDE1NiAxMzQiLz48L2c+CjxwYXRoIGQ9Ik0xMDAgMzAgQzEyOSAzMCAxNDkgNDUgMTU2IDY3IEMxNjIgODggMTU4IDExMyAxNDYgMTMzIEMxMzYgMTQ5IDEyMCAxNTcgMTAwIDE1OCBDODAgMTU3IDY0IDE0OSA1NCAxMzMgQzQyIDExMyAzOCA4OCA0NCA2NyBDNTEgNDUgNzEgMzAgMTAwIDMwWiIgZmlsbD0iIzE2MTUxYSIvPgogICAgPHBhdGggZD0iTTkwIDMzIEM5MiAyNCA5OSAyMSAxMDEgMjcgQzEwNCAyMSAxMTIgMjMgMTExIDMzWiIgZmlsbD0iIzE2MTUxYSIvPgo8cGF0aCBkPSJNNjAgNTggQzY4IDQ0IDgyIDM3IDk2IDM2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYzJhMzMiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTE4IDM4IEMxMjcgNDAgMTM0IDQ1IDEzOSA1MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmMyYTMzIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTAwIDQ4IEM5NS41IDQ4IDk0LjUgNjYgOTMgODIgQzc4IDkwIDY1IDEwNiA2NiAxMjQgQzY3IDE0NSA4NSAxNTggMTAwIDE1OCBDMTE1IDE1OCAxMzMgMTQ1IDEzNCAxMjQgQzEzNSAxMDYgMTIyIDkwIDEwNyA4MiBDMTA1LjUgNjYgMTA0LjUgNDggMTAwIDQ4WiIgZmlsbD0iI2ZiZjlmYyIvPgogICAgPHBhdGggZD0iTTcwIDEyOCBDNzQgMTQ2IDg4IDE1NiAxMDAgMTU2IEMxMTIgMTU2IDEyNiAxNDYgMTMwIDEyOCBDMTIyIDE0MCAxMTAgMTQ0IDEwMCAxNDQgQzkwIDE0NCA3OCAxNDAgNzAgMTI4WiIgZmlsbD0iI2U3ZTFlYyIgb3BhY2l0eT0iLjciLz4KPGcgZmlsbD0iIzhmOGE5OSI+PGNpcmNsZSBjeD0iODEiIGN5PSIxMjQiIHI9IjEuNSIvPjxjaXJjbGUgY3g9Ijc2LjUiIGN5PSIxMTgiIHI9IjEuNSIvPjxjaXJjbGUgY3g9IjgzLjUiIGN5PSIxMTYiIHI9IjEuMyIvPjxjaXJjbGUgY3g9Ijc1LjUiIGN5PSIxMjYiIHI9IjEuMiIvPjxjaXJjbGUgY3g9IjExOSIgY3k9IjEyNCIgcj0iMS41Ii8+PGNpcmNsZSBjeD0iMTIzLjUiIGN5PSIxMTgiIHI9IjEuNSIvPjxjaXJjbGUgY3g9IjExNi41IiBjeT0iMTE2IiByPSIxLjMiLz48Y2lyY2xlIGN4PSIxMjQuNSIgY3k9IjEyNiIgcj0iMS4yIi8+PC9nPgo8ZyBpZD0iaWV5ZXMiPjxwYXRoIGQ9Ik01NiA5MCBDNTggNzggNjggNzIgNzYgNzQgQzg2IDc2IDkwIDg2IDg4IDk2IEM4NiAxMDQgNzggMTA4IDcwIDEwNiBDNjIgMTA0IDU1IDk4IDU2IDkwWiIgZmlsbD0iIzBiMGEwZCIvPgogICAgPGNpcmNsZSBjeD0iNzIuNSIgY3k9IjkwLjUiIHI9IjExLjIiIGZpbGw9IiM5YjU1MjQiLz48Y2lyY2xlIGN4PSI3Mi41IiBjeT0iOTAuNSIgcj0iMTEuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNWEyYjBkIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI3My41IiBjeT0iOTEuNSIgcj0iNi4yIiBmaWxsPSIjMTQwODAzIi8+CiAgICA8ZWxsaXBzZSBjeD0iNjgiIGN5PSI4NS41IiByeD0iNC4zIiByeT0iMy43IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNzcuNSIgY3k9Ijk2IiByPSIxLjgiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii44NSIvPgogICAgPHBhdGggZD0iTTE0NCA5MCBDMTQyIDc4IDEzMiA3MiAxMjQgNzQgQzExNCA3NiAxMTAgODYgMTEyIDk2IEMxMTQgMTA0IDEyMiAxMDggMTMwIDEwNiBDMTM4IDEwNCAxNDUgOTggMTQ0IDkwWiIgZmlsbD0iIzBiMGEwZCIvPgogICAgPGNpcmNsZSBjeD0iMTI3LjUiIGN5PSI5MC41IiByPSIxMS4yIiBmaWxsPSIjOWI1NTI0Ii8+PGNpcmNsZSBjeD0iMTI3LjUiIGN5PSI5MC41IiByPSIxMS4yIiBmaWxsPSJub25lIiBzdHJva2U9IiM1YTJiMGQiIHN0cm9rZS13aWR0aD0iMiIvPjxjaXJjbGUgY3g9IjEyNi41IiBjeT0iOTEuNSIgcj0iNi4yIiBmaWxsPSIjMTQwODAzIi8+CiAgICA8ZWxsaXBzZSBjeD0iMTIyIiBjeT0iODUuNSIgcng9IjQuMyIgcnk9IjMuNyIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjEzMS41IiBjeT0iOTYiIHI9IjEuOCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjg1Ii8+PC9nPgo8cGF0aCBkPSJNNjAgNzYgQzY2IDcwIDc4IDY5IDg0IDczIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NTUzNWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTExNiA3MyBDMTIyIDY5IDEzNCA3MCAxNDAgNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU1NTM1ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTg1IDEwOSBDODUgOTkgMTE1IDk5IDExNSAxMDkgQzExNSAxMTggMTA2IDEyNCAxMDAgMTI0IEM5NCAxMjQgODUgMTE4IDg1IDEwOVoiIGZpbGw9IiMxNDEzMTciLz4KICAgIDxlbGxpcHNlIGN4PSI5MyIgY3k9IjEwNC41IiByeD0iNSIgcnk9IjIuMyIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjQ1Ii8+CiAgICA8cGF0aCBkPSJNMTAwIDEyNCBMMTAwIDEyOSIgc3Ryb2tlPSIjMGIwYTBkIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzYgMTI2IEM4MiAxNDkgMTE4IDE0OSAxMjQgMTI2IEMxMTMgMTM0IDg3IDEzNCA3NiAxMjZaIiBmaWxsPSIjM2EwYTE4Ii8+CiAgICA8cGF0aCBkPSJNODUgMTM0IEM4MiAxNTggMTA0IDE2NiAxMTAgMTQwIEMxMDIgMTQxIDkyIDEzOSA4NSAxMzRaIiBmaWxsPSIjZmY2ZmE1Ii8+CiAgICA8cGF0aCBkPSJNOTcgMTQwIEM5NiAxNDcgOTUgMTUyIDk0IDE1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDkzZTc4IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNODQuNSAxMzEgbDIuNCA1LjIgbDIuMyAtNC42WiBNMTEwLjYgMTMxLjYgbDIuMyA0LjYgbDIuNCAtNS4yWiIgZmlsbD0iI2ZmZiIvPgogICAgPHBhdGggZD0iTTc2IDEyNiBDODYgMTM0IDExNCAxMzQgMTI0IDEyNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGIwYTBkIiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzQgMTI0IEM3NSAxMjYgNzYgMTI3IDc4IDEyNyBNMTI2IDEyNCBDMTI1IDEyNiAxMjQgMTI3IDEyMiAxMjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBiMGEwZCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZWxsaXBzZSBjeD0iNjEiIGN5PSIxMTUiIHJ4PSI3LjUiIHJ5PSI0LjIiIGZpbGw9IiNmZjdmYjgiIG9wYWNpdHk9Ii4zNSIvPjxlbGxpcHNlIGN4PSIxMzkiIGN5PSIxMTUiIHJ4PSI3LjUiIHJ5PSI0LjIiIGZpbGw9IiNmZjdmYjgiIG9wYWNpdHk9Ii4zNSIvPjwvZz48L2c+PC9zdmc+"></span><div class="hb"><b id="hello"></b><span id="hdate"></span></div></div>
+  <div class="brand"><span class="logo"><img class="tico" alt="Tico" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9InRiZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmNGY5YyIvPjxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjZDkzYTllIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOGEzZGZmIi8+PC9saW5lYXJHcmFkaWVudD48cmFkaWFsR3JhZGllbnQgaWQ9InRnbCIgY3g9Ii41IiBjeT0iLjQiIHI9Ii42Ij48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmYiIHN0b3Atb3BhY2l0eT0iLjI4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9IjAiLz48L3JhZGlhbEdyYWRpZW50PjwvZGVmcz48Y2xpcFBhdGggaWQ9ImljIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ2Ii8+PC9jbGlwUGF0aD48ZyBjbGlwLXBhdGg9InVybCgjaWMpIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCN0YmcpIi8+PGNpcmNsZSBjeD0iMTAwIiBjeT0iODgiIHI9IjkyIiBmaWxsPSJ1cmwoI3RnbCkiLz4KPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwIDk2KSBzY2FsZSguOSkgdHJhbnNsYXRlKC0xMDAgLTEwMCkiPjxnIGlkPSJpYm9keSI+CiAgICAgIDxwYXRoIGQ9Ik00MCAyMzIgQzQwIDE4MiA2NiAxNTYgMTAwIDE1NiBDMTM0IDE1NiAxNjAgMTgyIDE2MCAyMzJaIiBmaWxsPSIjZmJmOWZjIi8+CiAgICAgIDxwYXRoIGQ9Ik00MCAyMzIgQzQxIDE5MiA1MCAxNzIgNjMgMTYzIEM3MSAxODMgNzAgMjEyIDYyIDIzMloiIGZpbGw9IiMxNjE1MWEiLz4KICAgICAgPHBhdGggZD0iTTE2MCAyMzIgQzE1OSAxOTggMTUzIDE4MCAxNDMgMTcwIEMxMzkgMTg4IDE0MSAyMTIgMTQ3IDIzMloiIGZpbGw9IiMxNjE1MWEiLz4KICAgICAgPGcgZmlsbD0iIzJhMjgzMCI+PGNpcmNsZSBjeD0iMTI0IiBjeT0iMTk4IiByPSIzLjIiLz48Y2lyY2xlIGN4PSIxMzMiIGN5PSIxODgiIHI9IjIuMyIvPjxjaXJjbGUgY3g9IjExNyIgY3k9IjE4OCIgcj0iMS45Ii8+PGNpcmNsZSBjeD0iODAiIGN5PSIxOTYiIHI9IjIuNCIvPjwvZz4KICAgICAgPHBhdGggZD0iTTY0IDE1MSBRMTAwIDE3MSAxMzYgMTUxIEwxMzkgMTYzIFExMDAgMTg0IDYxIDE2M1oiIGZpbGw9IiMyNjJhMzMiLz4KICAgICAgPHBhdGggZD0iTTY1IDE1My41IFExMDAgMTcyIDEzNSAxNTMuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjM2Y0NTUyIiBzdHJva2Utd2lkdGg9IjEuNiIvPgogICAgICA8ZyBmaWxsPSIjZjJjMTRlIj48cmVjdCB4PSI3MyIgeT0iMTU3LjUiIHdpZHRoPSI1IiBoZWlnaHQ9IjMuMiIgcng9IjEuMiIvPjxyZWN0IHg9IjEyMiIgeT0iMTU3LjUiIHdpZHRoPSI1IiBoZWlnaHQ9IjMuMiIgcng9IjEuMiIvPjwvZz4KICAgICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwIDE2NikiPgogICAgICAgIDxjbGlwUGF0aCBpZD0iaXRpZSI+PHBhdGggZD0iTS0xMiAwIEwxMiAwIEwxNyAyNyBMMCAzOSBMLTE3IDI3WiIvPjwvY2xpcFBhdGg+CiAgICAgICAgPGcgY2xpcC1wYXRoPSJ1cmwoI2l0aWUpIj48cmVjdCB4PSItMTgiIHk9IjAiIHdpZHRoPSI5IiBoZWlnaHQ9IjQyIiBmaWxsPSIjOGZkMGZmIi8+PHJlY3QgeD0iLTkiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjQyIiBmaWxsPSIjZmZlMjdhIi8+PHJlY3QgeD0iLTMiIHk9IjAiIHdpZHRoPSI2IiBoZWlnaHQ9IjQyIiBmaWxsPSIjZmY4ZmM0Ii8+PHJlY3QgeD0iMyIgeT0iMCIgd2lkdGg9IjYiIGhlaWdodD0iNDIiIGZpbGw9IiNmZmUyN2EiLz48cmVjdCB4PSI5IiB5PSIwIiB3aWR0aD0iOSIgaGVpZ2h0PSI0MiIgZmlsbD0iIzlmZTZiOCIvPgogICAgICAgICAgPHBhdGggZD0iTS0xOCAxNCBMMTggMTQgTDE4IDE5IEwtMTggMTlaIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIuMjUiLz48L2c+CiAgICAgICAgPGNpcmNsZSBjeD0iMCIgY3k9IjEuNSIgcj0iNC40IiBmaWxsPSIjYzljZWQ2Ii8+PGNpcmNsZSBjeD0iLTEuMyIgY3k9Ii4zIiByPSIxLjUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii44NSIvPgogICAgICA8L2c+PC9nPgo8cGF0aCBkPSJNNjMgNTIgQzQxIDQ1IDIyIDY0IDE3IDkxIEMxMyAxMTMgMTYgMTMzIDI0IDE0NyBDMjggMTQxIDMxIDE0MyAzNCAxNTAgQzM4IDE0MyA0MiAxNDUgNDYgMTUxIEM0OSAxNDMgNTMgMTQ1IDU2IDE0OCBDNTggMTI2IDYyIDk5IDcwIDcwWiIgZmlsbD0iIzE2MTUxYSIvPgogICAgPHBhdGggZD0iTTEzNyA1MiBDMTU5IDQ1IDE3OCA2NCAxODMgOTEgQzE4NyAxMTMgMTg0IDEzMyAxNzYgMTQ3IEMxNzIgMTQxIDE2OSAxNDMgMTY2IDE1MCBDMTYyIDE0MyAxNTggMTQ1IDE1NCAxNTEgQzE1MSAxNDMgMTQ3IDE0NSAxNDQgMTQ4IEMxNDIgMTI2IDEzOCA5OSAxMzAgNzBaIiBmaWxsPSIjMTYxNTFhIi8+CjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJjMmEzMyIgc3Ryb2tlLXdpZHRoPSIxLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTQyIDcyIEMzNCA5MCAzMCAxMTAgMzQgMTMwIi8+PHBhdGggZD0iTTUwIDc2IEM0NCA5NiA0MiAxMTQgNDQgMTM0Ii8+PHBhdGggZD0iTTE1OCA3MiBDMTY2IDkwIDE3MCAxMTAgMTY2IDEzMCIvPjxwYXRoIGQ9Ik0xNTAgNzYgQzE1NiA5NiAxNTggMTE0IDE1NiAxMzQiLz48L2c+CjxwYXRoIGQ9Ik0xMDAgMzAgQzEyOSAzMCAxNDkgNDUgMTU2IDY3IEMxNjIgODggMTU4IDExMyAxNDYgMTMzIEMxMzYgMTQ5IDEyMCAxNTcgMTAwIDE1OCBDODAgMTU3IDY0IDE0OSA1NCAxMzMgQzQyIDExMyAzOCA4OCA0NCA2NyBDNTEgNDUgNzEgMzAgMTAwIDMwWiIgZmlsbD0iIzE2MTUxYSIvPgogICAgPHBhdGggZD0iTTkwIDMzIEM5MiAyNCA5OSAyMSAxMDEgMjcgQzEwNCAyMSAxMTIgMjMgMTExIDMzWiIgZmlsbD0iIzE2MTUxYSIvPgo8cGF0aCBkPSJNNjAgNTggQzY4IDQ0IDgyIDM3IDk2IDM2IiBmaWxsPSJub25lIiBzdHJva2U9IiMyYzJhMzMiIHN0cm9rZS13aWR0aD0iMi42IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48cGF0aCBkPSJNMTE4IDM4IEMxMjcgNDAgMTM0IDQ1IDEzOSA1MSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMmMyYTMzIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTAwIDQ4IEM5NS41IDQ4IDk0LjUgNjYgOTMgODIgQzc4IDkwIDY1IDEwNiA2NiAxMjQgQzY3IDE0NSA4NSAxNTggMTAwIDE1OCBDMTE1IDE1OCAxMzMgMTQ1IDEzNCAxMjQgQzEzNSAxMDYgMTIyIDkwIDEwNyA4MiBDMTA1LjUgNjYgMTA0LjUgNDggMTAwIDQ4WiIgZmlsbD0iI2ZiZjlmYyIvPgogICAgPHBhdGggZD0iTTcwIDEyOCBDNzQgMTQ2IDg4IDE1NiAxMDAgMTU2IEMxMTIgMTU2IDEyNiAxNDYgMTMwIDEyOCBDMTIyIDE0MCAxMTAgMTQ0IDEwMCAxNDQgQzkwIDE0NCA3OCAxNDAgNzAgMTI4WiIgZmlsbD0iI2U3ZTFlYyIgb3BhY2l0eT0iLjciLz4KPGcgZmlsbD0iIzhmOGE5OSI+PGNpcmNsZSBjeD0iODEiIGN5PSIxMjQiIHI9IjEuNSIvPjxjaXJjbGUgY3g9Ijc2LjUiIGN5PSIxMTgiIHI9IjEuNSIvPjxjaXJjbGUgY3g9IjgzLjUiIGN5PSIxMTYiIHI9IjEuMyIvPjxjaXJjbGUgY3g9Ijc1LjUiIGN5PSIxMjYiIHI9IjEuMiIvPjxjaXJjbGUgY3g9IjExOSIgY3k9IjEyNCIgcj0iMS41Ii8+PGNpcmNsZSBjeD0iMTIzLjUiIGN5PSIxMTgiIHI9IjEuNSIvPjxjaXJjbGUgY3g9IjExNi41IiBjeT0iMTE2IiByPSIxLjMiLz48Y2lyY2xlIGN4PSIxMjQuNSIgY3k9IjEyNiIgcj0iMS4yIi8+PC9nPgo8ZyBpZD0iaWV5ZXMiPjxwYXRoIGQ9Ik01NiA5MCBDNTggNzggNjggNzIgNzYgNzQgQzg2IDc2IDkwIDg2IDg4IDk2IEM4NiAxMDQgNzggMTA4IDcwIDEwNiBDNjIgMTA0IDU1IDk4IDU2IDkwWiIgZmlsbD0iIzBiMGEwZCIvPgogICAgPGNpcmNsZSBjeD0iNzIuNSIgY3k9IjkwLjUiIHI9IjExLjIiIGZpbGw9IiM5YjU1MjQiLz48Y2lyY2xlIGN4PSI3Mi41IiBjeT0iOTAuNSIgcj0iMTEuMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNWEyYjBkIiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSI3My41IiBjeT0iOTEuNSIgcj0iNi4yIiBmaWxsPSIjMTQwODAzIi8+CiAgICA8ZWxsaXBzZSBjeD0iNjgiIGN5PSI4NS41IiByeD0iNC4zIiByeT0iMy43IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iNzcuNSIgY3k9Ijk2IiByPSIxLjgiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii44NSIvPgogICAgPHBhdGggZD0iTTE0NCA5MCBDMTQyIDc4IDEzMiA3MiAxMjQgNzQgQzExNCA3NiAxMTAgODYgMTEyIDk2IEMxMTQgMTA0IDEyMiAxMDggMTMwIDEwNiBDMTM4IDEwNCAxNDUgOTggMTQ0IDkwWiIgZmlsbD0iIzBiMGEwZCIvPgogICAgPGNpcmNsZSBjeD0iMTI3LjUiIGN5PSI5MC41IiByPSIxMS4yIiBmaWxsPSIjOWI1NTI0Ii8+PGNpcmNsZSBjeD0iMTI3LjUiIGN5PSI5MC41IiByPSIxMS4yIiBmaWxsPSJub25lIiBzdHJva2U9IiM1YTJiMGQiIHN0cm9rZS13aWR0aD0iMiIvPjxjaXJjbGUgY3g9IjEyNi41IiBjeT0iOTEuNSIgcj0iNi4yIiBmaWxsPSIjMTQwODAzIi8+CiAgICA8ZWxsaXBzZSBjeD0iMTIyIiBjeT0iODUuNSIgcng9IjQuMyIgcnk9IjMuNyIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjEzMS41IiBjeT0iOTYiIHI9IjEuOCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjg1Ii8+PC9nPgo8cGF0aCBkPSJNNjAgNzYgQzY2IDcwIDc4IDY5IDg0IDczIiBmaWxsPSJub25lIiBzdHJva2U9IiM1NTUzNWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PHBhdGggZD0iTTExNiA3MyBDMTIyIDY5IDEzNCA3MCAxNDAgNzYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzU1NTM1ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPHBhdGggZD0iTTg1IDEwOSBDODUgOTkgMTE1IDk5IDExNSAxMDkgQzExNSAxMTggMTA2IDEyNCAxMDAgMTI0IEM5NCAxMjQgODUgMTE4IDg1IDEwOVoiIGZpbGw9IiMxNDEzMTciLz4KICAgIDxlbGxpcHNlIGN4PSI5MyIgY3k9IjEwNC41IiByeD0iNSIgcnk9IjIuMyIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjQ1Ii8+CiAgICA8cGF0aCBkPSJNMTAwIDEyNCBMMTAwIDEyOSIgc3Ryb2tlPSIjMGIwYTBkIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzYgMTI2IEM4MiAxNDkgMTE4IDE0OSAxMjQgMTI2IEMxMTMgMTM0IDg3IDEzNCA3NiAxMjZaIiBmaWxsPSIjM2EwYTE4Ii8+CiAgICA8cGF0aCBkPSJNODUgMTM0IEM4MiAxNTggMTA0IDE2NiAxMTAgMTQwIEMxMDIgMTQxIDkyIDEzOSA4NSAxMzRaIiBmaWxsPSIjZmY2ZmE1Ii8+CiAgICA8cGF0aCBkPSJNOTcgMTQwIEM5NiAxNDcgOTUgMTUyIDk0IDE1NiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZDkzZTc4IiBzdHJva2Utd2lkdGg9IjEuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNODQuNSAxMzEgbDIuNCA1LjIgbDIuMyAtNC42WiBNMTEwLjYgMTMxLjYgbDIuMyA0LjYgbDIuNCAtNS4yWiIgZmlsbD0iI2ZmZiIvPgogICAgPHBhdGggZD0iTTc2IDEyNiBDODYgMTM0IDExNCAxMzQgMTI0IDEyNiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMGIwYTBkIiBzdHJva2Utd2lkdGg9IjMuMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzQgMTI0IEM3NSAxMjYgNzYgMTI3IDc4IDEyNyBNMTI2IDEyNCBDMTI1IDEyNiAxMjQgMTI3IDEyMiAxMjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzBiMGEwZCIgc3Ryb2tlLXdpZHRoPSIyLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZWxsaXBzZSBjeD0iNjEiIGN5PSIxMTUiIHJ4PSI3LjUiIHJ5PSI0LjIiIGZpbGw9IiNmZjdmYjgiIG9wYWNpdHk9Ii4zNSIvPjxlbGxpcHNlIGN4PSIxMzkiIGN5PSIxMTUiIHJ4PSI3LjUiIHJ5PSI0LjIiIGZpbGw9IiNmZjdmYjgiIG9wYWNpdHk9Ii4zNSIvPjwvZz48L2c+PC9zdmc+"></span><div class="hb"><b id="hello"></b><span id="hdate"></span><b id="hTitle"></b></div></div>
   <div class="ptw"><h1 id="pageTitle" class="ptitle"></h1><div id="hdate2" class="pdate"></div></div>
   <div class="topr"><span id="sync" class="syncpill" hidden></span>
   <div class="monthnav"><button id="prevM" aria-label="Mês anterior">‹</button><span id="mLabel"></span><button id="nextM" aria-label="Próximo mês">›</button></div>
@@ -1369,7 +1480,7 @@ function alerts(){const td=today(),tm=addDays(td,1),out=[];
 /* ---------- navegação ---------- */
 let cur=ymOf(today()),tab='inicio',txFilter='todos',txSearch='',selDay=null;
 const TABS=['inicio','movimentos','contas','agenda','analises','metas','simular','tico','mais'];
-function go(t){if(!TABS.includes(t))t='inicio';tab=t;if(location.hash!=='#'+t){try{history.replaceState(null,'','#'+t)}catch(e){location.hash=t}}render();window.scrollTo(0,0)}
+function go(t){if(!TABS.includes(t))t='inicio';const prev=tab;tab=t;if(location.hash!=='#'+t){try{history.replaceState(null,'','#'+t)}catch(e){location.hash=t}}const run=()=>{render();window.scrollTo(0,0)};if(prev!==t&&document.startViewTransition&&themeCfg().fx!=='off'){const i=TABS.indexOf(t),j=TABS.indexOf(prev);document.documentElement.dataset.dir=i>=j?'fwd':'back';document.startViewTransition(run)}else run()}
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(TABS.includes(h)&&h!==tab){tab=h;render()}});
 $('#prevM').onclick=()=>{cur=addMonths(cur,-1);selDay=null;render()};
 $('#nextM').onclick=()=>{cur=addMonths(cur,1);selDay=null;render()};
@@ -1385,10 +1496,11 @@ function render(){
   $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
   applyTheme();const V={inicio:vInicio,movimentos:vMovAll,contas:vContas,simular:vSimular,agenda:vAgenda,mais:vMais,metas:vMetas,analises:vAnalises,tico:vTico};
   const keepSearch=document.activeElement&&document.activeElement.id==='txSearch';
-  $('#view').innerHTML=V[tab]();
+  {const ht=$('#hTitle');if(ht)ht.textContent=TITLES[tab]||''}
+  $('#view').innerHTML=pageHead()+V[tab]();
   if(keepSearch){const i=$('#txSearch');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}}
   if(tab==='movimentos'){const i=$('#txSearch');if(i)i.oninput=()=>{txSearch=i.value;render()}}
-  if(tab==='simular')bindSimular();
+  if(tab==='simular')bindSimular();updateLogos();
 }
 
 /* ---------- views ---------- */
@@ -2320,7 +2432,7 @@ const metaSum=g=>r2(tot((g.deps||[]).map(d=>d.amount)));
 const metaPct=g=>g.target>0?Math.min(100,Math.round(metaSum(g)/g.target*100)):0;
 const META_TPL=[['📱','Comprar um celular',2500,''],['💰','Guardar R$ 5.000',5000,''],['🧾','Quitar todas as dívidas',0,'dividas'],['🛟','Reserva de emergência',0,'reserva'],['✈️','Viagem',3000,'']];
 function vMetas(){const L=metas().filter(g=>!g.archived),A=metas().filter(g=>g.archived);const T=tot(L.map(g=>g.target)),Sv=tot(L.map(metaSum));
-  let h=`<div class="actions"><button class="btn pri" data-act="newMeta">+ Nova meta</button></div>`;
+  let h='';
   h+=`<div class="tiles"><div class="tile"><div class="l">Guardado nas metas</div><div class="v pos mv">${brl(Sv)}</div><div class="n">${L.length} meta(s) ativa(s)</div></div><div class="tile"><div class="l">Falta para concluir</div><div class="v mv">${brl(Math.max(0,T-Sv))}</div><div class="n">${T?Math.round(Sv/T*100):0}% do total</div></div></div>`;
   h+=`<div class="callout small">💡 O dinheiro das metas <b>não é descontado de novo</b> do seu saldo: é só uma separação para você saber para que ele está guardado. Só sai do saldo se você fizer uma transferência real (por exemplo, para a poupança) e registrar no extrato.</div>`;
   if(!L.length)h+=`<div class="card"><h2>Comece por uma destas</h2><div class="list">${META_TPL.map(([i,n,v,k],x)=>`<button type="button" class="row optrow" data-act="newMeta" data-tpl="${x}"><div class="ic">${i}</div><div class="grow"><div class="t">${n}</div><div class="s">${k==='dividas'?'Valor = total das dívidas pendentes agora':k==='reserva'?'Valor = 6 meses das suas despesas médias':'Sugestão '+brl(v)}</div></div><span class="chev">›</span></button>`).join('')}</div></div>`;
@@ -2475,7 +2587,7 @@ function showLock(){const L=lockCfg();if(!L||unlocked)return;let el=$('#lock');i
   const key=async k=>{if(k==='bio'){try{if(await bioCheck(L.bio))ok()}catch(e){draw('Biometria não confirmou. Use a senha.')}return}
     if(k==='del'){pin=pin.slice(0,-1);draw();return}if(pin.length>=(L.len||4))return;pin+=k;draw();
     if(pin.length===(L.len||4)){const h=await shaHex(L.salt+pin);if(h===L.hash)ok();else{pin='';draw('Senha incorreta, tente de novo');el.querySelector('.pins').classList.add('shake')}}};
-  draw();if(L.bio&&bioAvail())setTimeout(()=>key('bio'),400)}
+  draw();setTimeout(updateLogos,0);if(L.bio&&bioAvail())setTimeout(()=>key('bio'),400)}
 document.addEventListener('keydown',e=>{const el=$('#lock');if(!el)return;if(/^\d$/.test(e.key)){const b=el.querySelector(`[data-k="${e.key}"]`);if(b)b.click()}else if(e.key==='Backspace'){const b=el.querySelector('[data-k="del"]');if(b)b.click()}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')hiddenAt=Date.now();else if(lockCfg()&&hiddenAt&&Date.now()-hiddenAt>5*60*1000){unlocked=false;showLock()}});
 function openSecurity(){const L=lockCfg();
@@ -2772,7 +2884,7 @@ const THEMES=[
  {id:'light',n:'Light Clean',d:'Branco, cinza e detalhes discretos',mode:'light',acc:'#db2777',sec:'#7c3aed',hl:'#db2777',bg:'#f5f4f7'},
  {id:'gold',n:'Gold Luxury',d:'Preto e dourado',mode:'dark',acc:'#d4af37',sec:'#8a6a22',hl:'#e9c46a',bg:'#09080a'},
  {id:'gray',n:'Minimal Gray',d:'Cinza, grafite e branco',mode:'dark',acc:'#d4d4d8',sec:'#71717a',hl:'#e4e4e7',bg:'#0c0d0f'}];
-const TH_DEF={base:'rose',mode:'auto',acc:'',sec:'',hl:'',cards:'vidro',fx:'normal',chart:'classico'};
+const TH_DEF={base:'rose',mode:'auto',acc:'',sec:'',hl:'',cards:'limpo',fx:'normal',chart:'classico'};
 const hexRGB=h=>{h=(h||'#000').replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return [(n>>16)&255,(n>>8)&255,n&255]};
 const lum=h=>{const [r,g,b]=hexRGB(h).map(v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*r+.7152*g+.0722*b};
 const mixHex=(a,b,t)=>{const A=hexRGB(a),B=hexRGB(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')};
@@ -2792,7 +2904,7 @@ function applyTheme(cfg){cfg=cfg||themeCfg();const sig=JSON.stringify(cfg);if(si
   V['--cin']=ch[0];V['--cout']=ch[1];V['--cline']=ch[2];
   for(const k in V)R.setProperty(k,V[k]);
   document.documentElement.style.colorScheme=light?'light':'dark';const b=document.body;if(b){b.dataset.mode=light?'light':'dark';b.dataset.cards=cfg.cards;b.dataset.fx=cfg.fx;b.dataset.theme=base.id}
-  const mt=document.querySelector('meta[name=theme-color]');if(mt)mt.setAttribute('content',bg);try{localStorage.setItem('tico.theme',sig)}catch(e){}}
+  if(typeof updateLogos==='function')setTimeout(updateLogos,0);const mt=document.querySelector('meta[name=theme-color]');if(mt)mt.setAttribute('content',bg);try{localStorage.setItem('tico.theme',sig)}catch(e){}}
 function setTheme(p,live){const c={...themeCfg(),...p};S.settings.theme=c;applyTheme(c);if(!live)save('settings')}
 function themeSwatch(t){return `<span class="tsw" style="background:${t.bg};border-color:${t.mode==='light'?'rgba(0,0,0,.12)':'rgba(255,255,255,.12)'}"><i style="background:linear-gradient(135deg,${t.acc},${t.sec})"></i><i style="background:${t.hl}"></i><i style="background:${t.mode==='light'?'#fff':mixHex(t.bg,'#ffffff',.08)}"></i></span>`}
 function openAppearance(){const c=themeCfg();const base=THEMES.find(t=>t.id===c.base)||THEMES[0];const saved=S.settings.customThemes||[];
@@ -2801,7 +2913,7 @@ function openAppearance(){const c=themeCfg();const base=THEMES.find(t=>t.id===c.
    ${saved.length?`<div class="sec" style="margin-top:14px">Suas combinações</div><div class="tgrid">${saved.map((t,i)=>`<div class="tcard"><button type="button" class="tc-use" data-ct="${i}">${themeSwatch({...(THEMES.find(x=>x.id===t.base)||THEMES[0]),acc:t.acc||base.acc,sec:t.sec||base.sec,hl:t.hl||base.hl})}<b>${esc(t.name)}</b></button><button type="button" class="btn sm danger" data-ctd="${i}">✕</button></div>`).join('')}</div>`:''}
    <div class="sec" style="margin-top:14px">Modo</div><div class="seg">${[['auto','Do tema'],['dark','🌙 Escuro'],['light','☀️ Claro']].map(([k,n])=>`<button type="button" class="${c.mode===k?'on':''}" data-md="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Suas cores</div><div class="cpick">${[['acc','Cor principal'],['sec','Cor secundária'],['hl','Destaque (botões e seleções)']].map(([k,n])=>`<label><input type="color" data-col="${k}" value="${c[k]||base[k]}"><span>${n}</span></label>`).join('')}</div>
-   <div class="sec">Estilo dos cartões</div><div class="seg">${[['vidro','Vidro'],['solido','Sólido'],['contorno','Contorno'],['elevado','Elevado']].map(([k,n])=>`<button type="button" class="${c.cards===k?'on':''}" data-cs="${k}">${n}</button>`).join('')}</div>
+   <div class="sec">Estilo dos cartões</div><div class="seg">${[['limpo','Limpo'],['vidro','Vidro'],['contorno','Contorno'],['elevado','Elevado']].map(([k,n])=>`<button type="button" class="${c.cards===k?'on':''}" data-cs="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Efeitos visuais</div><div class="seg">${[['off','Sem efeitos'],['suave','Suaves'],['normal','Normais']].map(([k,n])=>`<button type="button" class="${c.fx===k?'on':''}" data-fx="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Gráficos</div><div class="seg">${[['classico','Clássico (verde/rosa)'],['tema','Cores do tema'],['suave','Suave']].map(([k,n])=>`<button type="button" class="${c.chart===k?'on':''}" data-chs="${k}">${n}</button>`).join('')}</div>
    <div class="sec">Pré-visualização</div><div class="tprev"><div class="hero2" style="padding:14px 16px"><div class="l">Saldo atual nos bancos</div><div class="v" style="font-size:28px">R$ 1.500,00</div></div><div class="tprev-r"><button type="button" class="btn pri sm">Botão principal</button><span class="fchips"><button type="button" class="on">Selecionado</button><button type="button">Normal</button></span><span class="pos">+ R$ 450,00</span><span class="red">− R$ 120,00</span></div>${chartSVG([{label:'Set',long:'',inc:900,out:700,bal:1200},{label:'Out',long:'',inc:1200,out:950,bal:1450},{label:'Nov',long:'',inc:1500,out:800,bal:1500}],{line:1,h:150,w:360})}</div>
@@ -2817,9 +2929,10 @@ function openAppearance(){const c=themeCfg();const base=THEMES.find(t=>t.id===c.
     $$('[data-ctd]',s).forEach(b=>b.onclick=()=>{S.settings.customThemes=saved.filter((_,i)=>i!==+b.dataset.ctd);re()})})}
 const svgURL=s=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);
 function openBrand(){const L=[['full','Logo principal','Telas e apresentações'],['compact','Compacto','Cabeçalhos e espaços pequenos'],['icon','Ícone do app','Tela inicial do celular'],['mono','Monocromático','Fundos claros e escuros'],['minimal','Minimalista','Versão limpa'],['premium','Premium','Acabamento refinado']];
-  openModal(`${head('🐶 Identidade do Tico')}<div class="s" style="margin-bottom:10px">O Tico é a homenagem que dá nome ao app. Todas as versões são o mesmo cachorro: a faixa branca no rosto, as orelhas onduladas, os olhos castanhos, as pintinhas, a língua de fora e o lenço colorido.</div>
+  openModal(`${head('🐶 Identidade do Tico')}<div class="bthemed"><img alt="" src="${svgURL(themedLogo('icon'))}"><div><b>No seu tema atual</b><span>O ícone do Tico dentro do app acompanha as cores do tema que você escolher.</span><button type="button" class="btn sm" data-dlg="themed">Baixar este</button></div></div>
+   <div class="s" style="margin-bottom:10px">O Tico é a homenagem que dá nome ao app. Todas as versões são o mesmo cachorro: a faixa branca no rosto, as orelhas onduladas, os olhos castanhos, as pintinhas, a língua de fora e o lenço colorido.</div>
    <div class="bgrid">${L.map(([k,n,d])=>`<div class="bcard ${k}"><div class="bimg">${k==='mono'?`<img alt="" src="${svgURL(LOGOS.mono.replace('currentColor','#16151a'))}"><img alt="" class="inv" src="${svgURL(LOGOS.mono.replace('currentColor','#ffffff'))}">`:`<img alt="${n}" src="${svgURL(LOGOS[k])}">`}</div><b>${n}</b><span>${d}</span><button type="button" class="btn sm" data-dlg="${k}">Baixar SVG</button></div>`).join('')}</div>`,s=>{
-    $$('[data-dlg]',s).forEach(b=>b.onclick=()=>download(`tico-${b.dataset.dlg}.svg`,LOGOS[b.dataset.dlg].replace('currentColor','#16151a'),'image/svg+xml'))})}
+    $$('[data-dlg]',s).forEach(b=>b.onclick=()=>download(`tico-${b.dataset.dlg}.svg`,(b.dataset.dlg==='themed'?themedLogo('icon'):LOGOS[b.dataset.dlg]).replace('currentColor','#16151a'),'image/svg+xml'))})}
 
 /* ================= SALDO REAL × COMPROMETIDO × PROJETADO ================= */
 function expBetween(from,to){const out=[];for(let M=ymOf(from),i=0;M<=ymOf(to)&&i<14;M=addMonths(M,1),i++)expIncomes(M).forEach(e=>{if(!e.got&&e.date>=from&&e.date<=to)out.push(e)});return out.sort((a,b)=>a.date.localeCompare(b.date))}
@@ -2926,7 +3039,7 @@ function recurringCandidates(){const cm=ymOf(today());const rec={};allTx().filte
 function mkRec(k){const r=recurringCandidates().find(x=>x.k===k);if(!r)return;const cm=ymOf(today());let first=cm+'-'+pad(Math.min(r.day,dim(cm)));if(first<today())first=addMonths(cm,1)+'-'+pad(Math.min(r.day,dim(addMonths(cm,1))));
   openBill(null,{name:titleCase(r.k),amount:r.md,cat:r.cat,kind:'recorrente',freq:'mensal',first,bank:r.bank,variable:r.var,sub:SUBCATS.has(r.cat)})}
 function vTico(){const S2=tiSuggestions();
-  let h=`<div class="ti-hero"><img alt="" src="${svgURL(LOGOS.compact)}"><div><b>Tico Inteligente</b><span>Eu analiso só os seus dados reais — se faltar informação, eu aviso.</span></div></div>`;
+  let h=`<div class="callout small" style="margin-top:0">✨ Eu analiso só os seus dados reais — se faltar informação, eu aviso.</div>`;
   h+=`<div class="cols"><div class="col"><div class="card"><h2>💡 Sugestões para você</h2>${S2.length?`<div class="list">${S2.map(s=>`<div class="row ti-sg"><div class="ic">${s.i}</div><div class="grow"><div class="small" style="white-space:normal">${s.t}</div><div class="ti-btns">${s.a?`<button class="btn sm" data-act="${s.a[0]}" ${s.a[0]==='tabPt'?`data-tab="${s.a[2]}" data-pt="${s.a[3]}"`:s.a[0]==='editMeta'?`data-id="${s.a[2]}"`:s.a[0]==='mkRec'?`data-k="${esc(s.a[2])}"`:''}>${s.a[1]}</button>`:''}${s.a&&s.a[0]==='mkRec'?`<button class="btn sm" data-act="recIgn" data-k="${esc(s.a[2])}" title="Não sugerir de novo">✕</button>`:''}</div></div></div>`).join('')}</div>`:'<div class="empty-st"><div>✨</div>Nada importante agora. Tudo em ordem!</div>'}</div></div><div class="col">
    <div class="card ti-chat"><h2>💬 Pergunte ao Tico</h2><div class="ti-msgs" id="tiMsgs">${TI.length?TI.map(x=>`<div class="ti-q">${esc(x.q)}</div><div class="ti-a">${x.a}</div>`).join(''):'<div class="s">Toque numa pergunta ou escreva a sua.</div>'}</div>
    <div class="fchips ti-chips">${TIQ.map((q,i)=>`<button type="button" data-act="tiAsk" data-i="${i}">${q}</button>`).join('')}</div>
@@ -2935,34 +3048,6 @@ function vTico(){const S2=tiSuggestions();
 function tiAsk(q){if(!q||!q.trim())return;TI.push({q:q.trim(),a:tiAnswer(q)});if(TI.length>20)TI.shift();render();setTimeout(()=>{const b=$('#tiMsgs');if(b)b.scrollTop=b.scrollHeight},30)}
 function bindTico(){const f=$('#fTi');if(f)f.onsubmit=()=>{tiAsk(f.q.value)}}
 
-/* ================= INÍCIO (dashboard reorganizado) ================= */
-function vInicio(){const td=today(),cm=ymOf(td);if(cur!==cm&&tab==='inicio')cur=cm;if(SYNC_STATE==='loading'&&!hasData())return skeleton();
-  const H=healthInfo(),m=H.m,P=H.P,st=H.st;const MN=MESES[+cm.slice(5)-1].toLowerCase();
-  const prevEnd=addMonths(cm,-1)+'-'+pad(dim(addMonths(cm,-1)));const b0=m.hasBal?balanceAt(prevEnd):null;const vari=b0!=null?r2(m.bal-b0):null;
-  let h=installBanner('home');
-  if(!hasData())h+=`<div class="card onb"><h2>👋 Bem-vindo ao Tico</h2><ol class="steps small"><li><b>Informe o saldo</b> ou importe o extrato do banco.</li><li><b>Cadastre suas contas e dívidas</b> com o vencimento — elas ficam pendentes até você pagar.</li><li><b>Registre seus recebimentos</b> e o dia do salário.</li></ol></div>`;
-  h+=`<div class="dash2">
-  <section class="hero2 d2-hero"><div class="l">Saldo atual nos bancos</div>
-    ${m.hasBal?`<div class="v mv">${brl(m.bal)}</div>${vari!=null?`<div class="h2-var ${vari>=0?'up':'dn'}">${vari>=0?'▲':'▼'} <span class="mv">${brl(Math.abs(vari))}</span> em ${MN}</div>`:''}`:`<div class="v" style="font-size:26px">Informe seu saldo</div><div class="h2-var">Importe o extrato ou digite quanto tem em cada conta.</div>`}
-    <div class="h2-banks">${m.banks.map(b=>`<button class="bchip" data-act="setBal" data-bank="${esc(b.n)}">${b.n===WALLET?'👛':'🏦'} ${esc(b.n)} <b class="mv">${b.v!=null?brl(b.v):'informar'}</b></button>`).join('')}</div>
-    <div class="h2-acts"><button class="hbtn" data-act="accounts">Ver contas</button><button class="hbtn" data-act="setBal">+ Adicionar conta</button></div></section>
-  <section class="card d2-health lv-${H.lvl}"><h2>❤️ Saúde financeira <span class="hb-pill">${{ok:'Saudável',amb:'Atenção',red:'Risco',mute:'Sem dados'}[H.lvl]}</span></h2><div class="s" style="margin:-4px 0 10px">${H.msg}</div>
-    <div class="cov ${H.cover>=100?'c-ok':H.cover>=50?'c-amb':'c-red'}"><div class="cov-l"><span>Contas do mês cobertas pelo saldo</span><b>${H.cover}%</b></div><div class="bar big"><i style="width:${H.cover}%"></i></div></div>
-    <div class="hgrid"><div><span>Falta pagar</span><b class="mv">${brl(H.pendM)}</b></div><div><span>Já recebido</span><b class="mv pos">${brl(st.inc)}</b></div><div><span>Previsto para entrar</span><b class="mv">${brl(H.expM)}</b><i>não é saldo</i></div></div>
-    ${m.hasBal&&H.before<0?`<div class="callout red small" style="margin:12px 0 0">⚠️ Seu saldo pode ficar negativo antes do próximo recebimento${H.ni?` (${esc(H.ni.name)}, ${dShort(H.ni.date)})`:''}: faltariam <b>${brl(-H.before)}</b>.</div>`:''}</section>
-  <section class="d2-sum">${[
-    ['Recebido no mês',`<span class="pos">${brl(st.inc)}</span>`,'movimentos','receb',''],
-    ['Gasto no mês',brl(st.out),'movimentos','gastos',''],
-    ['Contas a pagar',brl(r2(tot(m.now.filter(x=>x.due>=td).map(x=>x.amt)))),'contas','mes',`${m.now.filter(x=>x.due>=td).length} até o fim do mês`],
-    ['Dívidas vencidas',m.late.length?`<span class="red">${brl(r2(tot(m.late.map(x=>x.amt))))}</span>`:brl(0),'contas','venc',m.late.length?`${m.late.length} conta(s)`:'nenhuma 🎉'],
-    ['Próximas contas',(()=>{const n7=m.all.filter(x=>x.due>=td&&dnum(x.due)-dnum(td)<=7);return brl(r2(tot(n7.map(x=>x.amt))))})(),'contas','prox','próximos 7 dias'],
-    ['Saldo projetado',P.has?`<span class="${P.proj<0?'red':''}">${brl(P.proj)}</span>`:'—','analises','proj',`fim do mês · estimativa`]].map(([l,v,t,pt,n])=>`<button class="kpi" data-act="tabPt" data-tab="${t}" data-pt="${pt}"><span>${l}</span><b class="mv">${v}</b>${n?`<i>${n}</i>`:''}</button>`).join('')}</section>
-  <section class="d2-quick">${[['newTx','saida','💸','Gasto'],['newTx','entrada','💰','Recebimento'],['newDebt','','🧾','Conta'],['import','','📄','Importar'],['transfer','','🔁','Transferir'],['newMeta','','🎯','Meta']].map(([a,v,i,n])=>`<button class="qk" data-act="${a}" ${a==='newTx'?`data-type="${v}"`:''}><i>${i}</i><span>${n}</span></button>`).join('')}</section>`;
-  const nx=[...m.late,...m.all.filter(x=>x.due>=td)].slice(0,4);
-  h+=`<section class="card d2-next"><h2>⏰ Próximas contas <button class="btn sm" data-act="tabPt" data-tab="contas" data-pt="prox">Ver todas ›</button></h2>${nx.length?`<div class="list">${nx.map(commitRow).join('')}</div>`:`<div class="empty-st"><div>✅</div>Nenhuma conta pendente.<br><button class="btn sm" data-act="newDebt" style="margin-top:8px">+ Adicionar conta</button></div>`}</section>`;
-  h+=`<div class="d2-chart">${chartCard(cm)}</div>`;
-  h+=`<section class="card d2-recent"><h2>🧾 Movimentações recentes <button class="btn sm" data-act="tab" data-tab="movimentos">Extrato ›</button></h2>${allTx().length?`<div class="rr-h s"><span></span><span>Descrição</span><span>Categoria</span><span>Data</span><span>Banco</span><span style="text-align:right">Valor</span></div><div class="rlist">${recentRows(6)}</div>`:'<div class="empty-st"><div>🧾</div>Suas movimentações aparecem aqui.</div>'}</section>`;
-  h+='</div>';return h}
 function openAccounts(){const L=bankList();openModal(`${head('🏦 Suas contas')}<div class="list">${L.map(b=>`<div class="row click" data-act="setBal" data-bank="${esc(b.n)}"><div class="ic">${b.n===WALLET?'👛':'🏦'}</div><div class="grow"><div class="t">${esc(b.n)}${defBank()===b.n?' <span class="badge b-ok">principal</span>':''}</div><div class="s">${b.a?`saldo informado em ${dFull(b.a.date)} + movimentações depois`:'saldo não informado'}</div></div><div class="amt mv">${b.v!=null?brl(b.v):'—'}</div></div>`).join('')||'<div class="empty">Nenhuma conta ainda.</div>'}</div>
   <div class="mf"><button class="btn" data-act="transfer">🔁 Transferir</button><button class="btn" data-act="import">📄 Importar extrato</button><button class="btn pri" data-act="setBal">+ Conta</button></div>`)}
 
@@ -2986,6 +3071,76 @@ function vHub(){const items=[['tab','agenda','📅','Agenda'],['tab','analises',
 
 function healthBadge(M,big){const H=healthInfo();const t={ok:'Situação saudável',amb:'Atenção',red:'Risco',mute:'Sem dados'}[H.lvl];const c={ok:'ok',amb:'amb',red:'red',mute:'amb'}[H.lvl];
   return `<div class="health h-${c}${big?' big':''}"><div class="hdot"></div><div class="grow"><b>${t}</b><div class="hmsg">${H.msg}${H.m.hasBal?` Contas do mês cobertas: ${H.cover}%.`:''}</div></div></div>`}
+
+/* ================= TICO 4 — visual limpo (estilo Nubank) e sensação de app nativo ================= */
+const IC={pix:'<path d="M12 3l4 4-4 4-4-4z"/><path d="M12 13l4 4-4 4-4-4z"/><path d="M3 12l4-4 4 4-4 4zM13 12l4-4 4 4-4 4z"/>',
+ out:'<path d="M12 19V5M5 12l7-7 7 7"/>',in:'<path d="M12 5v14M19 12l-7 7-7-7"/>',bill:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/>',
+ swap:'<path d="M7 7h13l-4-4M17 17H4l4 4"/>',file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
+ goal:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+ cal:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',spark:'<path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/>',
+ wallet:'<path d="M3 7a2 2 0 0 1 2-2h13v4"/><path d="M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2z"/><circle cx="16" cy="14.5" r="1.2"/>',chev:'<path d="M9 6l6 6-6 6"/>',alert:'<path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+ trend:'<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>'};
+const ico=(k,c)=>`<svg class="ico ${c||''}" viewBox="0 0 24 24" aria-hidden="true">${IC[k]||''}</svg>`;
+
+/* ----- cabeçalho de cada aba (mesmo padrão em todas) ----- */
+const PHEAD={movimentos:['Movimentações','Tudo o que entrou e saiu das suas contas',['newTx','+ Lançamento']],contas:['Contas','O que você tem para pagar, por vencimento',['newDebt','+ Conta']],
+ agenda:['Agenda','Vencimentos, recebimentos e compromissos',['newEv','+ Evento']],analises:['Análises','Para onde vai seu dinheiro',['reports','Exportar']],metas:['Metas','Seus objetivos e quanto falta',['newMeta','+ Meta']],
+ simular:['Simulador','Teste uma compra antes de fechar',null],tico:['Tico Inteligente','Pergunte sobre as suas finanças',null],mais:['Configurações','Conta, aparência e preferências',null]};
+function pageHead(){const P=PHEAD[tab];if(!P)return '';return `<div class="phead"><div><h1>${P[0]}</h1><p>${P[1]}</p></div>${P[2]?`<button class="btn pri sm" data-act="${P[2][0]}">${P[2][1]}</button>`:''}</div>`}
+
+/* ----- INÍCIO limpo ----- */
+const srow=(o)=>`<button type="button" class="srow" ${o.act?`data-act="${o.act}"`:''} ${o.data||''}>${o.ic?`<span class="sic ${o.tone||''}">${ico(o.ic)}</span>`:''}<span class="sl"><b>${o.l}</b>${o.s?`<i>${o.s}</i>`:''}</span><span class="sv mv ${o.vc||''}">${o.v}</span>${ico('chev','chv')}</button>`;
+function vInicio(){const td=today(),cm=ymOf(td);if(cur!==cm&&tab==='inicio')cur=cm;if(SYNC_STATE==='loading'&&!hasData())return skeleton();
+  const H=healthInfo(),m=H.m,P=H.P,st=H.st;const MN=MESES[+cm.slice(5)-1].toLowerCase();
+  const prevEnd=addMonths(cm,-1)+'-'+pad(dim(addMonths(cm,-1)));const b0=m.hasBal?balanceAt(prevEnd):null;const vari=b0!=null?r2(m.bal-b0):null;
+  const aPagar=m.now.filter(x=>x.due>=td),nAc=m.banks.filter(b=>b.v!=null).length;
+  let h=installBanner('home');
+  if(!hasData())h+=`<section class="sect onb2"><div class="sect-h">Comece por aqui</div>${srow({ic:'wallet',l:'Informe o saldo do banco',s:'ou importe o extrato',act:'setBal',v:''})}${srow({ic:'bill',l:'Cadastre suas contas e dívidas',s:'com a data de vencimento',act:'newDebt',v:''})}${srow({ic:'in',l:'Registre seus recebimentos',s:'e o dia do salário',act:'newTx',data:'data-type="entrada"',v:''})}</section>`;
+  h+=`<div class="home"><div class="hcol hl">
+   <section class="nh-bal"><button type="button" class="nh-main" data-act="accounts"><span class="nh-l">Saldo disponível nas contas</span>
+     ${m.hasBal?`<span class="nh-v mv">${brl(m.bal)}</span><span class="nh-s">${vari!=null?`<em class="${vari>=0?'up':'dn'}">${vari>=0?'+':'−'} ${brl(Math.abs(vari))}</em> em ${MN} · `:''}${nAc} conta${nAc===1?'':'s'}</span>`:`<span class="nh-v sm">Informe seu saldo</span><span class="nh-s">Toque para adicionar uma conta ou importe o extrato</span>`}
+     ${ico('chev','chv')}</button>
+    ${m.banks.length>1?`<div class="nh-accs">${m.banks.map(b=>`<button class="nh-acc" data-act="setBal" data-bank="${esc(b.n)}"><span>${esc(b.n)}</span><b class="mv">${b.v!=null?brl(b.v):'—'}</b></button>`).join('')}</div>`:''}</section>
+   <div class="nh-acts">${[['newTx','out','Gasto','data-type="saida"'],['newTx','in','Receber','data-type="entrada"'],['newDebt','bill','Conta',''],['transfer','swap','Transferir',''],['import','file','Importar',''],['newMeta','goal','Meta',''],['goSim','calc','Simular',''],['tabPt','chart','Análises','data-tab="analises" data-pt="analise"']].map(([a,i,n,d])=>`<button class="nh-act" data-act="${a}" ${d}><span>${ico(i)}</span><b>${n}</b></button>`).join('')}</div>
+   <section class="sect"><div class="sect-h">Este mês</div>
+    ${srow({ic:'in',tone:'g',l:'Recebido',v:`<span class="pos">${brl(st.inc)}</span>`,act:'tabPt',data:'data-tab="movimentos" data-pt="receb"'})}
+    ${srow({ic:'out',l:'Gasto',v:brl(st.out),act:'tabPt',data:'data-tab="movimentos" data-pt="gastos"'})}
+    ${srow({ic:'bill',l:'Contas a pagar',s:aPagar.length?`${aPagar.length} até o fim do mês`:'nada pendente',v:brl(r2(tot(aPagar.map(x=>x.amt)))),act:'tabPt',data:'data-tab="contas" data-pt="mes"'})}
+    ${m.late.length?srow({ic:'alert',tone:'r',l:'Vencidas',s:`${m.late.length} conta(s)`,v:`<span class="red">${brl(r2(tot(m.late.map(x=>x.amt))))}</span>`,act:'tabPt',data:'data-tab="contas" data-pt="venc"'}):''}
+    ${srow({ic:'trend',l:'Saldo projetado',s:'fim do mês · estimativa, não é saldo',v:P.has?`<span class="${P.proj<0?'red':''}">${brl(P.proj)}</span>`:'—',act:'tabPt',data:'data-tab="analises" data-pt="proj"'})}</section>
+   <section class="sect nh-health lv-${H.lvl}"><button type="button" class="nh-hb" data-act="tabPt" data-tab="analises" data-pt="proj"><span class="hdot2"></span><span class="sl"><b>${{ok:'Finanças saudáveis',amb:'Atenção',red:'Risco',mute:'Saúde financeira'}[H.lvl]}</b><i>${H.msg}</i></span>${ico('chev','chv')}</button>
+    ${m.hasBal?`<div class="nh-cov"><div class="bar"><i style="width:${H.cover}%"></i></div><div class="nh-cl"><span>${H.cover}% das contas do mês cobertas</span><span>falta pagar <b class="mv">${brl(H.pendM)}</b></span></div></div>`:''}
+    ${m.hasBal&&H.before<0?`<div class="nh-warn">${ico('alert')} Pode faltar <b class="mv">${brl(-H.before)}</b> antes do próximo recebimento${H.ni?' ('+dShort(H.ni.date)+')':''}.</div>`:''}</section>
+  </div><div class="hcol hr">`;
+  const nx=[...m.late,...m.all.filter(x=>x.due>=td)].slice(0,4);
+  h+=`<section class="sect"><div class="sect-h">Próximas contas<button class="lnk2" data-act="tabPt" data-tab="contas" data-pt="prox">Ver todas</button></div>${nx.length?`<div class="list">${nx.map(commitRow).join('')}</div>`:`<div class="empty-st sm">Nenhuma conta pendente 🎉</div>`}</section>`;
+  const rec=allTx().slice().sort((a,b)=>b.date.localeCompare(a.date)||(+b.ts||0)-(+a.ts||0)).slice(0,5);
+  h+=`<section class="sect"><div class="sect-h">Últimas movimentações<button class="lnk2" data-act="tab" data-tab="movimentos">Ver extrato</button></div>${rec.length?`<div class="list">${rec.map(t=>txRow(t,1)).join('')}</div>`:'<div class="empty-st sm">Suas movimentações aparecem aqui.</div>'}</section>`;
+  h+=`<div class="d-only">${chartCard(cm)}</div></div></div>`;return h}
+
+/* ----- sensação de app nativo ----- */
+// título grande que vira título pequeno no cabeçalho ao rolar
+let scT=0;addEventListener('scroll',()=>{if(scT)return;scT=requestAnimationFrame(()=>{scT=0;document.body.classList.toggle('scrolled',scrollY>46)})},{passive:true});
+// vibração curtinha nos toques principais (Android)
+document.addEventListener('click',e=>{const b=e.target.closest('.btn.pri,.nh-act,.tabs button,.qk,[data-submit]');if(b&&navigator.vibrate)try{navigator.vibrate(8)}catch(x){}},true);
+// arrastar a folha para baixo para fechar
+(()=>{let y0=null,dy=0,sh=null;document.addEventListener('touchstart',e=>{sh=e.target.closest('#sheet');if(!sh||innerWidth>700)return;if(sh.scrollTop>2||e.target.closest('input,select,textarea,.rv-list,.tblw,.fchips,.seg')){sh=null;return}y0=e.touches[0].clientY;dy=0},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!sh||y0==null)return;dy=e.touches[0].clientY-y0;if(dy>0){sh.style.transition='none';sh.style.transform=`translateY(${dy}px)`}},{passive:true});
+  document.addEventListener('touchend',()=>{if(!sh||y0==null)return;sh.style.transition='transform .2s ease';if(dy>110){sh.style.transform='translateY(100%)';setTimeout(()=>{sh.style.transform='';sh.style.transition='';closeModal()},180)}else sh.style.transform='';y0=null;sh=null},{passive:true})})();
+// puxar para atualizar
+(()=>{let y0=null,dy=0,el=null;const can=()=>scrollY<=0&&$('#modal').classList.contains('hidden')&&!$('#lock')&&!$('#login:not(.hidden)');
+  document.addEventListener('touchstart',e=>{if(!can()||e.target.closest('.tabs,.top,input,select,textarea,.nh-acts,.fchips,.seg'))return;y0=e.touches[0].clientY;dy=0},{passive:true});
+  document.addEventListener('touchmove',e=>{if(y0==null)return;dy=e.touches[0].clientY-y0;if(dy<=0)return;if(!el){el=document.createElement('div');el.className='ptr';el.innerHTML='<i></i>';document.body.appendChild(el)}const p=Math.min(1,dy/90);el.style.opacity=p;el.style.transform=`translate(-50%,${Math.min(70,dy*.6)}px) rotate(${p*270}deg)`;el.classList.toggle('ready',dy>90)},{passive:true});
+  document.addEventListener('touchend',()=>{if(y0==null)return;const go_=dy>90;y0=null;if(!el)return;const e2=el;el=null;if(go_){e2.classList.add('spin');try{if(MODE==='hosted'&&ACT.resync)ACT.resync();notifTick();render()}catch(x){}setTimeout(()=>{e2.remove();toast('Atualizado')},700)}else e2.remove()},{passive:true})})();
+
+/* ----- logo acompanha o tema (o Tico continua preto e branco; muda o fundo e os detalhes) ----- */
+let LOGO_SIG='';
+function themedLogo(kind){const c=themeCfg();const b=THEMES.find(t=>t.id===c.base)||THEMES[0];const acc=c.acc||b.acc,sec=c.sec||b.sec;
+  let s=LOGOS[kind]||LOGOS.icon;if(c.base==='rose'&&!c.acc&&!c.sec)return s;
+  return s.replace(/#ff4f9c/gi,mixHex(acc,'#ffffff',.12)).replace(/#d93a9e/gi,mixHex(acc,sec,.5)).replace(/#8a3dff/gi,sec).replace(/#ff7ab5/gi,mixHex(acc,'#ffffff',.25))}
+function updateLogos(){const sig=JSON.stringify(themeCfg());const url='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(themedLogo('icon'));
+  $$('.logo img,img.tico,.lk img,.brand img').forEach(i=>{if(i.src!==url)i.src=url});
+  if(sig!==LOGO_SIG){LOGO_SIG=sig;let l=document.querySelector('link[rel=icon][data-themed]');if(!l){l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.dataset.themed='1';document.head.appendChild(l)}l.href=url}}
 
 /* ---------- ações (cliques) ---------- */
 const ACT={
@@ -3019,7 +3174,7 @@ Object.assign(ACT,{
   metaDepDel:d=>{const g=metas().find(x=>x.id===d.id);if(!g)return;confirmBox('Excluir este depósito da meta?','Excluir',()=>{mark('Excluiu um depósito da meta “'+g.name+'”');g.deps=(g.deps||[]).filter(x=>x.id!==d.d);save('settings');render();openMeta(g.id)})},
   simK:d=>{SIMK=d.k;render()},agView:d=>{agView=d.v;render()},agF:d=>{agF=d.v;render()},agDay:d=>{const base=selDay||(ymOf(today())===cur?today():cur+'-01');selDay=addDays(base,+d.d);cur=ymOf(selDay);render()},
   search:()=>openSearch(),notifs:()=>openNotifs(),nsettings:()=>openNotifSettings(),hideVals:()=>{HIDE=!HIDE;try{localStorage.setItem('tico.hide',HIDE?'1':'')}catch(e){}applyHide()},profile:()=>{closeModal();go('mais')},
-  fab:()=>openFab(),tabPt:d=>{if(d.tab==='movimentos')movTab=d.pt;else if(d.tab==='contas')payTab=d.pt;else if(d.tab==='analises')anTab=d.pt;closeModal();go(d.tab)},accounts:()=>openAccounts(),transfer:()=>{closeModal();openTransfer()},delXfer:d=>delXfer(d.x),undoBatch:d=>undoBatch(d.b),appearance:()=>openAppearance(),brand:()=>openBrand(),anTab:d=>{anTab=d.t;render()},tiAsk:d=>tiAsk(TIQ[+d.i]),mkRec:d=>mkRec(d.k),recIgn:d=>{S.settings.recIgnore=[...(S.settings.recIgnore||[]),d.k];save('settings');render()},navCollapse:toggleNav,history:openHistory,security:openSecurity,
+  fab:()=>openFab(),goSim:()=>go('simular'),tabPt:d=>{if(d.tab==='movimentos')movTab=d.pt;else if(d.tab==='contas')payTab=d.pt;else if(d.tab==='analises')anTab=d.pt;closeModal();go(d.tab)},accounts:()=>openAccounts(),transfer:()=>{closeModal();openTransfer()},delXfer:d=>delXfer(d.x),undoBatch:d=>undoBatch(d.b),appearance:()=>openAppearance(),brand:()=>openBrand(),anTab:d=>{anTab=d.t;render()},tiAsk:d=>tiAsk(TIQ[+d.i]),mkRec:d=>mkRec(d.k),recIgn:d=>{S.settings.recIgnore=[...(S.settings.recIgnore||[]),d.k];save('settings');render()},navCollapse:toggleNav,history:openHistory,security:openSecurity,
 });
 document.addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(!el)return;const f=ACT[el.dataset.act];if(f){e.preventDefault();e.stopPropagation();f(el.dataset,el)}});
 function runSubmit(fm){if(!fm)return;const ev={preventDefault(){},target:fm};if(fm.id==='fRule')return submitRule(fm);if(typeof fm.onsubmit==='function')fm.onsubmit(ev)}
