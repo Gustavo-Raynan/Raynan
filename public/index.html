@@ -874,6 +874,13 @@ body.dropping::after{content:'📄 Solte os extratos para importar';position:fix
 .th-chips button:hover{background:rgba(var(--accRGB),.2)}
 .th-in{display:flex;gap:8px}.th-in input{flex:1;min-width:0}.th-in .btn{min-width:44px;display:flex;align-items:center;justify-content:center}
 .th-in .btn svg{width:18px;height:18px}
+/* chaves liga/desliga bem visíveis em qualquer tema */
+.sw{width:46px;height:26px}
+.sw i{background:rgba(127,127,140,.28)!important;border:1px solid rgba(127,127,140,.45)}
+.sw i:after{left:3px;top:3px;width:18px;height:18px;background:rgba(var(--fg),.55);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+body[data-mode=light] .sw i:after{background:#fff}
+.sw input:checked+i{background:rgb(var(--accRGB))!important;border-color:rgb(var(--accRGB))}
+.sw input:checked+i:after{transform:translateX(20px);background:#fff;content:"✓";color:rgb(var(--accRGB));font-size:12px;font-weight:900;line-height:18px;text-align:center}
 
 </style>
 </head>
