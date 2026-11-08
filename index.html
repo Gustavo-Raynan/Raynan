@@ -881,6 +881,22 @@ body.dropping::after{content:'📄 Solte os extratos para importar';position:fix
 body[data-mode=light] .sw i:after{background:#fff}
 .sw input:checked+i{background:rgb(var(--accRGB))!important;border-color:rgb(var(--accRGB))}
 .sw input:checked+i:after{transform:translateX(20px);background:#fff;content:"✓";color:rgb(var(--accRGB));font-size:12px;font-weight:900;line-height:18px;text-align:center}
+/* ícones de banco */
+.bk{position:relative;flex:none;width:40px;height:40px;border-radius:12px;background:var(--bk,#555);display:inline-flex;align-items:center;justify-content:center;overflow:hidden;color:#fff;font-size:14px;font-weight:800;letter-spacing:.02em;box-shadow:inset 0 0 0 1px rgba(var(--fg),.08)}
+.bk b{text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.bk img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;opacity:0;transition:opacity .2s}.bk img.ok{opacity:1;background:#fff}
+.bk.sm{width:24px;height:24px;border-radius:7px;font-size:10px;vertical-align:middle}
+.bk.wallet{background:rgba(var(--accRGB),.15);font-size:20px}.bk.sm.wallet{font-size:13px}
+.row>.bk{margin-right:2px}
+.nh-acc{display:inline-flex;align-items:center;gap:8px}
+.bk-edit{background:none;border:0;padding:0;cursor:pointer;border-radius:12px;position:relative}
+.bk-edit:after{content:"✎";position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border-radius:50%;background:var(--solid,#222);color:var(--fg,#fff);font-size:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(127,127,140,.4)}
+.bp-reg{margin:10px 0 6px;flex-wrap:nowrap;overflow-x:auto}.bp-reg button{white-space:nowrap}
+.bp-list{max-height:min(58vh,520px);overflow:auto}
+.bp-row{width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;gap:12px}
+.bp-cols{display:flex;gap:8px;flex-wrap:wrap}.bp-cols input{display:none}.bp-cols i{display:block;width:30px;height:30px;border-radius:9px;cursor:pointer;border:2px solid transparent}.bp-cols input:checked+i{border-color:var(--fg,#fff);box-shadow:0 0 0 2px rgb(var(--accRGB))}
+.bp-prev{display:flex;align-items:center;gap:10px;margin-top:14px}
+.ob-bk{display:flex;gap:8px;align-items:center}.ob-bk input{flex:1;min-width:0}
 
 </style>
 </head>
@@ -2371,7 +2387,7 @@ function vAnalise(){const R=anRange();const out=anTx('saida'),inn=anTx('entrada'
     <div class="card"><h2>⚠️ Aumentos fora do normal <span class="s">${mLabel(cur)}</span></h2>${ups.length?`<div class="list">${ups.map(x=>{const c=catOf(x.id);return `<div class="row"><div class="ic">${c.i}</div><div class="grow"><div class="t">${esc(c.n)}</div><div class="s">${x.a?`média ${brl(x.a)} → agora ${brl(x.v)}`:`novo gasto: ${brl(x.v)}`}</div></div><span class="badge b-red">${x.a?'+'+Math.round((x.v-x.a)/x.a*100)+'%':'novo'}</span></div>`}).join('')}</div>`:'<div class="empty">✅ Nenhuma categoria subiu muito em relação aos 3 meses anteriores.</div>'}</div>
     <div class="card"><h2>🔁 Gastos frequentes</h2>${fr.length?`<div class="list">${fr.map(x=>`<div class="row"><div class="ic">${catOf(x.cat).i}</div><div class="grow"><div class="t">${esc(titleCase(x.k))}</div><div class="s">${x.n}x · média ${brl(x.v/x.n)}</div></div><div class="amt mv">${brl(x.v)}</div></div>`).join('')}</div>`:'<div class="empty">Nenhum gasto repetido 3 vezes ou mais no período.</div>'}</div></div><div class="col">
     <div class="card"><h2>📊 Gastos mês a mês${AN.cat?' · '+esc(catOf(AN.cat).n):''}</h2>${mb.some(x=>x.out)?chartSVG(mb,{single:1,h:200}):'<div class="empty">Sem dados.</div>'}</div>
-    <div class="card"><h2>🏦 Por banco</h2>${Object.keys(byBank).length?`<div class="list">${Object.entries(byBank).sort((a,b)=>b[1].o-a[1].o).map(([b,v])=>`<div class="row"><div class="ic">${b===WALLET?'👛':'🏦'}</div><div class="grow"><div class="t">${esc(b)}</div><div class="s">${v.n} lançamento(s)</div></div><div style="text-align:right"><div class="amt mv">− ${brl(v.o)}</div><div class="s pos mv">+ ${brl(v.i)}</div></div></div>`).join('')}</div>`:'<div class="empty">Sem dados.</div>'}</div>
+    <div class="card"><h2>🏦 Por banco</h2>${Object.keys(byBank).length?`<div class="list">${Object.entries(byBank).sort((a,b)=>b[1].o-a[1].o).map(([b,v])=>`<div class="row">${bankIcon(b)}<div class="grow"><div class="t">${esc(b)}</div><div class="s">${v.n} lançamento(s)</div></div><div style="text-align:right"><div class="amt mv">− ${brl(v.o)}</div><div class="s pos mv">+ ${brl(v.i)}</div></div></div>`).join('')}</div>`:'<div class="empty">Sem dados.</div>'}</div>
     <div class="card"><h2>📜 Histórico do período</h2><div class="list">${out.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,30).map(t=>txRow(t,1)).join('')||'<div class="empty">Nada.</div>'}</div>${out.length>30?`<div class="s">+ ${out.length-30} lançamento(s) · use os filtros para refinar</div>`:''}</div></div></div>`;
   return h}
 
@@ -2666,7 +2682,7 @@ function openSetBal2(bank){const banks=[...new Set([...accounts().filter(x=>x!==
 
 /* ================= “Mais”: atalhos, categorias, segurança e histórico ================= */
 function maisExtra(){return `<div class="card mais-grid"><h2>✨ Ferramentas</h2><div class="shorts">${[['tab','metas','🎯','Metas'],['tab','simular','🧮','Simulador'],['reports','','📊','Relatórios'],['goAn','','🔎','Análise'],['subsGo','','📺','Assinaturas'],['search','','🔍','Pesquisar'],['cats','entrada','🏷️','Fontes de renda'],['cats','saida','🗂️','Categorias de gastos'],['nsettings','','🔔','Notificações'],['history','','📜','Histórico de alterações'],['security','','🔐','Segurança']].map(([a,v,i,n])=>`<button class="sc" data-act="${a}" ${a==='tab'?`data-tab="${v}"`:a==='cats'?`data-t="${v}"`:''}><i>${i}</i><span>${n}</span></button>`).join('')}</div></div>
-  <div class="card"><h2>🏦 Saldo por conta</h2>${bankList().length?`<div class="list">${bankList().map(b=>`<div class="row click" data-act="setBal" data-bank="${esc(b.n)}"><div class="ic">${b.n===WALLET?'👛':'🏦'}</div><div class="grow"><div class="t">${esc(b.n)}${defBank()===b.n?' <span class="badge b-ok">principal</span>':''}</div><div class="s">${b.a?`saldo de ${dFull(b.a.date)} ${b.a.src==='extrato'?'(extrato)':'(informado)'} + movimentações depois`:'saldo ainda não informado'}</div></div><div class="amt mv">${b.v!=null?brl(b.v):'—'}</div></div>`).join('')}</div>`:'<div class="empty">Nenhuma conta ainda.</div>'}<button class="btn" data-act="setBal" style="margin-top:10px">+ Informar saldo / nova conta</button></div>`}
+  <div class="card"><h2>🏦 Saldo por conta</h2>${bankList().length?`<div class="list">${bankList().map(b=>`<div class="row click" data-act="setBal" data-bank="${esc(b.n)}">${bankIcon(b.n)}<div class="grow"><div class="t">${esc(b.n)}${defBank()===b.n?' <span class="badge b-ok">principal</span>':''}</div><div class="s">${b.a?`saldo de ${dFull(b.a.date)} ${b.a.src==='extrato'?'(extrato)':'(informado)'} + movimentações depois`:'saldo ainda não informado'}</div></div><div class="amt mv">${b.v!=null?brl(b.v):'—'}</div></div>`).join('')}</div>`:'<div class="empty">Nenhuma conta ainda.</div>'}<button class="btn" data-act="addBank" style="margin-top:10px">+ Adicionar banco</button></div>`}
 
 /* ================= mudanças em filtros (selects e datas) ================= */
 const CHG={anCat:v=>{AN.cat=v},anBank:v=>{AN.bank=v},anMin:v=>{AN.min=v},anMax:v=>{AN.max=v},anFrom:v=>{AN.from=v},anTo:v=>{AN.to=v},
@@ -3147,7 +3163,7 @@ function vInicio(){const td=today(),cm=ymOf(td);if(cur!==cm&&tab==='inicio')cur=
    <section class="nh-bal"><button type="button" class="nh-main" data-act="accounts"><span class="nh-l">Saldo disponível nas contas</span>
      ${m.hasBal?`<span class="nh-v mv">${brl(m.bal)}</span><span class="nh-s">${vari!=null?`<em class="${vari>=0?'up':'dn'}">${vari>=0?'+':'−'} ${brl(Math.abs(vari))}</em> em ${MN} · `:''}${nAc} conta${nAc===1?'':'s'}</span>`:`<span class="nh-v sm">Informe seu saldo</span><span class="nh-s">Toque para adicionar uma conta ou importe o extrato</span>`}
      ${ico('chev','chv')}</button>
-    ${m.banks.length>1?`<div class="nh-accs">${m.banks.map(b=>`<button class="nh-acc" data-act="setBal" data-bank="${esc(b.n)}"><span>${esc(b.n)}</span><b class="mv">${b.v!=null?brl(b.v):'—'}</b></button>`).join('')}</div>`:''}</section>
+    ${m.banks.length>=1?`<div class="nh-accs">${m.banks.map(b=>`<button class="nh-acc" data-act="setBal" data-bank="${esc(b.n)}">${bankIcon(b.n,'sm')}<span>${esc(b.n)}</span><b class="mv">${b.v!=null?brl(b.v):'—'}</b></button>`).join('')}</div>`:''}</section>
    <div class="nh-acts">${[['newTx','out','Gasto','data-type="saida"'],['newTx','in','Receber','data-type="entrada"'],['newDebt','bill','Conta',''],['transfer','swap','Transferir',''],['import','file','Importar',''],['newMeta','goal','Meta',''],['goSim','calc','Simular',''],['tabPt','chart','Análises','data-tab="analises" data-pt="analise"']].map(([a,i,n,d])=>`<button class="nh-act" data-act="${a}" ${d}><span>${ico(i)}</span><b>${n}</b></button>`).join('')}</div>
    <section class="sect"><div class="sect-h">Este mês</div>
     ${srow({ic:'in',tone:'g',l:'Recebido',v:`<span class="pos">${brl(st.inc)}</span>`,act:'tabPt',data:'data-tab="movimentos" data-pt="receb"'})}
@@ -3238,13 +3254,13 @@ addEventListener('resize',()=>{if(TOUR)tourShow()});
 document.addEventListener('keydown',e=>{if(!TOUR)return;if(e.key==='Escape')tourEnd(0);if(e.key==='ArrowRight'){const b=$('#ttNext');if(b)b.click()}if(e.key==='ArrowLeft'){const b=$('#ttBack');if(b)b.click()}});
 
 /* ----- primeiros passos (configuração guiada para quem acabou de chegar) ----- */
-let ONB=0;
+let ONB=0,ONB_BANK='';
 function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Salário','Primeira conta','Avisos'];const dots=`<div class="ob-dots">${steps.map((s,k)=>`<i class="${k<=ONB?'on':''}"></i>`).join('')}</div>`;
   const nav=(next,label)=>`<div class="mf ob-nav">${ONB>0?'<button type="button" class="btn" id="obBack">Voltar</button>':''}<button type="button" class="btn" id="obSkip">${ONB===0?'Agora não':'Pular'}</button><button type="button" class="btn pri" id="obNext">${label||'Continuar'}</button></div>`;
   let h='';
   if(ONB===0)h=`<div class="ob-hero"><img alt="" src="${svgURL(themedLogo('icon'))}"><h3>Bem-vindo ao Tico Finances</h3><p>Em 4 passos rápidos eu deixo tudo pronto: seu saldo, o salário, a primeira conta a pagar e os avisos. Dá para pular qualquer passo.</p></div>${nav(0,'Começar')}`;
   if(ONB===1)h=`<h3 class="ob-t">🏦 Quanto você tem no banco?</h3><p class="s">É o seu ponto de partida. Depois, cada gasto, recebimento e conta paga atualiza o saldo sozinho.</p>
-    <label class="f">Banco ou conta</label><input type="text" id="obBank" placeholder="Ex.: Nubank, Mercado Pago" value="${esc(defBank()||'')}"><label class="f">Saldo de hoje (R$)</label><input type="text" class="big" id="obBal" inputmode="decimal" placeholder="0,00">
+    <label class="f">Banco ou conta</label><div class="ob-bk">${ONB_BANK||defBank()?bankIcon(ONB_BANK||defBank()):''}<input type="text" id="obBank" placeholder="Ex.: Nubank, Mercado Pago" value="${esc(ONB_BANK||defBank()||'')}"><button type="button" class="btn" id="obPickB">🔎 Escolher</button></div><label class="f">Saldo de hoje (R$)</label><input type="text" class="big" id="obBal" inputmode="decimal" placeholder="0,00">
     <div class="ob-or">ou</div><button type="button" class="btn block" id="obImp">📄 Importar o extrato do banco</button>${nav()}`;
   if(ONB===2)h=`<h3 class="ob-t">💰 Quando você recebe?</h3><p class="s">Eu aviso um dia antes e no dia — mas o salário só entra no saldo quando cair de verdade.</p>
     <div class="g2"><div><label class="f">Valor do salário (R$)</label><input type="text" id="obSal" inputmode="decimal" value="${+S.settings.income?fmtNum(S.settings.income):''}" placeholder="0,00"></div><div><label class="f">Dia do pagamento</label><input type="number" id="obDay" min="1" max="31" value="${+np().salaryDay||''}" placeholder="Ex.: 5"></div></div>${nav()}`;
@@ -3263,6 +3279,7 @@ function openOnboarding(step){ONB=step||0;const steps=['Bem-vindo','Saldo','Sal�
       next()};
     const sk=$('#obSkip',s);if(sk)sk.onclick=()=>{if(ONB===0){S.settings.onbDone=1;save('settings');closeModal();return}next()};
     const bk=$('#obBack',s);if(bk)bk.onclick=()=>openOnboarding(ONB-1);
+    const pb=$('#obPickB',s);if(pb)pb.onclick=()=>openBankPicker(n=>{ONB_BANK=n;openOnboarding(1)});
     const im=$('#obImp',s);if(im)im.onclick=()=>{S.settings.onbStep=2;save('settings');closeModal();openImport()};
     const ps=$('#obPush',s);if(ps)ps.onclick=async()=>{await pushEnable();const st=await pushState();$('#obPushS',s).textContent=st==='on'?'✅ Ativado!':st==='ios-install'?'No iPhone, instale o Tico na tela inicial primeiro.':'Não foi possível ativar agora — dá para fazer depois em Configurações.'};
   })}
@@ -3444,6 +3461,225 @@ bkPush=async function(docs){if(docs&&docs.settings){const st=docs.settings;delet
 async function pushHeal(){if(MODE!=='hosted'||!sbOk)return;try{if(await pushState()!=='on')return;if(!np().push){S.settings.np={...(S.settings.np||{}),push:true};save('settings')}notifTick();pushSync(true)}catch(e){console.warn('pushHeal',e)}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(pushHeal,2500)});
 
+/* ================= BANCOS: ícones e catálogo mundial ================= */
+/* [nome, site, cor, região, apelidos] — o ícone vem do próprio site do banco; sem internet aparece a sigla na cor do banco */
+const BANKS_RAW=`Nubank|nubank.com.br|#820ad1|BR|nu,nu pagamentos,roxinho
+Banco do Brasil|bb.com.br|#f8d117|BR|bb,brasil
+Caixa|caixa.gov.br|#005ca9|BR|caixa economica,cef,caixa tem
+Itaú|itau.com.br|#ec7000|BR|itau,itau unibanco,personnalite
+Bradesco|bradesco.com.br|#cc092f|BR|bradesco next
+Santander|santander.com.br|#ec0000|BR|santander brasil
+Inter|inter.co|#ff7a00|BR|banco inter,bancointer
+C6 Bank|c6bank.com.br|#242424|BR|c6
+Mercado Pago|mercadopago.com.br|#00b1ea|BR|mercadopago,mercado livre
+PicPay|picpay.com|#21c25e|BR|pic pay
+PagBank|pagbank.com.br|#00a868|BR|pagseguro,pag bank
+Neon|neon.com.br|#0ba5ec|BR|banco neon
+Next|next.me|#00c853|BR|banco next
+Banco Pan|bancopan.com.br|#00aeef|BR|pan
+BTG Pactual|btgpactual.com|#0d2f5e|BR|btg
+XP Investimentos|xpi.com.br|#1b1b1b|BR|xp
+Rico|rico.com.vc|#ff5a00|BR|
+Clear|clear.com.br|#0c1a2b|BR|
+Sicoob|sicoob.com.br|#003641|BR|
+Sicredi|sicredi.com.br|#33a02c|BR|
+Banrisul|banrisul.com.br|#0063a6|BR|
+Banco Original|original.com.br|#00a651|BR|original
+BMG|bancobmg.com.br|#f37021|BR|banco bmg
+Safra|safra.com.br|#002a5c|BR|banco safra
+Banco do Nordeste|bnb.gov.br|#a6192e|BR|bnb
+Banco da Amazônia|bancoamazonia.com.br|#006b3f|BR|basa
+BRB|brb.com.br|#003da5|BR|banco de brasilia
+Banestes|banestes.com.br|#004b8d|BR|
+Banpará|banpara.b.br|#00519e|BR|banpara
+Banese|banese.com.br|#00804a|BR|
+Daycoval|daycoval.com.br|#002f6c|BR|
+Agibank|agibank.com.br|#0033a0|BR|agiplan
+Will Bank|willbank.com.br|#f4c400|BR|will
+Iti|iti.itau|#ff3d77|BR|iti itau
+Digio|digio.com.br|#0a1a5c|BR|
+Ame Digital|amedigital.com|#ff004d|BR|ame
+RecargaPay|recargapay.com.br|#2f49d1|BR|
+BV|bv.com.br|#1c3f94|BR|banco votorantim,banco bv
+Mercantil do Brasil|mercantildobrasil.com.br|#0b3b7a|BR|mercantil
+Banco Sofisa|sofisadireto.com.br|#002b5c|BR|sofisa
+Banco Pine|pine.com|#00205b|BR|pine
+Banco Modal|modal.com.br|#121212|BR|modal
+Genial|genialinvestimentos.com.br|#0b0b45|BR|
+Cresol|cresol.com.br|#00a859|BR|
+Unicred|unicred.com.br|#00563f|BR|
+Ailos|ailos.coop.br|#0b6b3a|BR|viacredi
+Nomad|nomadglobal.com|#f5c400|BR|
+Avenue|avenue.us|#0b1b33|BR|
+Stone|stone.com.br|#00a868|BR|
+Ton|ton.com.br|#00c853|BR|
+Cora|cora.com.br|#fe3e6d|BR|
+InfinitePay|infinitepay.io|#00c896|BR|infinite pay
+Efí|sejaefi.com.br|#f37021|BR|gerencianet,efi
+Asaas|asaas.com|#0030b9|BR|
+Superdigital|superdigital.com.br|#ec0000|BR|
+99Pay|99app.com|#ffdd00|BR|99 pay
+Alelo|alelo.com.br|#007a3d|BR|vale alimentacao
+VR|vr.com.br|#00a443|BR|vr beneficios
+Pluxee|pluxee.com.br|#221c46|BR|sodexo
+Ticket|ticket.com.br|#e30613|BR|ticket edenred
+Flash|flashapp.com.br|#ff2c74|BR|flash beneficios
+Caju|caju.com.br|#ff6b3d|BR|
+Banco Bari|bancobari.com.br|#1d1d6d|BR|bari
+Banco Topázio|bancotopazio.com.br|#0a3d62|BR|topazio
+Chase|chase.com|#117aca|US|jpmorgan,jp morgan
+Bank of America|bankofamerica.com|#e31837|US|bofa
+Wells Fargo|wellsfargo.com|#d71e28|US|
+Citi|citi.com|#056dae|US|citibank,citigroup
+Capital One|capitalone.com|#004977|US|
+U.S. Bank|usbank.com|#0c2074|US|us bank
+PNC|pnc.com|#ef7622|US|
+Truist|truist.com|#2e1a47|US|
+TD Bank|td.com|#34a853|US|td
+Ally|ally.com|#650360|US|ally bank
+Discover|discover.com|#ff6000|US|
+American Express|americanexpress.com|#006fcf|US|amex
+Charles Schwab|schwab.com|#00a0df|US|schwab
+Marcus|marcus.com|#0b2b4a|US|goldman sachs
+Chime|chime.com|#1ec677|US|
+SoFi|sofi.com|#00a2c7|US|
+Venmo|venmo.com|#008cff|US|
+Cash App|cash.app|#00d632|US|cashapp
+PayPal|paypal.com|#003087|US|
+Zelle|zellepay.com|#6d1ed4|US|
+Fidelity|fidelity.com|#368727|US|
+RBC|rbc.com|#005daa|CA|royal bank
+Scotiabank|scotiabank.com|#ec111a|CA|
+BMO|bmo.com|#0079c1|CA|bank of montreal
+CIBC|cibc.com|#c41f3e|CA|
+Revolut|revolut.com|#191c1f|EU|
+Wise|wise.com|#163300|EU|transferwise
+N26|n26.com|#36a18b|EU|
+Monzo|monzo.com|#ff4f40|EU|
+Starling|starlingbank.com|#6935d3|EU|starling bank
+HSBC|hsbc.com|#db0011|EU|
+Barclays|barclays.co.uk|#00aeef|EU|
+Lloyds|lloydsbank.com|#006a4d|EU|lloyds bank
+NatWest|natwest.com|#5a287d|EU|
+Santander UK|santander.co.uk|#ec0000|EU|
+BNP Paribas|bnpparibas.com|#00915a|EU|bnp
+Société Générale|societegenerale.com|#e60028|EU|societe generale
+Crédit Agricole|credit-agricole.fr|#009597|EU|credit agricole
+Deutsche Bank|db.com|#0018a8|EU|
+Commerzbank|commerzbank.de|#ffcc00|EU|
+ING|ing.com|#ff6200|EU|
+ABN AMRO|abnamro.nl|#009286|EU|
+Rabobank|rabobank.nl|#000099|EU|
+UBS|ubs.com|#e60000|EU|
+BBVA|bbva.com|#004481|EU|
+CaixaBank|caixabank.es|#007eae|EU|la caixa
+Banco Sabadell|bancsabadell.com|#006dff|EU|sabadell
+Intesa Sanpaolo|intesasanpaolo.com|#00843d|EU|intesa
+UniCredit|unicredit.it|#e2001a|EU|
+Millennium BCP|millenniumbcp.pt|#d1005d|EU|millennium,bcp
+Caixa Geral de Depósitos|cgd.pt|#005e9e|EU|cgd
+Novo Banco|novobanco.pt|#00a88f|EU|
+ActivoBank|activobank.pt|#7ac143|EU|
+Nordea|nordea.com|#0000a0|EU|
+Danske Bank|danskebank.com|#003755|EU|danske
+Swedbank|swedbank.com|#ee7023|EU|
+BBVA México|bbva.mx|#004481|LA|bancomer
+Banorte|banorte.com|#eb0029|LA|
+Nu México|nu.com.mx|#820ad1|LA|nu mexico
+Bancolombia|bancolombia.com|#fdda24|LA|
+Nequi|nequi.com.co|#200020|LA|
+Banco de Chile|bancochile.cl|#002d72|LA|
+BancoEstado|bancoestado.cl|#ec6608|LA|banco estado
+Banco Galicia|bancogalicia.com|#fa6400|LA|galicia
+Banco Nación|bna.com.ar|#0079c1|LA|banco nacion
+Ualá|uala.com.ar|#3e6bfd|LA|uala
+Banco Pichincha|pichincha.com|#ffdd00|LA|pichincha
+BCP Peru|viabcp.com|#002a8d|LA|banco de credito del peru
+Interbank|interbank.pe|#00a94f|LA|
+BROU|brou.com.uy|#0a3d7a|LA|banco republica
+Itaú Uruguay|itau.com.uy|#ec7000|LA|
+Banco Popular|popularenlinea.com|#003b71|LA|
+MUFG|mufg.jp|#e60012|AS|mitsubishi ufj
+SMBC|smbc.co.jp|#00523a|AS|sumitomo mitsui
+Mizuho|mizuhobank.co.jp|#14148c|AS|
+ICBC|icbc.com.cn|#c7000b|AS|
+Bank of China|boc.cn|#a3000c|AS|
+China Construction Bank|ccb.com|#0066b3|AS|ccb
+Alipay|alipay.com|#1677ff|AS|
+DBS|dbs.com|#ff3333|AS|
+OCBC|ocbc.com|#e2231a|AS|
+UOB|uobgroup.com|#005eb8|AS|
+HDFC Bank|hdfcbank.com|#004c8f|AS|hdfc
+ICICI Bank|icicibank.com|#ae282e|AS|icici
+State Bank of India|onlinesbi.sbi|#280071|AS|sbi
+Paytm|paytm.com|#00baf2|AS|
+KB Kookmin|kbstar.com|#ffbc00|AS|kookmin
+Shinhan|shinhan.com|#0046ff|AS|
+Commonwealth Bank|commbank.com.au|#ffcc00|OC|commbank,cba
+Westpac|westpac.com.au|#d5002b|OC|
+ANZ|anz.com|#007dba|OC|
+NAB|nab.com.au|#000000|OC|national australia bank
+Standard Bank|standardbank.co.za|#0033a1|AF|
+FNB|fnb.co.za|#009fac|AF|first national bank
+Banco BAI|bancobai.ao|#002c5f|AF|bai
+BFA|bfa.ao|#f37021|AF|banco de fomento angola
+BCI Moçambique|bci.co.mz|#f58220|AF|bci
+Emirates NBD|emiratesnbd.com|#072447|ME|
+QNB|qnb.com|#5d0f3d|ME|
+Al Rajhi Bank|alrajhibank.com.sa|#0b2c7a|ME|al rajhi
+Garanti BBVA|garantibbva.com.tr|#00854a|ME|garanti`;
+const BKCAT=BANKS_RAW.split('\n').map(l=>{const[n,d,c,r,al]=l.split('|');return{n,d,c,r,al:(al||'').split(',').filter(Boolean)}});
+const BREG={BR:['🇧🇷','Brasil'],US:['🇺🇸','EUA'],CA:['🇨🇦','Canadá'],EU:['🇪🇺','Europa'],LA:['🌎','América Latina'],AS:['🌏','Ásia'],OC:['🇦🇺','Oceania'],AF:['🌍','África'],ME:['🕌','Oriente Médio']};
+function bankFind(name){const k=norm(name||'');if(!k)return null;return BKCAT.find(b=>norm(b.n)===k||b.al.some(a=>norm(a)===k))
+  ||BKCAT.find(b=>k.split(' ').length<=3&&(k.startsWith(norm(b.n)+' ')||b.al.some(a=>k.startsWith(norm(a)+' '))))||null}
+function bankMeta(name){const m=(S.settings.bankMeta||{})[name];if(m)return m;const f=bankFind(name);return f?{d:f.d,c:f.c,cat:f.n}:null}
+function bankInitials(n){const w0=String(n||'?').replace(/[^\p{L}\p{N} ]/gu,'').trim().split(/\s+/);const w=w0.filter(x=>!/^(d[aeo]s?|of|the|e|y)$/i.test(x));if(!w.length)w.push(...w0);return ((w[0]||'?')[0]+(w.length>1?w[1][0]:(w[0][1]||''))).toUpperCase()}
+function hashColor(s){let h=0;for(const ch of String(s))h=(h*31+ch.charCodeAt(0))|0;return `hsl(${Math.abs(h)%360} 55% 42%)`}
+function bankLogoURL(d){return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=128`}
+function bankIcon(name,cls){if(name===WALLET)return `<span class="bk wallet ${cls||''}">👛</span>`;const m=bankMeta(name);const col=(m&&m.c)||hashColor(name);
+  return `<span class="bk ${cls||''}" style="--bk:${esc(col)}"><b>${esc(bankInitials(name))}</b>${m&&m.d?`<img alt="" loading="lazy" referrerpolicy="no-referrer" src="${bankLogoURL(m.d)}" onload="if(this.naturalWidth<20)this.remove();else this.classList.add('ok')" onerror="this.remove()">`:''}</span>`}
+function setBankMeta(name,meta){S.settings.bankMeta={...(S.settings.bankMeta||{}),[name]:meta};save('settings')}
+
+/* escolher banco: busca no catálogo, filtro por região, ou adicionar qualquer outro banco do mundo */
+let BPK={q:'',r:'BR'};
+function openBankPicker(onPick,opts){opts=opts||{};BPK={q:'',r:'BR'};
+  const draw=s=>{const q=norm(BPK.q);let L=BKCAT.filter(b=>(q?true:BPK.r==='all'||b.r===BPK.r)&&(!q||norm(b.n).includes(q)||b.al.some(a=>norm(a).includes(q))||norm(b.d).includes(q)));
+    $('#bpList',s).innerHTML=(L.length?L.slice(0,80).map(b=>`<button type="button" class="row click bp-row" data-bp="${esc(b.n)}">${bankIcon(b.n)}<div class="grow"><div class="t">${esc(b.n)}</div><div class="s">${BREG[b.r][0]} ${BREG[b.r][1]} · ${esc(b.d)}</div></div>${accounts().includes(b.n)?'<span class="badge b-ok">já é sua</span>':''}</button>`).join('')
+      :`<div class="empty">Não achei “${esc(BPK.q)}” na lista.</div>`)+`<button type="button" class="row click bp-row" id="bpOther"><span class="bk" style="--bk:var(--acc)"><b>+</b></span><div class="grow"><div class="t">${BPK.q?`Adicionar “${esc(BPK.q)}”`:'Outro banco ou carteira'}</div><div class="s">Qualquer banco do mundo — informe o nome e, se quiser, o site para aparecer o ícone</div></div></button>`;
+    $$('[data-bp]',s).forEach(x=>x.onclick=()=>{const b=BKCAT.find(z=>z.n===x.dataset.bp);finish(opts.as||b.n,{d:b.d,c:b.c,cat:b.n})});
+    $('#bpOther',s).onclick=()=>openOtherBank(BPK.q,opts,onPick)};
+  const finish=(name,meta)=>{setBankMeta(name,meta);closeModal();onPick&&onPick(name)};
+  openModal(`<div>${head(opts.title||'🏦 Escolha o banco')}${opts.as?`<div class="s" style="margin-bottom:8px">Ícone para a conta <b>${esc(opts.as)}</b></div>`:''}
+    <input type="search" id="bpQ" placeholder="Buscar banco, carteira ou site… (ex.: Nubank, Chase, Revolut)" autocomplete="off">
+    <div class="fchips bp-reg">${Object.entries(BREG).map(([k,[f,n]])=>`<button type="button" data-r="${k}" class="${BPK.r===k?'on':''}">${f} ${n}</button>`).join('')}<button type="button" data-r="all">🌐 Todos</button></div>
+    <div class="list bp-list" id="bpList"></div></div>`,s=>{draw(s);const qi=$('#bpQ',s);qi.oninput=()=>{BPK.q=qi.value.trim();draw(s)};if(innerWidth>700)qi.focus();
+    $$('[data-r]',s).forEach(b=>b.onclick=()=>{BPK.r=b.dataset.r;$$('[data-r]',s).forEach(x=>x.classList.toggle('on',x===b));draw(s)})})}
+function openOtherBank(q,opts,onPick){const COLS=['#820ad1','#ec7000','#cc092f','#005ca9','#00a868','#00b1ea','#f8d117','#242424','#ff4f9c','#0b6b3a'];
+  openModal(`<form novalidate id="fOb">${head('🌐 Outro banco')}<label class="f">Nome do banco ou carteira</label><input type="text" name="n" value="${esc(opts.as||q||'')}" placeholder="Ex.: Banco Local, Cooperativa X" ${opts.as?'readonly':''}>
+    <label class="f">Site do banco (opcional, para mostrar o ícone)</label><input type="text" name="d" inputmode="url" placeholder="ex.: meubanco.com" autocomplete="off">
+    <label class="f">Cor</label><div class="bp-cols">${COLS.map((c,i)=>`<label><input type="radio" name="c" value="${c}" ${i===0?'checked':''}><i style="background:${c}"></i></label>`).join('')}</div>
+    <div class="bp-prev" id="obPrev"></div>
+    <div class="mf"><button type="button" class="btn" id="obBk">Voltar</button><button type="button" class="btn pri" data-submit="1">Usar este banco</button></div></form>`,s=>{const fm=$('#fOb',s);
+    const dom=()=>{let d=fm.d.value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').split(/[/?#\s]/)[0];return /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d)?d:''};
+    const prev=()=>{const n=fm.n.value.trim()||'Banco';const c=(fm.querySelector('[name=c]:checked')||{}).value;const d=dom();$('#obPrev',s).innerHTML=`<span class="bk" style="--bk:${c}"><b>${esc(bankInitials(n))}</b>${d?`<img alt="" referrerpolicy="no-referrer" src="${bankLogoURL(d)}" onload="if(this.naturalWidth<20)this.remove();else this.classList.add('ok')" onerror="this.remove()">`:''}</span><b>${esc(n)}</b>`};
+    prev();fm.oninput=prev;fm.onchange=prev;$('#obBk',s).onclick=()=>openBankPicker(onPick,opts);
+    fm.onsubmit=()=>{const n=fm.n.value.trim();if(!n){toast('Escreva o nome do banco');return}if(n.length>40){toast('Nome muito longo');return}const c=(fm.querySelector('[name=c]:checked')||{}).value;
+      setBankMeta(n,{d:dom(),c,custom:1});closeModal();onPick&&onPick(n)}})}
+
+/* contas: ícones, adicionar banco pelo catálogo e trocar o ícone */
+openAccounts=function(){const L=bankList();openModal(`${head('🏦 Suas contas')}<div class="list">${L.map(b=>`<div class="row"><button type="button" class="bk-edit" data-act="bankIco" data-bank="${esc(b.n)}" title="Trocar ícone">${bankIcon(b.n)}</button><div class="grow click" data-act="setBal" data-bank="${esc(b.n)}"><div class="t">${esc(b.n)}${defBank()===b.n?' <span class="badge b-ok">principal</span>':''}</div><div class="s">${b.a?`saldo informado em ${dFull(b.a.date)} + movimentações depois`:'saldo não informado'}</div></div><div class="amt mv click" data-act="setBal" data-bank="${esc(b.n)}">${b.v!=null?brl(b.v):'—'}</div></div>`).join('')||'<div class="empty">Nenhuma conta ainda.</div>'}</div>
+  <div class="s" style="margin-top:8px">Toque no ícone para trocar o banco vinculado.</div>
+  <div class="mf"><button class="btn" data-act="transfer">🔁 Transferir</button><button class="btn" data-act="import">📄 Importar extrato</button><button class="btn pri" data-act="addBank">+ Adicionar banco</button></div>`)};
+function addBankFlow(){openBankPicker(n=>{regBank(n);save('settings');openSetBal2(n)},{title:'🏦 Adicionar banco'})}
+function bankIcoFlow(name){if(name===WALLET)return;openBankPicker(()=>{render();openAccounts()},{as:name,title:'🏦 Qual é o banco desta conta?'})}
+
+/* novo banco no saldo: abre o catálogo em vez de digitar */
+const _openSetBal12=openSetBal2;
+openSetBal2=function(bank){if(!bank&&!accounts().filter(x=>x!==WALLET).length)return addBankFlow();_openSetBal12(bank);const s=$('#sheet');if(!s)return;const fm=$('#fBal',s);if(!fm)return;
+  const h=s.querySelector('.mh h3, .mh .t, h3');if(bank&&h&&bank!==WALLET)h.innerHTML=h.innerHTML.replace('🏦',bankIcon(bank,'sm'));
+  fm.b.addEventListener('change',()=>{if(fm.b.value==='__new'){addBankFlow()}},true)};
+
+
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>{if(d.pt)payTab=d.pt;closeModal();go(d.tab)},close:closeModal,
@@ -3464,7 +3700,7 @@ const ACT={
   backup:doBackup,csv:doCSV,restore:doRestore,wipe:doWipe,
 };
 Object.assign(ACT,{
-  tour:()=>tourStart(),tiHome:d=>tiHome(d.q,d.l),tiHomeClr:()=>{HTI=null;render()},onboarding:()=>openOnboarding(0),
+  tour:()=>tourStart(),addBank:()=>addBankFlow(),bankIco:d=>bankIcoFlow(d.bank),tiHome:d=>tiHome(d.q,d.l),tiHomeClr:()=>{HTI=null;render()},onboarding:()=>openOnboarding(0),
   movTab:d=>{movTab=d.t;render()},bankF:d=>{txBankF=d.b;render()},recF:d=>{recF=recF===d.f?'':d.f;movTab='receb';render()},incGoal:d=>openIncGoal(d.c),cats:d=>openCats(d.t),
   goAn:()=>{anTab='analise';closeModal();go('analises')},reports:()=>{anTab='relat';closeModal();go('analises')},subsGo:()=>{payTab='assin';go('contas')},
   anPer:d=>{AN.per=d.p;if(d.p==='custom'&&!AN.from){AN.from=cur+'-01';AN.to=cur+'-'+pad(dim(cur))}render()},anCatSet:d=>{AN.cat=AN.cat===d.c?'':d.c;render()},anClear:()=>{AN={...AN,cat:'',bank:'',min:'',max:''};render()},
