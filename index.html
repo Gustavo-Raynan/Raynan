@@ -1116,7 +1116,7 @@ async function startSync(){
     const remote=await bkPull();sbOk=true;sbErr='';
     loadPending().forEach(k=>dirty.add(k));
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
-    applyRemote(remote);migrateFuture();render();SYNCED=true;scheduleTick();setTimeout(maybeIntro,1500);
+    applyRemote(remote);migrateFuture();render();SYNCED=true;scheduleTick();setTimeout(maybeIntro,1500);setTimeout(pushHeal,3000);
     if(!remote.upcoming||remote.upcoming.updated!==today())dirty.add('upcoming');
     if(dirty.size)flush();else setSync('cloud');
     setTimeout(maybeAskSalary,2500);
@@ -3415,6 +3415,27 @@ const _vInicio10=vInicio;
 vInicio=function(){const h=_vInicio10();const mk='<section class="sect"><div class="sect-h">Este mês';const i=h.indexOf(mk);if(i<0)return h;return h.slice(0,i)+tiHomeCard()+h.slice(i)};
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#tiHgo')){const i=$('#tiHq');if(i)tiHome(i.value)}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='tiHq'){e.preventDefault();tiHome(e.target.value)}});
+
+/* ================= SINCRONIA SEGURA DAS CONFIGURAÇÕES ENTRE APARELHOS =================
+   Antes: cada aparelho regravava as configurações inteiras, e um aparelho com cópia antiga apagava o que o outro mudou
+   (ex.: notificações ligadas no celular sumiam quando o computador salvava o tema). Agora só vai o que mudou neste aparelho. */
+let SBASE=null;const jsn=x=>JSON.stringify(x===undefined?null:x);
+const _applyRemote11=applyRemote;
+applyRemote=function(remote){if(remote&&remote.settings&&!dirty.has('settings')&&!inflight.has('settings'))SBASE=JSON.parse(JSON.stringify(remote.settings));return _applyRemote11(remote)};
+async function settingsPatch(local){const base=SBASE||{};const patch={},removed=[];
+  Object.keys(local).forEach(k=>{if(!SBASE||jsn(local[k])!==jsn(base[k]))patch[k]=local[k]});
+  if(SBASE)Object.keys(base).forEach(k=>{if(!(k in local))removed.push(k)});
+  if(!Object.keys(patch).length&&!removed.length)return;
+  let body;if(MODE==='hosted'){const{data,error}=await sbc.rpc('mb_patch',{k:'settings',patch,removed});if(error)throw hostErr(error);body=data}
+  else{const rm=removed.filter(k=>/^[A-Za-z0-9_]{1,60}$/.test(k));const rows=await sql(`insert into meubolso.docs(user_id,key,body,updated_at) select o.id,'settings',${dq(JSON.stringify(patch))}::jsonb,now() from ${OWNER_SQL} o(id) on conflict (user_id,key) do update set body=(coalesce(meubolso.docs.body,'{}'::jsonb)||excluded.body)${rm.length?` - array[${rm.map(k=>`'${k}'`).join(',')}]::text[]`:''},updated_at=now() returning body`);body=rows&&rows[0]&&rows[0].body;if(typeof body==='string'){try{body=JSON.parse(body)}catch(e){body=null}}}
+  if(body&&typeof body==='object'){SBASE=JSON.parse(JSON.stringify(body));
+    if(!dirty.has('settings')){const before=jsn(S.settings);S.settings=Object.assign({rules:[],banks:[],lastImport:{}},body);if(jsn(S.settings)!==before){saveLocal();if($('#modal').classList.contains('hidden'))render()}}}}
+const _bkPush11=bkPush;
+bkPush=async function(docs){if(docs&&docs.settings){const st=docs.settings;delete docs.settings;await settingsPatch(st)}if(docs&&Object.keys(docs).length)return _bkPush11(docs)};
+
+/* aparelho com push ativo: garante que o aviso no celular continue ligado e a fila agendada */
+async function pushHeal(){if(MODE!=='hosted'||!sbOk)return;try{if(await pushState()!=='on')return;if(!np().push){S.settings.np={...(S.settings.np||{}),push:true};save('settings')}notifTick();pushSync(true)}catch(e){console.warn('pushHeal',e)}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(pushHeal,2500)});
 
 /* ---------- ações (cliques) ---------- */
 const ACT={
