@@ -897,6 +897,9 @@ body[data-mode=light] .sw i:after{background:#fff}
 .bp-cols{display:flex;gap:8px;flex-wrap:wrap}.bp-cols input{display:none}.bp-cols i{display:block;width:30px;height:30px;border-radius:9px;cursor:pointer;border:2px solid transparent}.bp-cols input:checked+i{border-color:var(--fg,#fff);box-shadow:0 0 0 2px rgb(var(--accRGB))}
 .bp-prev{display:flex;align-items:center;gap:10px;margin-top:14px}
 .ob-bk{display:flex;gap:8px;align-items:center}.ob-bk input{flex:1;min-width:0}
+/* Open Finance */
+.of-steps{margin:10px 0 12px;padding-left:20px;font-size:13.5px;line-height:1.5}.of-steps li{margin-bottom:8px}.of-steps a{color:var(--acc);font-weight:600}
+.of-cta{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;margin-bottom:10px;border:1px solid rgba(var(--accRGB),.35);background:rgba(var(--accRGB),.10);color:inherit;font:inherit}
 
 </style>
 </head>
@@ -1139,7 +1142,7 @@ async function startSync(){
     const remote=await bkPull();sbOk=true;sbErr='';
     loadPending().forEach(k=>dirty.add(k));
     if(!Object.keys(remote).length&&hasData())keysAll().forEach(k=>dirty.add(k));
-    applyRemote(remote);migrateFuture();render();SYNCED=true;scheduleTick();setTimeout(maybeIntro,1500);setTimeout(pushHeal,3000);
+    applyRemote(remote);migrateFuture();render();SYNCED=true;scheduleTick();setTimeout(maybeIntro,1500);setTimeout(pushHeal,3000);setTimeout(ofAuto,5000);
     if(!remote.upcoming||remote.upcoming.updated!==today())dirty.add('upcoming');
     if(dirty.size)flush();else setSync('cloud');
     setTimeout(maybeAskSalary,2500);
@@ -3128,7 +3131,7 @@ function vProj(){const td=today(),cm=ymOf(td);const P=projection(cm+'-'+pad(dim(
 
 /* ================= MAIS / CONFIGURAÇÕES (hub) ================= */
 function vHub(){const items=[['tab','agenda','📅','Agenda'],['tab','analises','📊','Análises'],['tab','metas','🎯','Metas'],['tab','tico','✨','Tico Inteligente'],['tab','simular','🧮','Simulador'],['search','','🔍','Pesquisar']];
-  const cfg=[['appearance','🎨','Aparência e temas',(THEMES.find(t=>t.id===themeCfg().base)||{}).n],['accounts','🏦','Contas bancárias',accounts().length+' conta(s)'],['nsettings','🔔','Notificações',np().push?'push ativado':'configurar'],['security','🔐','Segurança',lockCfg()?'bloqueio ativo':'senha e biometria'],['history','📜','Histórico de alterações','desfazer ações'],['cats','🏷️','Categorias','gastos e fontes de renda'],['brand','🐶','Identidade do Tico','logo e versões'],['tour','🧭','Tutorial do app','tour guiado pelas telas'],['onboarding','🚀','Primeiros passos','configuração guiada']];
+  const cfg=[['appearance','🎨','Aparência e temas',(THEMES.find(t=>t.id===themeCfg().base)||{}).n],['accounts','🏦','Contas bancárias',accounts().length+' conta(s)'],['nsettings','🔔','Notificações',np().push?'push ativado':'configurar'],['security','🔐','Segurança',lockCfg()?'bloqueio ativo':'senha e biometria'],['history','📜','Histórico de alterações','desfazer ações'],['cats','🏷️','Categorias','gastos e fontes de renda'],['brand','🐶','Identidade do Tico','logo e versões'],['openOF','🔗','Conectar bancos','Open Finance — saldo e extrato automáticos'],['tour','🧭','Tutorial do app','tour guiado pelas telas'],['onboarding','🚀','Primeiros passos','configuração guiada']];
   return `<div class="hub m-only"><div class="shorts">${items.map(([a,v,i,n])=>`<button class="sc" data-act="${a}" ${a==='tab'?`data-tab="${v}"`:''}><i>${i}</i><span>${n}</span></button>`).join('')}</div></div>
    <div class="card"><h2>⚙️ Configurações</h2><div class="list">${cfg.map(([a,i,n,d])=>`<button type="button" class="row optrow" data-act="${a}" ${a==='cats'?'data-t="saida"':''}><div class="ic">${i}</div><div class="grow"><div class="t">${n}</div><div class="s">${esc(d||'')}</div></div><span class="chev">›</span></button>`).join('')}</div></div>`}
 
@@ -3366,7 +3369,7 @@ autoImport=function(r,bankHint){const bank=r.bank||bankHint;const prev=bank?bank
   if(inQ){IMPQ.silent=false;const txs=IMP.ids.map(id=>findTx(id)).filter(Boolean).map(f=>f.t);IMPQ.done.push({imp:IMP,bank:IMP.bank,n:IMP.ids.length,dups:IMP.dups,inc:sum(txs.filter(t=>t.type==='entrada'&&counted(t))),out:sum(txs.filter(t=>t.type==='saida'&&counted(t))),balTxt:balCheckTxt(IMP,true)});
     if(IMPQ.items.length){impNext()}else impFinish()}};
 const _drawResult0=drawResult;
-drawResult=function(){if(IMPQ&&IMPQ.silent)return;_drawResult0();const s=$('#sheet');if(!s||!IMP)return;const mf=s.querySelector('.mf');if(!mf)return;
+drawResult=function(){if((IMPQ&&IMPQ.silent)||(typeof OF_SILENT!=='undefined'&&OF_SILENT))return;_drawResult0();const s=$('#sheet');if(!s||!IMP)return;const mf=s.querySelector('.mf');if(!mf)return;
   const per=IMP.from?`<div class="s" style="margin-top:6px">📅 Período do extrato: ${dFull(IMP.from)} a ${dFull(IMP.to)}</div>`:'';
   const bc=balCheckTxt(IMP);mf.insertAdjacentHTML('beforebegin',per+(bc?`<div class="callout small ${/difere/.test(bc)?'amb':'ok'}" style="margin-top:8px">${bc}</div>`:'')+impSuggest(IMP.ids))};
 function balCheckTxt(I,short){if(!I.balance||I.prevBal==null)return '';const diff=r2(I.balance.value-I.prevBal);const now=bankBal(I.bank);
@@ -3378,7 +3381,7 @@ function impSuggest(ids){const keys=new Set(ids.map(id=>findTx(id)).filter(Boole
 /* tela de importar */
 openImport=function(bank,file){const C=impCfg();const accs=accounts().filter(a=>a!==WALLET);
   openModal(`<div>${head('Importar extrato do banco')}
-   <label class="drop" id="iDrop"><input type="file" id="iFile" multiple accept=".pdf,.ofx,.csv,.txt,.xls,.xlsx,application/pdf,text/csv"><div class="drop-ic">📄</div><b>Escolha um ou vários extratos</b><span>PDF, Excel, OFX ou CSV · de um ou mais bancos de uma vez</span></label>
+   ${MODE==='hosted'?`<button type="button" class="callout small of-cta" data-act="openOF">⚡ <span><b>Cansou de importar?</b> Conecte o banco pelo Open Finance e o Tico puxa as movimentações sozinho. ›</span></button>`:''}<label class="drop" id="iDrop"><input type="file" id="iFile" multiple accept=".pdf,.ofx,.csv,.txt,.xls,.xlsx,application/pdf,text/csv"><div class="drop-ic">📄</div><b>Escolha um ou vários extratos</b><span>PDF, Excel, OFX ou CSV · de um ou mais bancos de uma vez</span></label>
    <button type="button" class="btn block" id="iPaste" style="margin-top:8px">📋 Colar texto ou notificação do banco</button>
    <div id="iPasteBox" class="hidden" style="margin-top:8px"><textarea id="iTxt" rows="5" placeholder="Cole aqui o extrato copiado ou as notificações (ex.: “Pix recebido de Fulano — R$ 50,00”, “Compra aprovada R$ 35,90 em Mercado”)."></textarea><button type="button" class="btn pri block" id="iTxtGo" style="margin-top:6px">Ler texto</button></div>
    <div id="iStatus"></div>
@@ -3669,7 +3672,7 @@ function openOtherBank(q,opts,onPick){const COLS=['#820ad1','#ec7000','#cc092f',
 /* contas: ícones, adicionar banco pelo catálogo e trocar o ícone */
 openAccounts=function(){const L=bankList();openModal(`${head('🏦 Suas contas')}<div class="list">${L.map(b=>`<div class="row"><button type="button" class="bk-edit" data-act="bankIco" data-bank="${esc(b.n)}" title="Trocar ícone">${bankIcon(b.n)}</button><div class="grow click" data-act="setBal" data-bank="${esc(b.n)}"><div class="t">${esc(b.n)}${defBank()===b.n?' <span class="badge b-ok">principal</span>':''}</div><div class="s">${b.a?`saldo informado em ${dFull(b.a.date)} + movimentações depois`:'saldo não informado'}</div></div><div class="amt mv click" data-act="setBal" data-bank="${esc(b.n)}">${b.v!=null?brl(b.v):'—'}</div></div>`).join('')||'<div class="empty">Nenhuma conta ainda.</div>'}</div>
   <div class="s" style="margin-top:8px">Toque no ícone para trocar o banco vinculado.</div>
-  <div class="mf"><button class="btn" data-act="transfer">🔁 Transferir</button><button class="btn" data-act="import">📄 Importar extrato</button><button class="btn pri" data-act="addBank">+ Adicionar banco</button></div>`)};
+  <div class="mf"><button class="btn" data-act="transfer">🔁 Transferir</button><button class="btn" data-act="import">📄 Importar extrato</button>${MODE==='hosted'?'<button class="btn" data-act="openOF">🔗 Conectar banco</button>':''}<button class="btn pri" data-act="addBank">+ Adicionar banco</button></div>`)};
 function addBankFlow(){openBankPicker(n=>{regBank(n);save('settings');openSetBal2(n)},{title:'🏦 Adicionar banco'})}
 function bankIcoFlow(name){if(name===WALLET)return;openBankPicker(()=>{render();openAccounts()},{as:name,title:'🏦 Qual é o banco desta conta?'})}
 
@@ -3679,6 +3682,79 @@ openSetBal2=function(bank){if(!bank&&!accounts().filter(x=>x!==WALLET).length)re
   const h=s.querySelector('.mh h3, .mh .t, h3');if(bank&&h&&bank!==WALLET)h.innerHTML=h.innerHTML.replace('🏦',bankIcon(bank,'sm'));
   fm.b.addEventListener('change',()=>{if(fm.b.value==='__new'){addBankFlow()}},true)};
 
+
+/* ================= OPEN FINANCE (Pluggy / MeuPluggy): puxa saldo e movimentações sozinho. Só leitura. ================= */
+let OFST=null,OF_SILENT=false,OF_BUSY=false;
+function ofCfg(){return{on:false,since:{},map:{},last:0,cards:[],...(S.settings.of||{})}}
+function setOf(p){S.settings.of={...ofCfg(),...p};save('settings')}
+async function ofCall(action,extra){if(MODE!=='hosted'||!sbc)throw new Error('Disponível no app instalado/site do Tico.');
+  const{data,error}=await sbc.functions.invoke('tico-bank',{body:{action,...(extra||{})}});
+  if(error){let m=error.message||'Falha ao falar com o servidor';try{const j=await error.context.json();if(j&&j.error)m=j.error}catch(e){}throw new Error(m)}
+  if(data&&data.error)throw new Error(data.error);return data}
+async function ofStatus(){const{data,error}=await sbc.rpc('mb_bank_status');if(error)throw error;OFST=data||{configured:false};return OFST}
+function loadPluggy(){return new Promise((ok,no)=>{if(window.PluggyConnect)return ok();const s=document.createElement('script');s.src='https://cdn.pluggy.ai/pluggy-connect/latest/pluggy-connect.js';s.onload=()=>ok();s.onerror=()=>no(new Error('Não consegui carregar a tela da Pluggy (sem internet?)'));document.head.appendChild(s)})}
+
+/* conectar um banco pela janela oficial da Pluggy (escolha “MeuPluggy” ou o seu banco) */
+async function ofConnect(updateId){try{toast('Abrindo a conexão segura…');await loadPluggy();const{token}=await ofCall('token',updateId?{itemId:updateId}:{});
+    closeModal();const pc=new window.PluggyConnect({connectToken:token,includeSandbox:false,language:'pt',theme:document.body.dataset.mode==='light'?'light':'dark',...(updateId?{updateItem:updateId}:{}),
+      onSuccess:async d=>{try{const id=d&&d.item&&d.item.id;if(id&&!updateId)await ofCall('add',{itemId:id});setOf({on:true});toast('Banco conectado! Buscando movimentações…');await ofStatus();ofSync({})}catch(e){toast(e.message)}},
+      onError:e=>{console.warn('pluggy',e);toast('A conexão não foi concluída'+(e&&e.message?': '+e.message:''))},onClose:()=>{}});pc.init()}
+  catch(e){toast(e.message||'Não foi possível conectar')}}
+
+/* sincronizar: busca novidades e importa usando as mesmas regras da importação (sem duplicar) */
+function ofBankName(a){const m=ofCfg().map;if(m[a.account.id])return m[a.account.id];let n=a.connector||'Banco';const r=resolveBank({bank:n},'');if(r)n=r;
+  if(a.account.subtype==='SAVINGS_ACCOUNT')n+=' Poupança';return n}
+async function ofSync(opts){opts=opts||{};if(OF_BUSY)return;OF_BUSY=true;const C=ofCfg();
+  try{const since={};const td=today();
+    Object.entries(C.since||{}).forEach(([k,v])=>since[k]=v);
+    const res=await ofCall('sync',{since});const map={...C.map},nsince={...C.since};let tot=0,banks=[];const cards=[];
+    for(const a of res.accounts||[]){if(a.account.type==='CREDIT'){cards.push({n:a.account.name||a.connector,conn:a.connector,bal:a.account.balance,lim:a.account.credit&&a.account.credit.limit,avail:a.account.credit&&a.account.credit.available,due:a.account.credit&&a.account.credit.due&&String(a.account.credit.due).slice(0,10)});continue}
+      if(a.account.type!=='BANK')continue;const bank=ofBankName(a);map[a.account.id]=bank;
+      let rows=(a.tx||[]).filter(t=>t.status!=='PENDING'&&t.amount>0&&t.date<=td).map(t=>{let d=t.desc||'';const who=t.type==='saida'?(t.pay&&t.pay.receiver):(t.pay&&t.pay.payer);const isPix=t.pay&&/pix/i.test(t.pay.method||'');if(who&&(!d||/^(transfer[eê]ncia|pix|ted|doc)\s*(recebid[ao]|enviad[ao])?\s*$/i.test(d.trim()))){d=`${isPix?'PIX':'TRANSFERENCIA'} ${t.type==='saida'?(isPix?'ENVIADO':'ENVIADA'):(isPix?'RECEBIDO':'RECEBIDA')} ${who}`}if(who&&!norm(d).includes(norm(who)))d=(d+' '+who).trim();if(t.pay&&/pix/i.test(t.pay.method)&&!/pix/i.test(d))d='PIX '+(t.type==='saida'?'ENVIADO ':'RECEBIDO ')+d;return{date:t.date,amount:t.amount,type:t.type,desc:d||'Movimentação',fitid:'pg'+t.id}});
+      if(!C.since[a.account.id]){const mine=allTx().filter(t=>t.bank===bank&&t.src!=='manual').map(t=>t.date).sort();const last=mine[mine.length-1];if(last)rows=rows.filter(x=>x.date>last)}
+      const bal=typeof a.account.balance==='number'?{value:a.account.balance,date:td}:null;
+      if(rows.length||bal){OF_SILENT=true;try{autoImport({kind:'Open Finance',bank,rows,balance:bal},bank)}finally{OF_SILENT=false}const n=(IMP&&IMP.ids||[]).length;tot+=n;banks.push(`${bank}${n?` (+${n})`:''}`)}
+      nsince[a.account.id]=addDays(td,-3)}
+    setOf({on:true,map,since:nsince,last:Date.now(),cards});render();
+    if(!opts.silent||tot){const msg=tot?`🏦 ${tot} movimentação(ões) nova(s) puxada(s) do banco: ${banks.join(', ')}`:`🏦 Bancos atualizados: ${banks.join(', ')||'nenhuma conta'} — nada novo.`;toast(msg);}
+    if(res.errors&&res.errors.length)toast('⚠️ '+res.errors[0]);
+    if($('#ofBox'))drawOf()}
+  catch(e){if(!opts.silent)toast(e.message||'Erro ao atualizar')}finally{OF_BUSY=false}}
+function ofAuto(){const C=ofCfg();if(MODE!=='hosted'||!sbOk||!C.on)return;if(Date.now()-(C.last||0)<4*36e5)return;ofStatus().then(st=>{if(st.configured&&(st.items||[]).length)ofSync({silent:true})}).catch(()=>{})}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(ofAuto,4000)});
+
+/* tela */
+function openOF(){openModal(`<div id="ofBox">${head('🏦 Conectar bancos (Open Finance)')}<div class="empty">Carregando…</div></div>`,()=>{if(MODE!=='hosted'){drawOf();return}ofStatus().then(drawOf).catch(e=>{OFST={configured:false,err:e.message};drawOf()})})}
+function drawOf(){const box=$('#ofBox');if(!box)return;const st=OFST||{configured:false};const C=ofCfg();
+  const steps=`<ol class="of-steps">
+    <li><b>Crie sua conta no MeuPluggy</b> (grátis) e conecte seus bancos lá — a autorização é feita no app do seu banco, pelo Open Finance oficial.<br><a href="https://meu.pluggy.ai" target="_blank" rel="noopener">Abrir meu.pluggy.ai ↗</a></li>
+    <li><b>Crie a conta de desenvolvedor da Pluggy</b> com o mesmo e-mail.<br><a href="https://dashboard.pluggy.ai" target="_blank" rel="noopener">Abrir dashboard.pluggy.ai ↗</a></li>
+    <li>No painel: <b>Customização</b> → adicione o conector <b>MeuPluggy</b> à lista. Depois em <b>Aplicações</b> → crie uma <b>Development Application</b>.</li>
+    <li>Copie o <b>Client ID</b> e o <b>Client Secret</b> e cole aqui embaixo.</li>
+    <li>Toque em <b>Conectar banco</b>, escolha <b>MeuPluggy</b> e autorize. Repita para cada banco.</li></ol>`;
+  let h=head('🏦 Conectar bancos (Open Finance)');
+  if(MODE!=='hosted')h+=`<div class="callout amb small">Abra o Tico pelo site ou app instalado para conectar bancos.</div>`;
+  else if(!st.configured)h+=`<div class="callout small">O Tico passa a buscar <b>saldo e movimentações</b> dos seus bancos sozinho, todo dia. É <b>só leitura</b>: ninguém consegue pagar, transferir ou mexer no seu dinheiro por aqui.</div>${steps}
+    <form novalidate id="fOf"><label class="f">Client ID</label><input type="text" name="cid" autocomplete="off" spellcheck="false" placeholder="cole aqui">
+    <label class="f">Client Secret</label><input type="password" name="cs" autocomplete="new-password" spellcheck="false" placeholder="cole aqui">
+    <div class="s" style="margin-top:6px">🔒 Os códigos ficam guardados só no servidor do Tico e nunca voltam para a tela.</div>
+    <div class="mf"><button type="button" class="btn pri" data-submit="1">Salvar e testar</button></div></form>`;
+  else{const items=st.items||[];
+    h+=`<div class="callout ok small">✅ Pluggy configurada (${esc(st.client_hint||'')}). ${st.last_sync?`Última atualização: ${dt(st.last_sync)}.`:''} O Tico atualiza sozinho ao abrir o app (no máximo a cada 4 horas).</div>
+    ${st.last_error?`<div class="callout amb small">⚠️ ${esc(st.last_error)}</div>`:''}
+    <div class="card"><h2>Bancos conectados</h2>${items.length?`<div class="list">${items.map(it=>`<div class="row">${bankIcon(it.name)}<div class="grow"><div class="t">${esc(it.name)}</div><div class="s">conectado em ${dFull(String(it.added||'').slice(0,10))}</div></div><button type="button" class="btn sm" data-ofupd="${esc(it.id)}">Reautorizar</button><button type="button" class="btn sm danger" data-ofrm="${esc(it.id)}">Remover</button></div>`).join('')}</div>`:'<div class="empty">Nenhum banco ainda. Toque em “Conectar banco”.</div>'}
+      <div class="g2" style="margin-top:10px"><button type="button" class="btn pri" id="ofAdd">+ Conectar banco</button><button type="button" class="btn" id="ofNow" ${items.length?'':'disabled'}>🔄 Atualizar agora</button></div></div>
+    ${(C.cards||[]).length?`<div class="card"><h2>💳 Cartões de crédito</h2><div class="list">${C.cards.map(c=>`<div class="row">${bankIcon(c.conn)}<div class="grow"><div class="t">${esc(c.n)}</div><div class="s">${c.due?`vence ${dFull(c.due)} · `:''}${c.avail!=null?`disponível ${brl(c.avail)}`:''}${c.lim?` de ${brl(c.lim)}`:''}</div></div><div class="amt mv">${brl(c.bal||0)}</div></div>`).join('')}</div><div class="s" style="margin-top:6px">Fatura atual informada pelo banco. Ela não entra no saldo — cadastre como conta a pagar se quiser o aviso de vencimento.</div></div>`:''}
+    <details class="small"><summary style="cursor:pointer">Como funciona / ajuda</summary>${steps}<div class="s">Se um banco pedir para autorizar de novo (o consentimento do Open Finance vence), toque em <b>Reautorizar</b>.</div></details>
+    <div class="mf"><button type="button" class="btn danger" id="ofForget">Apagar códigos da Pluggy</button></div>`}
+  box.innerHTML=h;
+  const fm=$('#fOf',box);if(fm)fm.onsubmit=async()=>{const cid=fm.cid.value.trim(),cs=fm.cs.value.trim();if(cid.length<8||cs.length<8){toast('Cole o Client ID e o Client Secret');return}
+    try{const{error}=await sbc.rpc('mb_bank_creds',{cid,csecret:cs});if(error)throw new Error(error.message);fm.cs.value='';await ofCall('check');toast('Códigos certos ✅ Agora conecte o banco');setOf({on:true});await ofStatus();drawOf()}
+    catch(e){toast(e.message||'Não deu certo');await ofStatus().catch(()=>{});drawOf()}};
+  const a=$('#ofAdd',box);if(a)a.onclick=()=>ofConnect();const n=$('#ofNow',box);if(n)n.onclick=()=>{n.disabled=true;n.textContent='Atualizando…';ofSync({}).finally(()=>ofStatus().then(drawOf))};
+  $$('[data-ofupd]',box).forEach(b=>b.onclick=()=>ofConnect(b.dataset.ofupd));
+  $$('[data-ofrm]',box).forEach(b=>b.onclick=()=>confirmBox('Desconectar este banco do Tico? As movimentações já importadas continuam.','Desconectar',async()=>{try{await ofCall('remove',{itemId:b.dataset.ofrm});await ofStatus();openOF()}catch(e){toast(e.message)}}));
+  const f=$('#ofForget',box);if(f)f.onclick=()=>confirmBox('Apagar os códigos da Pluggy do Tico? A atualização automática para.','Apagar',async()=>{await sbc.rpc('mb_bank_forget');setOf({on:false});OFST=null;openOF()})}
 
 /* ---------- ações (cliques) ---------- */
 const ACT={
@@ -3700,7 +3776,7 @@ const ACT={
   backup:doBackup,csv:doCSV,restore:doRestore,wipe:doWipe,
 };
 Object.assign(ACT,{
-  tour:()=>tourStart(),addBank:()=>addBankFlow(),bankIco:d=>bankIcoFlow(d.bank),tiHome:d=>tiHome(d.q,d.l),tiHomeClr:()=>{HTI=null;render()},onboarding:()=>openOnboarding(0),
+  tour:()=>tourStart(),openOF:()=>openOF(),addBank:()=>addBankFlow(),bankIco:d=>bankIcoFlow(d.bank),tiHome:d=>tiHome(d.q,d.l),tiHomeClr:()=>{HTI=null;render()},onboarding:()=>openOnboarding(0),
   movTab:d=>{movTab=d.t;render()},bankF:d=>{txBankF=d.b;render()},recF:d=>{recF=recF===d.f?'':d.f;movTab='receb';render()},incGoal:d=>openIncGoal(d.c),cats:d=>openCats(d.t),
   goAn:()=>{anTab='analise';closeModal();go('analises')},reports:()=>{anTab='relat';closeModal();go('analises')},subsGo:()=>{payTab='assin';go('contas')},
   anPer:d=>{AN.per=d.p;if(d.p==='custom'&&!AN.from){AN.from=cur+'-01';AN.to=cur+'-'+pad(dim(cur))}render()},anCatSet:d=>{AN.cat=AN.cat===d.c?'':d.c;render()},anClear:()=>{AN={...AN,cat:'',bank:'',min:'',max:''};render()},
