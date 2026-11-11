@@ -3835,6 +3835,20 @@ function catSort(L){const col=new Intl.Collator('pt-BR',{sensitivity:'base'});re
 outCats=function(all){const h=new Set(all?[]:(S.settings.hiddenCats||[]));return catSort([...CATS.filter(c=>!h.has(c.id)),...custCats('saida')])};
 incCats=function(all){const h=new Set(all?[]:(S.settings.hiddenCats||[]));return catSort([...INC.filter(c=>!h.has(c.id)),...custCats('entrada')])};
 
+/* ================= ATUALIZAÇÃO AO VIVO: a cada 5 segundos busca o que mudou em outros aparelhos =================
+   Leve: primeiro pergunta só "o que mudou?" (carimbos de data); baixa apenas os documentos alterados. */
+let STAMPS=null,LIVE_BUSY=false;
+async function liveTick(){if(MODE!=='hosted'||!sbOk||!SYNCED||LIVE_BUSY||document.visibilityState!=='visible'||!navigator.onLine)return;if(dirty.size||inflight.size)return;
+  LIVE_BUSY=true;try{const{data,error}=await sbc.rpc('mb_stamps');if(error)return;const st=data||{};
+    if(!STAMPS){STAMPS=st;return}
+    const ch=Object.keys(st).filter(k=>k!=='upcoming'&&st[k]!==STAMPS[k]&&!dirty.has(k)&&!inflight.has(k));STAMPS=st;if(!ch.length)return;
+    const r=await sbc.rpc('mb_pull_keys',{keys:ch});if(r.error)return;const rem=r.data||{};const diff={};
+    for(const k in rem){if(dirty.has(k)||inflight.has(k))continue;let local=null;try{local=JSON.stringify(docBody(k))}catch(e){}if(JSON.stringify(rem[k])!==local)diff[k]=rem[k]}
+    if(Object.keys(diff).length){applyRemote(diff);if(typeof updBell==='function')updBell()}}
+  catch(e){}finally{LIVE_BUSY=false}}
+setInterval(liveTick,5000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(liveTick,300)});
+
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>{if(d.pt)payTab=d.pt;closeModal();go(d.tab)},close:closeModal,
