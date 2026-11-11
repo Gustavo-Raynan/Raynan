@@ -900,6 +900,7 @@ body[data-mode=light] .sw i:after{background:#fff}
 /* Open Finance */
 .of-steps{margin:10px 0 12px;padding-left:20px;font-size:13.5px;line-height:1.5}.of-steps li{margin-bottom:8px}.of-steps a{color:var(--acc);font-weight:600}
 .of-cta{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;cursor:pointer;margin-bottom:10px;border:1px solid rgba(var(--accRGB),.35);background:rgba(var(--accRGB),.10);color:inherit;font:inherit}
+.catq{margin:4px 0 8px}.catq input{width:100%}
 
 </style>
 </head>
@@ -977,36 +978,71 @@ function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');
 /* ---------- categorias ---------- */
 const CATS=[
  {id:'mercado',n:'Mercado',i:'🛒',c:'#8bc34a'},
+ {id:'padaria',n:'Padaria e café',i:'🥐',c:'#d7a86e'},
+ {id:'acougue',n:'Açougue, hortifrúti e feira',i:'🥩',c:'#e57373'},
+ {id:'bebidas',n:'Bebidas e conveniência',i:'🍺',c:'#ffb300'},
  {id:'comida',n:'Restaurante e delivery',i:'🍔',c:'#ff9800'},
- {id:'transporte',n:'Transporte e apps',i:'🚕',c:'#ffca28'},
+ {id:'transporte',n:'Uber, 99 e táxi',i:'🚕',c:'#ffca28'},
+ {id:'onibus',n:'Ônibus, metrô e passagens',i:'🚌',c:'#ffd54f'},
  {id:'veiculo',n:'Veículo',i:'🏍️',c:'#a7b0ba'},
  {id:'moradia',n:'Aluguel e condomínio',i:'🏠',c:'#6ea8ff'},
  {id:'energia',n:'Luz',i:'💡',c:'#ffe066'},
  {id:'agua',n:'Água',i:'🚿',c:'#4fc3f7'},
  {id:'gas',n:'Gás',i:'🔥',c:'#ff8a65'},
+ {id:'iptu',n:'IPTU e taxas da casa',i:'🏛️',c:'#9fa8da'},
  {id:'internet',n:'Internet',i:'🌐',c:'#7c9cff'},
  {id:'operadora',n:'Operadora / celular',i:'📱',c:'#4dd0e1'},
  {id:'assinaturas',n:'Assinaturas e streaming',i:'📺',c:'#b388ff'},
- {id:'educacao',n:'Educação e faculdade',i:'🎓',c:'#9575cd'},
+ {id:'educacao',n:'Faculdade',i:'🎓',c:'#9575cd'},
+ {id:'escola',n:'Escola e creche',i:'🏫',c:'#7e57c2'},
+ {id:'cursos',n:'Cursos e livros',i:'📚',c:'#b39ddb'},
+ {id:'papelaria',n:'Papelaria e material escolar',i:'✏️',c:'#d1c4e9'},
  {id:'saude',n:'Médico e exames',i:'🩺',c:'#26c6da'},
  {id:'dentista',n:'Dentista',i:'🦷',c:'#80deea'},
  {id:'farmacia',n:'Farmácia',i:'💊',c:'#4db6ac'},
  {id:'planosaude',n:'Plano de saúde',i:'🏥',c:'#00bfa5'},
+ {id:'terapia',n:'Terapia e psicólogo',i:'🧠',c:'#80cbc4'},
+ {id:'otica',n:'Ótica e óculos',i:'👓',c:'#4dd0e1'},
+ {id:'suplementos',n:'Suplementos',i:'💪',c:'#e57373'},
  {id:'academia',n:'Academia e esportes',i:'🏋️',c:'#ef5350'},
- {id:'beleza',n:'Beleza e cuidados',i:'💇',c:'#f48fb1'},
+ {id:'beleza',n:'Salão e beleza',i:'💇',c:'#f48fb1'},
+ {id:'barbearia',n:'Barbearia',i:'💈',c:'#5c9ded'},
+ {id:'estetica',n:'Manicure e estética',i:'💅',c:'#f8a5c2'},
+ {id:'perfumaria',n:'Perfumes e cosméticos',i:'🧴',c:'#e1a3d6'},
  {id:'roupas',n:'Roupas e calçados',i:'👕',c:'#ce93d8'},
  {id:'compras',n:'Compras e eletrônicos',i:'🛍️',c:'#9ccc65'},
  {id:'casa',n:'Casa e manutenção',i:'🛠️',c:'#bcaaa4'},
- {id:'pets',n:'Pets',i:'🐾',c:'#d9925f'},
+ {id:'moveis',n:'Móveis e decoração',i:'🛋️',c:'#a1887f'},
+ {id:'eletro',n:'Eletrodomésticos',i:'🧺',c:'#90caf9'},
+ {id:'limpeza',n:'Limpeza e higiene',i:'🧽',c:'#80deea'},
+ {id:'diarista',n:'Diarista e faxina',i:'🧹',c:'#b0bec5'},
+ {id:'lavanderia',n:'Lavanderia',i:'👔',c:'#9fa8da'},
+ {id:'pets',n:'Pets e ração',i:'🐾',c:'#d9925f'},
+ {id:'veterinario',n:'Veterinário',i:'🐶',c:'#c58b5c'},
  {id:'filhos',n:'Filhos',i:'🧸',c:'#ffb74d'},
- {id:'lazer',n:'Lazer e bares',i:'🎉',c:'#ff8ad1'},
+ {id:'familia',n:'Ajuda à família e mesada',i:'👨‍👩‍👧',c:'#ffcc80'},
+ {id:'pensao',n:'Pensão alimentícia',i:'⚖️',c:'#bcaaa4'},
+ {id:'lazer',n:'Lazer e bares',i:'🍻',c:'#ff8ad1'},
+ {id:'cinema',n:'Cinema, shows e ingressos',i:'🎬',c:'#f06292'},
+ {id:'jogos',n:'Jogos e games',i:'🎮',c:'#7e57c2'},
+ {id:'festas',n:'Festas e eventos',i:'🎂',c:'#ffab91'},
+ {id:'apostas',n:'Loterias e apostas',i:'🎲',c:'#a1887f'},
+ {id:'tabacaria',n:'Cigarro e tabacaria',i:'🚬',c:'#8d6e63'},
  {id:'viagem',n:'Viagens',i:'✈️',c:'#64b5f6'},
  {id:'presentes',n:'Presentes',i:'🎁',c:'#f06292'},
  {id:'igreja',n:'Igreja e doações',i:'⛪',c:'#ffd54f'},
- {id:'impostos',n:'Impostos e tarifas',i:'🧾',c:'#90a4ae'},
+ {id:'impostos',n:'Impostos',i:'🧾',c:'#90a4ae'},
+ {id:'tarifas',n:'Tarifas bancárias e juros',i:'🏦',c:'#78909c'},
+ {id:'documentos',n:'Cartório e documentos',i:'📑',c:'#b0bec5'},
+ {id:'servicos',n:'Advogado e contador',i:'💼',c:'#90a4ae'},
+ {id:'correios',n:'Fretes e correios',i:'📦',c:'#ffcc80'},
+ {id:'trabalho',n:'Trabalho e equipamentos',i:'🧰',c:'#a7b0ba'},
  {id:'seguros',n:'Seguros',i:'🛡️',c:'#78909c'},
  {id:'dividas',n:'Dívidas e cartão',i:'💳',c:'#ff5c7a'},
+ {id:'emprestimo',n:'Empréstimos e financiamentos',i:'🤝',c:'#ef5350'},
+ {id:'consorcio',n:'Consórcio',i:'🧩',c:'#ba68c8'},
  {id:'investimentos',n:'Investimentos e poupança',i:'📈',c:'#69f0ae'},
+ {id:'previdencia',n:'Previdência privada',i:'🏖️',c:'#4caf50'},
  {id:'transferencia',n:'Entre minhas contas',i:'🔁',c:'#8f8996'},
  {id:'outros',n:'Outros',i:'📦',c:'#a3a0ab'},
  {id:'classificar',n:'A classificar',i:'❓',c:'#6e6a75'},
@@ -1025,7 +1061,36 @@ const BILLDOT='#f7f4f8';
 
 const BASE_RULES=[
  // intermediários: não dá para saber o que foi
- ['mercado pago','classificar'],['mercadopago','classificar'],['pagseguro','classificar'],['picpay','classificar'],['stone','classificar'],['cielo','classificar'],['sumup','classificar'],['infinitepay','classificar'],
+ ['mercado pago','classificar'],['mercadopago','classificar'],
+ ['barbearia','barbearia'],['barber','barbearia'],['barbeiro','barbearia'],['barbershop','barbearia'],
+ ['manicure','estetica'],['pedicure','estetica'],['esmalteria','estetica'],['depilacao','estetica'],['espacolaser','estetica'],['estetica','estetica'],['sobrancelha','estetica'],['cilios','estetica'],
+ ['boticario','perfumaria'],['natura','perfumaria'],['avon','perfumaria'],['sephora','perfumaria'],['eudora','perfumaria'],['perfumaria','perfumaria'],['quem disse berenice','perfumaria'],
+ ['padaria','padaria'],['panificadora','padaria'],['panificacao','padaria'],['confeitaria','padaria'],['cafeteria','padaria'],['starbucks','padaria'],['cafe ','padaria'],
+ ['acougue','acougue'],['casa de carnes','acougue'],['hortifruti','acougue'],['sacolao','acougue'],['feira','acougue'],['peixaria','acougue'],['frutaria','acougue'],
+ ['adega','bebidas'],['distribuidora de bebidas','bebidas'],['conveniencia','bebidas'],['ze delivery','bebidas'],['tabacaria','tabacaria'],['charutaria','tabacaria'],['cigarro','tabacaria'],
+ ['metro','onibus'],['sptrans','onibus'],['bilhete unico','onibus'],['onibus','onibus'],['buser','onibus'],['recarga transporte','onibus'],['bhbus','onibus'],['passagem','onibus'],['clickbus','onibus'],['top bilhete','onibus'],['rodoviaria','onibus'],['cptm','onibus'],['vlt','onibus'],['brt','onibus'],
+ ['iptu','iptu'],['taxa de lixo','iptu'],
+ ['creche','escola'],['bercario','escola'],['escola','escola'],['colegio','escola'],
+ ['curso','cursos'],['udemy','cursos'],['alura','cursos'],['hotmart','cursos'],['livraria','cursos'],['amazon kindle','cursos'],['estrategia concursos','cursos'],['gran cursos','cursos'],['ingles','cursos'],['wizard','cursos'],['ccaa','cursos'],['senac','cursos'],
+ ['papelaria','papelaria'],['material escolar','papelaria'],['kalunga','papelaria'],
+ ['psicolog','terapia'],['terapia','terapia'],['psiquiatra','terapia'],['psicanalis','terapia'],
+ ['otica','otica'],['oculos','otica'],['chilli beans','otica'],['lentes de contato','otica'],
+ ['growth supplements','suplementos'],['max titanium','suplementos'],['integralmedica','suplementos'],['suplemento','suplementos'],['whey','suplementos'],
+ ['tok stok','moveis'],['tokstok','moveis'],['mobly','moveis'],['moveis','moveis'],['camicado','moveis'],['etna','moveis'],['decoracao','moveis'],['colchao','moveis'],
+ ['eletrodomestico','eletro'],['brastemp','eletro'],['consul','eletro'],['electrolux','eletro'],
+ ['diarista','diarista'],['faxina','diarista'],['passadeira','diarista'],['lavanderia','lavanderia'],['lavateria','lavanderia'],['5asec','lavanderia'],
+ ['veterinari','veterinario'],['clinica vet','veterinario'],['hospital vet','veterinario'],
+ ['pensao alimenticia','pensao'],
+ ['cinema','cinema'],['cinemark','cinema'],['cinepolis','cinema'],['ingresso','cinema'],['sympla','cinema'],['eventim','cinema'],['ticketmaster','cinema'],['ingresse','cinema'],['bilheteria','cinema'],
+ ['steam','jogos'],['nuuvem','jogos'],['epic games','jogos'],['playstation store','jogos'],['xbox store','jogos'],['nintendo','jogos'],['riot games','jogos'],['garena','jogos'],['roblox','jogos'],['google play jogos','jogos'],
+ ['buffet','festas'],['casa de festas','festas'],['artigos para festa','festas'],
+ ['loteria','apostas'],['loterica','apostas'],['lotericas','apostas'],['mega sena','apostas'],['betano','apostas'],['bet365','apostas'],['sportingbet','apostas'],['superbet','apostas'],['estrela bet','apostas'],['betnacional','apostas'],['pixbet','apostas'],['kto','apostas'],['novibet','apostas'],
+ ['tarifa','tarifas'],['cesta de servicos','tarifas'],['anuidade','tarifas'],['iof','tarifas'],['juros','tarifas'],['encargos','tarifas'],['cheque especial','tarifas'],['mensalidade pacote','tarifas'],
+ ['cartorio','documentos'],['tabeliao','documentos'],['tabelionato','documentos'],['poupatempo','documentos'],['despachante','documentos'],['passaporte','documentos'],['policia federal','documentos'],
+ ['advogado','servicos'],['advocacia','servicos'],['contabilidade','servicos'],['contador','servicos'],
+ ['correios','correios'],['jadlog','correios'],['loggi','correios'],['total express','correios'],['sedex','correios'],
+ ['emprestimo','emprestimo'],['financiamento','emprestimo'],['consignado','emprestimo'],['credito pessoal','emprestimo'],
+ ['previdencia','previdencia'],['brasilprev','previdencia'],['icatu','previdencia'],['prevcef','previdencia'],['pagseguro','classificar'],['picpay','classificar'],['stone','classificar'],['cielo','classificar'],['sumup','classificar'],['infinitepay','classificar'],
  // entre contas / investimentos
  ['mesma titularidade','transferencia'],['transferencia entre contas','transferencia'],['conta propria','transferencia'],['resgate','investimentos'],['aplicacao','investimentos'],['cdb','investimentos'],['tesouro direto','investimentos'],['poupanca','investimentos'],['caixinha','investimentos'],['porquinho','investimentos'],['cofrinho','investimentos'],['corretora','investimentos'],['xp investimentos','investimentos'],['rico investimentos','investimentos'],
  // compras online específicas antes de "mercado"
@@ -3755,6 +3820,13 @@ function drawOf(){const box=$('#ofBox');if(!box)return;const st=OFST||{configure
   $$('[data-ofupd]',box).forEach(b=>b.onclick=()=>ofConnect(b.dataset.ofupd));
   $$('[data-ofrm]',box).forEach(b=>b.onclick=()=>confirmBox('Desconectar este banco do Tico? As movimentações já importadas continuam.','Desconectar',async()=>{try{await ofCall('remove',{itemId:b.dataset.ofrm});await ofStatus();openOF()}catch(e){toast(e.message)}}));
   const f=$('#ofForget',box);if(f)f.onclick=()=>confirmBox('Apagar os códigos da Pluggy do Tico? A atualização automática para.','Apagar',async()=>{await sbc.rpc('mb_bank_forget');setOf({on:false});OFST=null;openOF()})}
+
+/* busca rápida no seletor de categorias (a lista ficou grande) */
+function catSearchEnhance(root){(root||document).querySelectorAll('.catgrid').forEach(g=>{if(g.dataset.q||g.children.length<14)return;g.dataset.q='1';
+  const w=document.createElement('div');w.className='catq';w.innerHTML='<input type="search" placeholder="🔎 Buscar categoria… (ex.: barbearia, padaria, ônibus)" autocomplete="off" enterkeyhint="search">';g.parentNode.insertBefore(w,g);
+  const inp=w.firstChild;inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const f=[...g.children].find(c=>c.style.display!=='none');if(f){const r=f.querySelector('input');if(r){r.checked=true;r.dispatchEvent(new Event('change',{bubbles:true}))}}}});
+  inp.oninput=()=>{const q=norm(inp.value);[...g.children].forEach(c=>{c.style.display=!q||norm(c.textContent).includes(q)?'':'none'})}})}
+new MutationObserver(()=>{const s=document.getElementById('sheet');if(s)catSearchEnhance(s)}).observe(document.documentElement,{childList:true,subtree:true});
 
 /* ---------- ações (cliques) ---------- */
 const ACT={
