@@ -3828,6 +3828,13 @@ function catSearchEnhance(root){(root||document).querySelectorAll('.catgrid').fo
   inp.oninput=()=>{const q=norm(inp.value);[...g.children].forEach(c=>{c.style.display=!q||norm(c.textContent).includes(q)?'':'none'})}})}
 new MutationObserver(()=>{const s=document.getElementById('sheet');if(s)catSearchEnhance(s)}).observe(document.documentElement,{childList:true,subtree:true});
 
+/* categorias em ordem alfabética (Outros, Entre minhas contas e A classificar ficam no fim) */
+const CAT_LAST=['outros','outros_in','transferencia','classificar'];
+function catSort(L){const col=new Intl.Collator('pt-BR',{sensitivity:'base'});return L.slice().sort((a,b)=>{const ia=CAT_LAST.indexOf(a.id),ib=CAT_LAST.indexOf(b.id);if(ia>=0||ib>=0)return (ia<0?-1:ia)-(ib<0?-1:ib)||0;return col.compare(a.n,b.n)})}
+(()=>{const a=catSort(CATS);CATS.length=0;CATS.push(...a);const b=catSort(INC);INC.length=0;INC.push(...b)})();
+outCats=function(all){const h=new Set(all?[]:(S.settings.hiddenCats||[]));return catSort([...CATS.filter(c=>!h.has(c.id)),...custCats('saida')])};
+incCats=function(all){const h=new Set(all?[]:(S.settings.hiddenCats||[]));return catSort([...INC.filter(c=>!h.has(c.id)),...custCats('entrada')])};
+
 /* ---------- ações (cliques) ---------- */
 const ACT={
   tab:d=>{if(d.pt)payTab=d.pt;closeModal();go(d.tab)},close:closeModal,
